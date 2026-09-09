@@ -1,0 +1,154 @@
+<script setup>
+import { ref, onMounted, computed } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue';
+import { ShoppingBagIcon, MagnifyingGlassIcon, UserCircleIcon, Bars3Icon, XMarkIcon } from '@heroicons/vue/24/outline';
+import { useAuthStore } from '../stores/auth';
+import { useCartStore } from '../stores/cart';
+import { useUiStore } from '../stores/ui';
+import CartDrawer from '../components/CartDrawer.vue';
+import api from '../lib/api';
+
+const auth = useAuthStore();
+const cart = useCartStore();
+const ui = useUiStore();
+const router = useRouter();
+const route = useRoute();
+
+const search = ref('');
+const mobileOpen = ref(false);
+const categories = ref([]);
+
+onMounted(async () => {
+    cart.fetch();
+    const { data } = await api.get('/categories');
+    categories.value = data;
+});
+
+function submitSearch() {
+    router.push({ name: 'shop', query: { q: search.value || undefined } });
+    mobileOpen.value = false;
+}
+
+async function logout() {
+    await auth.logout();
+    cart.reset();
+    cart.fetch();
+    ui.toast('Системээс гарлаа', 'info');
+    router.push({ name: 'home' });
+}
+
+const shopName = computed(() => ui.config?.name || 'BeautyPro Supply');
+</script>
+
+<template>
+    <div class="flex min-h-full flex-col">
+        <!-- Top bar -->
+        <div class="bg-stone-900 text-center text-xs text-stone-300">
+            <div class="container-x py-2">✨ 300,000₮-с дээш захиалгад хүргэлт үнэгүй · QPay-ээр аюулгүй төлбөр · Дууссан барааг урьдчилан захиалах боломжтой</div>
+        </div>
+
+        <header class="sticky top-0 z-40 border-b border-stone-200/80 bg-white/90 backdrop-blur">
+            <div class="container-x flex h-16 items-center gap-4">
+                <button class="lg:hidden -ml-2 p-2 text-stone-600" @click="mobileOpen = !mobileOpen">
+                    <Bars3Icon v-if="!mobileOpen" class="h-6 w-6" /><XMarkIcon v-else class="h-6 w-6" />
+                </button>
+
+                <router-link :to="{ name: 'home' }" class="flex items-center gap-2">
+                    <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-600 font-display text-lg font-bold text-white">B</span>
+                    <span class="whitespace-nowrap font-display text-xl font-bold tracking-tight text-stone-900">{{ shopName }}</span>
+                </router-link>
+
+                <nav class="ml-6 hidden items-center gap-6 text-sm font-medium text-stone-600 lg:flex">
+                    <router-link :to="{ name: 'shop' }" class="hover:text-stone-900" active-class="text-brand-700">Бүх бараа</router-link>
+                    <router-link v-for="c in categories.slice(0, 5)" :key="c.id" :to="{ name: 'shop', query: { category: c.slug } }" class="hover:text-stone-900" :class="route.query.category === c.slug && 'text-brand-700'">{{ c.name }}</router-link>
+                </nav>
+
+                <form @submit.prevent="submitSearch" class="ml-auto hidden w-56 shrink-0 xl:block">
+                    <div class="relative">
+                        <MagnifyingGlassIcon class="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-stone-400" />
+                        <input v-model="search" type="search" placeholder="Бараа хайх..." class="input pl-9 py-2 rounded-full" />
+                    </div>
+                </form>
+
+                <div class="ml-auto flex items-center gap-1 xl:ml-2">
+                    <Menu v-if="auth.isLoggedIn" as="div" class="relative">
+                        <MenuButton class="flex items-center gap-2 rounded-full p-1.5 pr-3 hover:bg-stone-100">
+                            <span class="flex h-7 w-7 items-center justify-center rounded-full bg-brand-100 text-xs font-bold text-brand-700">{{ auth.user.name.slice(0, 1) }}</span>
+                            <span class="hidden text-sm font-medium sm:block">{{ auth.user.name }}</span>
+                        </MenuButton>
+                        <transition enter-active-class="transition duration-100 ease-out" enter-from-class="scale-95 opacity-0" enter-to-class="scale-100 opacity-100" leave-active-class="transition duration-75 ease-in" leave-from-class="scale-100 opacity-100" leave-to-class="scale-95 opacity-0">
+                            <MenuItems class="absolute right-0 mt-2 w-52 origin-top-right rounded-xl bg-white p-1.5 shadow-lg ring-1 ring-stone-200 focus:outline-none">
+                                <MenuItem v-if="auth.isAdmin" v-slot="{ active }"><router-link :to="{ name: 'admin.dashboard' }" class="block rounded-lg px-3 py-2 text-sm font-medium text-brand-700" :class="active && 'bg-stone-50'">⚙️ Админ самбар</router-link></MenuItem>
+                                <MenuItem v-if="auth.isCourier || auth.isAdmin" v-slot="{ active }"><router-link :to="{ name: 'courier.deliveries' }" class="block rounded-lg px-3 py-2 text-sm font-medium text-sky-700" :class="active && 'bg-stone-50'">🛵 Хүргэлтүүд</router-link></MenuItem>
+                                <MenuItem v-slot="{ active }"><router-link :to="{ name: 'orders' }" class="block rounded-lg px-3 py-2 text-sm" :class="active && 'bg-stone-50'">Миний захиалгууд</router-link></MenuItem>
+                                <MenuItem v-slot="{ active }"><router-link :to="{ name: 'profile' }" class="block rounded-lg px-3 py-2 text-sm" :class="active && 'bg-stone-50'">Профайл</router-link></MenuItem>
+                                <MenuItem v-slot="{ active }"><button @click="logout" class="block w-full rounded-lg px-3 py-2 text-left text-sm text-red-600" :class="active && 'bg-stone-50'">Гарах</button></MenuItem>
+                            </MenuItems>
+                        </transition>
+                    </Menu>
+                    <router-link v-else :to="{ name: 'login' }" class="flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium text-stone-700 hover:bg-stone-100">
+                        <UserCircleIcon class="h-5 w-5" /><span class="hidden sm:block">Нэвтрэх</span>
+                    </router-link>
+
+                    <button @click="ui.cartOpen = true" class="relative rounded-full p-2 text-stone-700 hover:bg-stone-100">
+                        <ShoppingBagIcon class="h-6 w-6" />
+                        <span v-if="cart.count" class="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-brand-600 px-1 text-[11px] font-bold text-white">{{ cart.count }}</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile nav -->
+            <transition name="fade">
+                <div v-if="mobileOpen" class="border-t border-stone-200 bg-white lg:hidden">
+                    <div class="container-x space-y-1 py-3">
+                        <form @submit.prevent="submitSearch" class="mb-2"><input v-model="search" type="search" placeholder="Бараа хайх..." class="input rounded-full" /></form>
+                        <router-link :to="{ name: 'shop' }" @click="mobileOpen = false" class="block rounded-lg px-3 py-2 text-sm font-medium hover:bg-stone-50">Бүх бараа</router-link>
+                        <router-link v-for="c in categories" :key="c.id" :to="{ name: 'shop', query: { category: c.slug } }" @click="mobileOpen = false" class="block rounded-lg px-3 py-2 text-sm hover:bg-stone-50">{{ c.icon }} {{ c.name }}</router-link>
+                    </div>
+                </div>
+            </transition>
+        </header>
+
+        <main class="flex-1">
+            <router-view v-slot="{ Component }">
+                <transition name="fade" mode="out-in"><component :is="Component" /></transition>
+            </router-view>
+        </main>
+
+        <footer class="mt-16 border-t border-stone-200 bg-white">
+            <div class="container-x grid gap-8 py-12 sm:grid-cols-2 lg:grid-cols-4">
+                <div>
+                    <div class="flex items-center gap-2"><span class="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-600 font-display font-bold text-white">B</span><span class="font-display text-lg font-bold">{{ shopName }}</span></div>
+                    <p class="mt-3 text-sm text-stone-500">Гоо сайхны салон, үсчин, косметологичдод зориулсан мэргэжлийн тоног төхөөрөмж, хэрэгслийн нэгдсэн нийлүүлэгч.</p>
+                </div>
+                <div>
+                    <h4 class="text-sm font-semibold text-stone-900">Ангилал</h4>
+                    <ul class="mt-3 space-y-2 text-sm text-stone-600">
+                        <li v-for="c in categories" :key="c.id"><router-link :to="{ name: 'shop', query: { category: c.slug } }" class="hover:text-brand-700">{{ c.name }}</router-link></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-sm font-semibold text-stone-900">Үйлчилгээ</h4>
+                    <ul class="mt-3 space-y-2 text-sm text-stone-600">
+                        <li>Улаанбаатар хотод 24 цагт хүргэнэ</li>
+                        <li>Орон нутагт 2–5 хоногт</li>
+                        <li>QPay болон бэлэн төлбөр</li>
+                        <li>Дууссан барааг урьдчилан захиалах</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-sm font-semibold text-stone-900">Холбоо барих</h4>
+                    <ul class="mt-3 space-y-2 text-sm text-stone-600">
+                        <li>📞 7700-1122</li>
+                        <li>✉️ info@beautypro.mn</li>
+                        <li>📍 Улаанбаатар, Сүхбаатар дүүрэг, Beauty Tower 3 давхар</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-stone-100 py-4 text-center text-xs text-stone-400">© {{ new Date().getFullYear() }} {{ shopName }}. Бүх эрх хуулиар хамгаалагдсан.</div>
+        </footer>
+
+        <CartDrawer />
+    </div>
+</template>
