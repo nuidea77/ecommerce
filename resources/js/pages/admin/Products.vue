@@ -1,5 +1,6 @@
 <script setup>
 import { ref, reactive, onMounted, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import api, { errorMessage } from '../../lib/api';
 import { money } from '../../lib/format';
 import { useUiStore } from '../../stores/ui';
@@ -10,7 +11,8 @@ import { PlusIcon, PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/outline
 const ui = useUiStore();
 const result = ref(null);
 const categories = ref([]);
-const f = reactive({ q: '', category_id: '', status: '', low_stock: false, page: 1 });
+const route = useRoute();
+const f = reactive({ q: '', category_id: '', status: '', low_stock: route.query.low_stock === '1', page: 1 });
 
 async function load() {
     const { data } = await api.get('/admin/products', { params: { ...f, low_stock: f.low_stock ? 1 : undefined } });

@@ -4,6 +4,7 @@ import { useAuthStore } from '../stores/auth';
 import { useUiStore } from '../stores/ui';
 import { errorMessage } from '../lib/api';
 import { ROLE } from '../lib/format';
+import AccountShell from '../components/account/AccountShell.vue';
 
 const auth = useAuthStore();
 const ui = useUiStore();
@@ -17,13 +18,13 @@ async function save() {
 }
 </script>
 <template>
-    <div class="container-x max-w-2xl py-8">
-        <h1 class="font-display text-3xl font-bold">Профайл</h1>
+    <AccountShell title="Профайл">
         <div class="card mt-6 p-6">
             <div class="flex items-center gap-4">
                 <span class="flex h-14 w-14 items-center justify-center rounded-full bg-brand-100 text-xl font-bold text-brand-700">{{ auth.user.name.slice(0, 1) }}</span>
-                <div><p class="font-semibold">{{ auth.user.email }}</p><span class="badge" :class="ROLE[auth.user.role].cls">{{ ROLE[auth.user.role].label }}</span></div>
+                <div><p class="font-semibold">{{ auth.user.email }}</p><div class="mt-1 flex flex-wrap gap-1.5"><span class="badge" :class="ROLE[auth.user.role].cls">{{ ROLE[auth.user.role].label }}</span><span v-if="auth.user.is_verified" class="badge bg-emerald-100 text-emerald-800">✓ verify.mn баталгаажсан</span><router-link v-else-if="auth.isCustomer" :to="{ name: 'verify' }" class="badge bg-amber-100 text-amber-800">Баталгаажаагүй →</router-link></div></div>
             </div>
+            <dl v-if="auth.user.is_verified" class="mt-5 grid gap-3 rounded-xl bg-stone-50 p-4 text-sm sm:grid-cols-3"><div><dt class="text-stone-500">Овог</dt><dd class="font-medium">{{ auth.user.last_name }}</dd></div><div><dt class="text-stone-500">Нэр</dt><dd class="font-medium">{{ auth.user.first_name }}</dd></div><div><dt class="text-stone-500">Регистр</dt><dd class="font-mono font-medium">{{ auth.user.register_number?.slice(0, 2) }}******{{ auth.user.register_number?.slice(-2) }}</dd></div></dl>
             <form @submit.prevent="save" class="mt-6 grid gap-4 sm:grid-cols-2">
                 <div><label class="label">Нэр</label><input v-model="form.name" class="input" required /></div>
                 <div><label class="label">Утас</label><input v-model="form.phone" class="input" /></div>
@@ -34,5 +35,5 @@ async function save() {
                 <div class="sm:col-span-2"><button :disabled="saving" class="btn-brand">Хадгалах</button></div>
             </form>
         </div>
-    </div>
+    </AccountShell>
 </template>

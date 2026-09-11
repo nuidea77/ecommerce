@@ -8,6 +8,8 @@ export const useAuthStore = defineStore('auth', {
         isAdmin: (s) => s.user?.role === 'admin',
         isCourier: (s) => s.user?.role === 'courier',
         isCustomer: (s) => s.user?.role === 'customer',
+        isVerified: (s) => !!s.user?.is_verified,
+        needsVerification: (s) => s.user?.role === 'customer' && !s.user?.is_verified,
     },
     actions: {
         async fetch() {
@@ -36,6 +38,9 @@ export const useAuthStore = defineStore('auth', {
         async logout() {
             await api.post('/auth/logout');
             this.user = null;
+        },
+        setUser(user) {
+            this.user = user;
         },
         async updateProfile(payload) {
             const { data } = await api.put('/auth/profile', payload);

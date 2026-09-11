@@ -1,13 +1,15 @@
 <script setup>
 import { ref, reactive, onMounted, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import api from '../../lib/api';
 import { money, dateTime, ORDER_STATUS, PAYMENT_STATUS, DELIVERY_STATUS, PAYMENT_METHOD } from '../../lib/format';
 import StatusBadge from '../../components/ui/StatusBadge.vue';
 import Pagination from '../../components/ui/Pagination.vue';
 import Spinner from '../../components/ui/Spinner.vue';
 
+const route = useRoute();
 const result = ref(null);
-const f = reactive({ q: '', status: '', payment_status: '', delivery_status: '', payment_method: '', backorder: false, page: 1 });
+const f = reactive({ q: '', status: route.query.status || '', payment_status: route.query.payment_status || '', delivery_status: route.query.delivery_status || '', payment_method: '', backorder: route.query.backorder === '1', page: 1 });
 async function load() { result.value = (await api.get('/admin/orders', { params: { ...f, backorder: f.backorder ? 1 : undefined } })).data; }
 let t;
 watch(() => [f.q, f.status, f.payment_status, f.delivery_status, f.payment_method, f.backorder], () => { f.page = 1; clearTimeout(t); t = setTimeout(load, 250); });

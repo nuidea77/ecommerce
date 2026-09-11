@@ -81,7 +81,9 @@ const shopName = computed(() => ui.config?.name || 'BeautyPro Supply');
                             <MenuItems class="absolute right-0 mt-2 w-52 origin-top-right rounded-xl bg-white p-1.5 shadow-lg ring-1 ring-stone-200 focus:outline-none">
                                 <MenuItem v-if="auth.isAdmin" v-slot="{ active }"><router-link :to="{ name: 'admin.dashboard' }" class="block rounded-lg px-3 py-2 text-sm font-medium text-brand-700" :class="active && 'bg-stone-50'">⚙️ Админ самбар</router-link></MenuItem>
                                 <MenuItem v-if="auth.isCourier || auth.isAdmin" v-slot="{ active }"><router-link :to="{ name: 'courier.deliveries' }" class="block rounded-lg px-3 py-2 text-sm font-medium text-sky-700" :class="active && 'bg-stone-50'">🛵 Хүргэлтүүд</router-link></MenuItem>
+                                <MenuItem v-slot="{ active }"><router-link :to="{ name: 'account' }" class="block rounded-lg px-3 py-2 text-sm" :class="active && 'bg-stone-50'">Миний самбар</router-link></MenuItem>
                                 <MenuItem v-slot="{ active }"><router-link :to="{ name: 'orders' }" class="block rounded-lg px-3 py-2 text-sm" :class="active && 'bg-stone-50'">Миний захиалгууд</router-link></MenuItem>
+                                <MenuItem v-slot="{ active }"><router-link :to="{ name: 'verify' }" class="flex items-center justify-between rounded-lg px-3 py-2 text-sm" :class="active && 'bg-stone-50'">Баталгаажуулалт <span v-if="auth.isVerified" class="text-emerald-600">✓</span><span v-else class="badge bg-amber-100 text-amber-800">Хүлээгдэж буй</span></router-link></MenuItem>
                                 <MenuItem v-slot="{ active }"><router-link :to="{ name: 'profile' }" class="block rounded-lg px-3 py-2 text-sm" :class="active && 'bg-stone-50'">Профайл</router-link></MenuItem>
                                 <MenuItem v-slot="{ active }"><button @click="logout" class="block w-full rounded-lg px-3 py-2 text-left text-sm text-red-600" :class="active && 'bg-stone-50'">Гарах</button></MenuItem>
                             </MenuItems>
@@ -109,6 +111,13 @@ const shopName = computed(() => ui.config?.name || 'BeautyPro Supply');
                 </div>
             </transition>
         </header>
+
+        <div v-if="auth.needsVerification && route.name !== 'verify' && route.name !== 'verify.mock'" class="border-b border-amber-200 bg-amber-50">
+            <div class="container-x flex flex-wrap items-center justify-between gap-2 py-2 text-sm text-amber-900">
+                <span>🪪 Захиалга өгөхийн тулд verify.mn-ээр бүртгэлээ баталгаажуулна уу.</span>
+                <router-link :to="{ name: 'verify' }" class="btn-sm btn bg-amber-500 text-white hover:bg-amber-600">Баталгаажуулах</router-link>
+            </div>
+        </div>
 
         <main class="flex-1">
             <router-view v-slot="{ Component }">

@@ -20,9 +20,11 @@ class User extends Authenticatable
 
     protected $fillable = [
         'name', 'email', 'phone', 'role', 'address', 'city', 'is_active', 'password',
+        'is_verified', 'verified_at', 'verify_provider', 'verify_subject', 'register_number',
+        'last_name', 'first_name', 'verify_data',
     ];
 
-    protected $hidden = ['password', 'remember_token'];
+    protected $hidden = ['password', 'remember_token', 'verify_data', 'verify_subject'];
 
     protected $attributes = ['role' => self::ROLE_CUSTOMER, 'is_active' => true];
 
@@ -32,12 +34,20 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_active' => 'boolean',
+            'is_verified' => 'boolean',
+            'verified_at' => 'datetime',
+            'verify_data' => 'array',
         ];
     }
 
     public function isAdmin(): bool
     {
         return $this->role === self::ROLE_ADMIN;
+    }
+
+    public function needsVerification(): bool
+    {
+        return $this->role === self::ROLE_CUSTOMER && ! $this->is_verified;
     }
 
     public function isCourier(): bool

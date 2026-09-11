@@ -10,11 +10,14 @@ const routes = [
             { path: 'shop', name: 'shop', component: () => import('../pages/Shop.vue') },
             { path: 'products/:slug', name: 'product', component: () => import('../pages/ProductDetail.vue') },
             { path: 'cart', name: 'cart', component: () => import('../pages/Cart.vue') },
-            { path: 'checkout', name: 'checkout', component: () => import('../pages/Checkout.vue'), meta: { auth: true } },
+            { path: 'checkout', name: 'checkout', component: () => import('../pages/Checkout.vue'), meta: { auth: true, verified: true } },
+            { path: 'account', name: 'account', component: () => import('../pages/account/Dashboard.vue'), meta: { auth: true } },
             { path: 'orders', name: 'orders', component: () => import('../pages/Orders.vue'), meta: { auth: true } },
             { path: 'orders/:number', name: 'order', component: () => import('../pages/OrderDetail.vue'), meta: { auth: true } },
             { path: 'orders/:number/pay', name: 'pay', component: () => import('../pages/Payment.vue'), meta: { auth: true } },
             { path: 'profile', name: 'profile', component: () => import('../pages/Profile.vue'), meta: { auth: true } },
+            { path: 'verify', name: 'verify', component: () => import('../pages/account/Verify.vue'), meta: { auth: true } },
+            { path: 'verify/mock', name: 'verify.mock', component: () => import('../pages/account/VerifyMock.vue'), meta: { auth: true } },
             { path: 'login', name: 'login', component: () => import('../pages/auth/Login.vue'), meta: { guest: true } },
             { path: 'register', name: 'register', component: () => import('../pages/auth/Register.vue'), meta: { guest: true } },
         ],
@@ -69,8 +72,11 @@ router.beforeEach(async (to) => {
     if (roles.length && !roles.includes(auth.user?.role)) {
         return { name: 'home' };
     }
+    if (to.meta.verified && auth.needsVerification) {
+        return { name: 'verify', query: { redirect: to.fullPath } };
+    }
     if (to.meta.guest && auth.isLoggedIn) {
-        return auth.isAdmin ? { name: 'admin.dashboard' } : auth.isCourier ? { name: 'courier.deliveries' } : { name: 'home' };
+        return auth.isAdmin ? { name: 'admin.dashboard' } : auth.isCourier ? { name: 'courier.deliveries' } : { name: 'account' };
     }
     return true;
 });

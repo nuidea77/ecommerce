@@ -6,6 +6,7 @@ import StatusBadge from '../components/ui/StatusBadge.vue';
 import Pagination from '../components/ui/Pagination.vue';
 import EmptyState from '../components/ui/EmptyState.vue';
 import Spinner from '../components/ui/Spinner.vue';
+import AccountShell from '../components/account/AccountShell.vue';
 
 const result = ref(null);
 async function load(page = 1) {
@@ -16,8 +17,7 @@ onMounted(load);
 </script>
 
 <template>
-    <div class="container-x py-8">
-        <h1 class="font-display text-3xl font-bold">Миний захиалгууд</h1>
+    <AccountShell title="Миний захиалгууд">
         <Spinner v-if="!result" />
         <EmptyState v-else-if="!result.data.length" class="mt-6" title="Захиалга байхгүй" description="Та одоогоор захиалга хийгээгүй байна." icon="📦"><router-link :to="{ name: 'shop' }" class="btn-brand">Дэлгүүр үзэх</router-link></EmptyState>
         <div v-else class="mt-6 space-y-4">
@@ -42,5 +42,5 @@ onMounted(load);
             </router-link>
             <Pagination :meta="result" @change="load" />
         </div>
-    </div>
+    </AccountShell>
 </template>

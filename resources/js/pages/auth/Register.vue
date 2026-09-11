@@ -17,7 +17,7 @@ async function submit() {
         await auth.register(form);
         await cart.fetch();
         ui.toast('Бүртгэл амжилттай үүслээ!');
-        router.push(route.query.redirect || { name: 'home' });
+        router.push({ name: 'verify', query: route.query.redirect ? { redirect: route.query.redirect } : {} });
     } catch (e) { errors.value = e.response?.data?.errors || {}; ui.toast(errorMessage(e), 'error'); }
     finally { loading.value = false; }
 }

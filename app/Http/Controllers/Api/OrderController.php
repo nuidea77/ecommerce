@@ -35,6 +35,13 @@ class OrderController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        if (config('verify.require_for_checkout') && $request->user()->needsVerification()) {
+            return response()->json([
+                'message' => 'Захиалга өгөхийн тулд verify.mn-ээр бүртгэлээ баталгаажуулна уу.',
+                'verification_required' => true,
+            ], 403);
+        }
+
         $data = $request->validate([
             'shipping_name' => ['required', 'string', 'max:100'],
             'shipping_phone' => ['required', 'string', 'max:32'],

@@ -39,6 +39,7 @@ async function submit() {
         ui.toast(`Захиалга ${data.order.order_number} үүслээ`);
         router.push(data.order.payment_method === 'qpay' ? { name: 'pay', params: { number: data.order.order_number } } : { name: 'order', params: { number: data.order.order_number }, query: { created: 1 } });
     } catch (e) {
+        if (e.response?.data?.verification_required) return router.push({ name: 'verify', query: { redirect: '/checkout' } });
         errors.value = e.response?.data?.errors || {};
         ui.toast(errorMessage(e), 'error');
     } finally {

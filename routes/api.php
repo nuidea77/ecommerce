@@ -39,6 +39,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/auth/me', [Api\AuthController::class, 'me']);
     Route::put('/auth/profile', [Api\AuthController::class, 'updateProfile']);
 
+    Route::get('/account/dashboard', [Api\AccountController::class, 'dashboard']);
+    Route::get('/verify/status', [Api\VerifyController::class, 'status']);
+    Route::post('/verify/start', [Api\VerifyController::class, 'start']);
+    Route::get('/verify/callback', [Api\VerifyController::class, 'callback']);
+    Route::post('/verify/mock/complete', [Api\VerifyController::class, 'mockComplete']);
+
     Route::get('/orders', [Api\OrderController::class, 'index']);
     Route::post('/orders', [Api\OrderController::class, 'store']);
     Route::get('/orders/{orderNumber}', [Api\OrderController::class, 'show']);

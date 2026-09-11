@@ -1,5 +1,6 @@
 <script setup>
 import { ref, reactive, onMounted, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import api, { errorMessage } from '../../lib/api';
 import { dateOnly, ROLE } from '../../lib/format';
 import { useUiStore } from '../../stores/ui';
@@ -11,7 +12,8 @@ import { PlusIcon, PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/outline
 
 const ui = useUiStore();
 const result = ref(null);
-const f = reactive({ q: '', role: '', page: 1 });
+const route = useRoute();
+const f = reactive({ q: '', role: route.query.role || '', verified: '', page: 1 });
 const open = ref(false); const editing = ref(null); const saving = ref(false);
 const form = reactive({ name: '', email: '', phone: '', role: 'customer', password: '', is_active: true });
 
@@ -28,7 +30,7 @@ async function remove(u) {
     try { await api.delete(`/admin/users/${u.id}`); ui.toast('Устгагдлаа'); load(); } catch (e) { ui.toast(errorMessage(e), 'error'); }
 }
 let t;
-watch(() => [f.q, f.role], () => { f.page = 1; clearTimeout(t); t = setTimeout(load, 250); });
+watch(() => [f.q, f.role, f.verified], () => { f.page = 1; clearTimeout(t); t = setTimeout(load, 250); });
 onMounted(load);
 </script>
 <template>
@@ -42,15 +44,17 @@ onMounted(load);
             <div class="flex gap-1 rounded-xl bg-stone-100 p-1 text-sm">
                 <button v-for="(r, k) in { '': 'Бүгд', ...Object.fromEntries(Object.entries(ROLE).map(([k, v]) => [k, v.label])) }" :key="k" @click="f.role = k" class="rounded-lg px-3 py-1.5 font-medium" :class="f.role === k ? 'bg-white shadow-sm' : 'text-stone-500'">{{ r }}</button>
             </div>
+            <select v-model="f.verified" class="input w-auto py-2"><option value="">Баталгаажуулалт: бүгд</option><option value="1">Баталгаажсан</option><option value="0">Баталгаажаагүй</option></select>
         </div>
         <Spinner v-if="!result" />
         <div v-else class="card mt-4 overflow-x-auto">
             <table class="min-w-full text-sm">
-                <thead class="bg-stone-50 text-left text-xs uppercase text-stone-500"><tr><th class="px-4 py-3">Хэрэглэгч</th><th class="px-4 py-3">Эрх</th><th class="px-4 py-3">Утас</th><th class="px-4 py-3">Захиалга / Хүргэлт</th><th class="px-4 py-3">Төлөв</th><th class="px-4 py-3">Бүртгүүлсэн</th><th></th></tr></thead>
+                <thead class="bg-stone-50 text-left text-xs uppercase text-stone-500"><tr><th class="px-4 py-3">Хэрэглэгч</th><th class="px-4 py-3">Эрх</th><th class="px-4 py-3">Баталгаажуулалт</th><th class="px-4 py-3">Утас</th><th class="px-4 py-3">Захиалга / Хүргэлт</th><th class="px-4 py-3">Төлөв</th><th class="px-4 py-3">Бүртгүүлсэн</th><th></th></tr></thead>
                 <tbody class="divide-y divide-stone-100">
                     <tr v-for="u in result.data" :key="u.id" class="hover:bg-stone-50">
                         <td class="px-4 py-3"><div class="flex items-center gap-3"><span class="flex h-9 w-9 items-center justify-center rounded-full bg-brand-100 font-bold text-brand-700">{{ u.name.slice(0, 1) }}</span><div><p class="font-medium">{{ u.name }}</p><p class="text-xs text-stone-400">{{ u.email }}</p></div></div></td>
                         <td class="px-4 py-3"><StatusBadge :value="u.role" type="role" /></td>
+                        <td class="px-4 py-3"><template v-if="u.is_verified"><span class="badge bg-emerald-100 text-emerald-800">✓ verify.mn</span><p class="mt-0.5 text-xs text-stone-400">{{ u.last_name }} {{ u.first_name }} · {{ u.register_number }}</p></template><span v-else-if="u.role === 'customer'" class="badge bg-amber-100 text-amber-800">Баталгаажаагүй</span><span v-else class="text-xs text-stone-400">—</span></td>
                         <td class="px-4 py-3 text-stone-600">{{ u.phone || '—' }}</td>
                         <td class="px-4 py-3 text-stone-600"><span v-if="u.role === 'courier'">{{ u.active_deliveries_count }} идэвхтэй · {{ u.delivered_count }} хүргэсэн</span><span v-else>{{ u.orders_count }} захиалга</span></td>
                         <td class="px-4 py-3"><span class="badge" :class="u.is_active ? 'bg-emerald-100 text-emerald-800' : 'bg-stone-200 text-stone-600'">{{ u.is_active ? 'Идэвхтэй' : 'Идэвхгүй' }}</span></td>

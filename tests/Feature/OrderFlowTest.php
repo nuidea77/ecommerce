@@ -47,7 +47,7 @@ class OrderFlowTest extends TestCase
         config(['qpay.mock' => true]);
         $product = $this->makeProduct(stock: 0);
         $variant = $product->variants->first();
-        $user = User::create(['name' => 'C', 'email' => 'c@x.mn', 'password' => 'password', 'role' => 'customer']);
+        $user = User::create(['name' => 'C', 'email' => 'c@x.mn', 'password' => 'password', 'role' => 'customer', 'is_verified' => true]);
 
         $this->as($user)->postJson('/api/cart/items', ['variant_id' => $variant->id, 'quantity' => 1])
             ->assertOk()->assertJsonPath('has_backorder', true);
@@ -74,7 +74,7 @@ class OrderFlowTest extends TestCase
         $variant = $product->variants->first();
         $admin = User::create(['name' => 'A', 'email' => 'a@x.mn', 'password' => 'password', 'role' => 'admin']);
         $courier = User::create(['name' => 'K', 'email' => 'k@x.mn', 'password' => 'password', 'role' => 'courier']);
-        $user = User::create(['name' => 'C', 'email' => 'c@x.mn', 'password' => 'password', 'role' => 'customer']);
+        $user = User::create(['name' => 'C', 'email' => 'c@x.mn', 'password' => 'password', 'role' => 'customer', 'is_verified' => true]);
 
         $this->as($user)->postJson('/api/cart/items', ['variant_id' => $variant->id, 'quantity' => 1]);
         $orderId = $this->as($user)->postJson('/api/orders', [

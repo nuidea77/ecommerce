@@ -9,10 +9,12 @@ Laravel 12 + Vue 3 + Tailwind CSS 4 + MySQL дээр бүтээсэн бүрэн
 | **Дэлгүүр (хэрэглэгч)** | Нүүр, ангилал, хайлт, шүүлт (өнгө / хэмжээ / брэнд / үнэ / бэлэн байгаа), эрэмбэ, хуудаслалт |
 | **Бүтээгдэхүүн** | Өнгө · хэмжээ · тоо ширхгийн багц (1 / 6 / 12 / 50 …) сонголт бүр өөрийн SKU, үнэ, үлдэгдэлтэй |
 | **Урьдчилсан захиалга** | Үлдэгдэл дууссан сонголтыг ч захиалж болно (backorder); хугацаа бүтээгдэхүүн тус бүрээр тохируулна |
+| **verify.mn баталгаажуулалт** | Нэвтэрсний дараа хэрэглэгч verify.mn-ээр (OAuth2 / e-Mongolia) овог, нэр, регистрээ баталгаажуулна; баталгаажаагүй бол захиалга өгөх боломжгүй. `VERIFY_MOCK=true` үед локал симуляц |
+| **Хэрэглэгчийн самбар** | Захиалгын статистик, баталгаажуулалтын төлөв, хүргэлт хянах, урьдчилсан захиалгын бараа, төлбөр хүлээгдэж буй захиалга, дахин захиалах |
 | **Сагс** | Зочин сагс (token) → нэвтрэхэд автоматаар нэгтгэнэ, үнэгүй хүргэлтийн босго |
 | **Захиалга** | Хүргэлтийн хаяг, тэмдэглэл, QPay эсвэл бэлэн (хүргэлтээр) төлбөр, цуцлах, түүх/timeline |
 | **QPay** | QPay v2 merchant API (нэхэмжлэх үүсгэх, төлбөр шалгах, callback). `QPAY_MOCK=true` үед локал симуляц |
-| **Админ** | Хянах самбар (орлого, төлөв, дуусаж буй үлдэгдэл), бүтээгдэхүүн + сонголт CRUD, зураг upload, ангилал, захиалгын төлөв / төлбөр / хүргэгч томилох, хэрэглэгч & хүргэгч удирдлага |
+| **Админ** | Хянах самбар (7/14/30/90 хоногийн үе, KPI өөрчлөлт, өдрийн орлогын график + хүснэгт, төлбөрийн хэлбэр, ангиллын борлуулалт, анхаарал шаардсан захиалга, нийлүүлэх шаардлагатай урьдчилсан захиалга, хүргэгчийн гүйцэтгэл, баталгаажсан хэрэглэгч), бүтээгдэхүүн + сонголт CRUD, зураг upload, ангилал, захиалгын төлөв / төлбөр / хүргэгч томилох, хэрэглэгч & хүргэгч удирдлага |
 | **Хүргэлтийн ажилтан** | Өөрт томилогдсон хүргэлтүүд, статистик, статус шинэчлэх (хүлээн авсан → замд → хүргэсэн / амжилтгүй), бэлэн мөнгө хүлээн авах |
 
 ## Суулгах
@@ -67,6 +69,23 @@ QPAY_CALLBACK_URL=https://yourdomain.mn/api/payments/qpay/callback
 
 `QPAY_MOCK=true` (анхдагч) үед бодит API дуудахгүй, төлбөрийн хуудсан дээр "симуляц" товч гарч ирнэ.
 
+## verify.mn тохиргоо
+
+Интеграц нь стандарт OAuth 2.0 authorization-code урсгалаар хийгдсэн. verify.mn-ээс авсан мерчант мэдээллээ `.env`-д оруулна:
+
+```env
+VERIFY_MOCK=false
+VERIFY_REQUIRE_FOR_CHECKOUT=true
+VERIFY_CLIENT_ID=...
+VERIFY_CLIENT_SECRET=...
+VERIFY_REDIRECT_URI=https://yourdomain.mn/api/verify/callback
+VERIFY_AUTHORIZE_URL=https://verify.mn/oauth/authorize
+VERIFY_TOKEN_URL=https://verify.mn/oauth/token
+VERIFY_USERINFO_URL=https://verify.mn/oauth/userinfo
+```
+
+verify.mn-ийн буцаадаг claim нэрс өөр бол `VERIFY_CLAIM_REGISTER`, `VERIFY_CLAIM_LAST_NAME`, `VERIFY_CLAIM_FIRST_NAME`, `VERIFY_CLAIM_PHONE`, `VERIFY_CLAIM_SUBJECT`-ээр тааруулна (`config/verify.php`). Урсгал: `POST /api/verify/start` → verify.mn → `GET /api/verify/callback?code&state` → профайл татаж хэрэглэгчийг баталгаажуулна. `VERIFY_MOCK=true` үед `/verify/mock` симуляцийн хуудас verify.mn-ийг орлоно.
+
 ## Бүтэц
 
 ```
@@ -74,6 +93,7 @@ app/Http/Controllers/Api       Дэлгүүрийн API (auth, catalog, cart, or
 app/Http/Controllers/Admin     Админ API
 app/Http/Controllers/Courier   Хүргэлтийн ажилтны API
 app/Services/QPayService.php   QPay интеграц
+app/Services/VerifyService.php verify.mn баталгаажуулалт
 app/Services/CartService.php   Зочин / хэрэглэгчийн сагс
 resources/js/pages             Vue хуудсууд (store, admin, courier)
 resources/js/layouts           Store / Admin / Courier layout

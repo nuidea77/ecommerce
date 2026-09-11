@@ -28,8 +28,9 @@ async function submit() {
         await cart.fetch();
         ui.toast(`Тавтай морил, ${user.name}!`);
         const redirect = route.query.redirect;
-        if (redirect) router.push(redirect);
-        else router.push(user.role === 'admin' ? { name: 'admin.dashboard' } : user.role === 'courier' ? { name: 'courier.deliveries' } : { name: 'home' });
+        if (user.role === 'customer' && !user.is_verified) router.push({ name: 'verify', query: redirect ? { redirect } : {} });
+        else if (redirect) router.push(redirect);
+        else router.push(user.role === 'admin' ? { name: 'admin.dashboard' } : user.role === 'courier' ? { name: 'courier.deliveries' } : { name: 'account' });
     } catch (e) { error.value = errorMessage(e); }
     finally { loading.value = false; }
 }
