@@ -25,7 +25,7 @@ class UserController extends Controller
             $query->where('is_verified', $request->query('verified') === '1');
         }
         if ($q = trim((string) $request->query('q'))) {
-            $query->where(fn ($w) => $w->where('name', 'like', "%$q%")->orWhere('email', 'like', "%$q%")->orWhere('phone', 'like', "%$q%")->orWhere('register_number', 'like', "%$q%"));
+            $query->where(fn ($w) => $w->where('name', 'like', "%$q%")->orWhere('email', 'like', "%$q%")->orWhere('phone', 'like', "%$q%")->orWhere('verified_phone', 'like', "%$q%"));
         }
 
         return response()->json($query->latest()->paginate((int) $request->query('per_page', 15))->withQueryString());

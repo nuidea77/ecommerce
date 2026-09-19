@@ -3,13 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\CheckPhoneVerification;
+use App\Models\PhoneVerification;
 use App\Services\VerifyService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
-use Throwable;
+use RuntimeException;
 
 class VerifyController extends Controller
 {
@@ -18,20 +19,21 @@ class VerifyController extends Controller
     public function status(Request $request): JsonResponse
     {
         $u = $request->user();
+        $active = $u->phoneVerifications()->where('status', PhoneVerification::PENDING)->where('expires_at', '>', now())->latest()->first();
 
         return response()->json([
             'verified' => (bool) $u->is_verified,
             'verified_at' => $u->verified_at,
+            'verified_phone' => $u->verified_phone,
             'provider' => $u->verify_provider,
-            'register_number' => $u->register_number ? Str::mask($u->register_number, '*', 2, 6) : null,
-            'first_name' => $u->first_name,
-            'last_name' => $u->last_name,
+            'session' => $active ? $this->sessionPayload($active) : null,
+            'shortcode' => config('verify.shortcode'),
             'mock' => $this->verify->isMock(),
             'required_for_checkout' => (bool) config('verify.require_for_checkout'),
         ]);
     }
 
-    /** Step 1: hand the SPA the verify.mn URL to redirect to. */
+    /** Create (or reuse) a session; the SPA shows displayInstruction + smsUri. */
     public function start(Request $request): JsonResponse
     {
         $user = $request->user();
@@ -39,73 +41,77 @@ class VerifyController extends Controller
             return response()->json(['verified' => true]);
         }
 
-        $state = Str::random(40);
-        $request->session()->put('verify.state', $state);
-        $request->session()->put('verify.user_id', $user->id);
-
-        return response()->json(['url' => $this->verify->authorizationUrl($state), 'mock' => $this->verify->isMock()]);
-    }
-
-    /** Step 2: verify.mn redirects back here with ?code=&state=. */
-    public function callback(Request $request): RedirectResponse
-    {
-        $state = $request->session()->pull('verify.state');
-        $userId = $request->session()->pull('verify.user_id');
-        $user = $request->user();
-
-        if (! $user || ! $state || ! hash_equals($state, (string) $request->query('state')) || $user->id !== $userId) {
-            return redirect('/verify?status=error&reason=state');
-        }
-
-        if ($request->query('error')) {
-            return redirect('/verify?status=error&reason='.urlencode($request->query('error')));
-        }
+        $data = $request->validate(['phone' => ['required', 'regex:/^\+?[\d\s-]{8,20}$/']]);
 
         try {
-            $profile = $this->verify->fetchProfile((string) $request->query('code'));
-            $this->verify->markVerified($user, $profile);
-        } catch (Throwable $e) {
-            return redirect('/verify?status=error&reason='.urlencode($e->getMessage()));
+            $session = $this->verify->createSession($data['phone'], $user);
+        } catch (RuntimeException $e) {
+            throw ValidationException::withMessages(['phone' => $e->getMessage()]);
         }
 
-        return redirect('/verify?status=success');
+        return response()->json(['session' => $this->sessionPayload($session), 'mock' => $this->verify->isMock()]);
     }
 
-    /** Mock provider (VERIFY_MOCK=true): the local simulation page posts here. */
-    public function mockComplete(Request $request): JsonResponse
+    /** Polled by the SPA every 3s: re-checks GET /sessions/{id}. */
+    public function check(Request $request, string $sessionId): JsonResponse
+    {
+        $session = $request->user()->phoneVerifications()->where('session_id', $sessionId)->firstOrFail();
+
+        // Don't hammer the API if the client polls faster than allowed.
+        if (! $session->isVerified() && (! $session->last_checked_at || $session->last_checked_at->diffInSeconds(now()) >= config('verify.poll_interval', 3) - 1)) {
+            $session = $this->verify->checkSession($session);
+        } elseif ($session->isActive() === false && $session->status === PhoneVerification::PENDING) {
+            $session->update(['status' => PhoneVerification::EXPIRED]);
+            $session->refresh();
+        }
+
+        return response()->json(['session' => $this->sessionPayload($session), 'verified' => (bool) $request->user()->fresh()->is_verified]);
+    }
+
+    /**
+     * verify.mn -> us: GET, no body, no signature. Only a wake-up signal; the
+     * real status is fetched from GET /sessions/{id} after responding 200.
+     */
+    public function callback(string $token): JsonResponse
+    {
+        $verification = PhoneVerification::where('callback_token', $token)->first();
+
+        if ($verification && ! $verification->isVerified()) {
+            CheckPhoneVerification::dispatch($verification->id)->afterResponse();
+        } else {
+            Log::info('verify.mn callback for unknown or completed session');
+        }
+
+        return response()->json(['ok' => true]);
+    }
+
+    /** Mock only: simulate the user's SMS reaching 144773. */
+    public function mockConfirm(Request $request, string $sessionId): JsonResponse
     {
         abort_unless($this->verify->isMock(), 404);
-
-        $data = $request->validate([
-            'state' => ['required', 'string'],
-            'register_number' => ['required', 'string', 'max:16'],
-            'last_name' => ['required', 'string', 'max:100'],
-            'first_name' => ['required', 'string', 'max:100'],
-        ]);
-
-        $state = $request->session()->pull('verify.state');
-        $request->session()->forget('verify.user_id');
-        if (! $state || ! hash_equals($state, $data['state'])) {
-            throw ValidationException::withMessages(['state' => 'Хүчингүй хүсэлт. Дахин эхлүүлнэ үү.']);
-        }
-        if (! VerifyService::isValidRegisterNumber($data['register_number'])) {
-            throw ValidationException::withMessages(['register_number' => 'Регистрийн дугаар буруу байна (ж: УБ95010112).']);
-        }
+        $data = $request->validate(['text' => ['required', 'string', 'max:120']]);
+        $session = $request->user()->phoneVerifications()->where('session_id', $sessionId)->firstOrFail();
 
         try {
-            $profile = $this->verify->normalize([
-                'sub' => 'mock-'.Str::uuid(),
-                'register_number' => $data['register_number'],
-                'last_name' => $data['last_name'],
-                'first_name' => $data['first_name'],
-                'phone_number' => $request->user()->phone,
-                'verified_by' => 'verify.mn (mock)',
-            ]);
-            $this->verify->markVerified($request->user(), $profile, 'verify.mn-mock');
-        } catch (Throwable $e) {
-            throw ValidationException::withMessages(['register_number' => $e->getMessage()]);
+            $session = $this->verify->mockConfirm($session, $data['text']);
+        } catch (RuntimeException $e) {
+            throw ValidationException::withMessages(['text' => $e->getMessage()]);
         }
 
-        return response()->json(['verified' => true, 'user' => $request->user()->fresh()]);
+        return response()->json(['session' => $this->sessionPayload($session), 'verified' => true, 'user' => $request->user()->fresh()]);
+    }
+
+    protected function sessionPayload(PhoneVerification $s): array
+    {
+        return [
+            'session_id' => $s->session_id,
+            'phone' => $s->phone,
+            'code' => $s->code,
+            'sms_uri' => $s->sms_uri ?: 'sms:'.config('verify.shortcode').'?body='.rawurlencode($s->code),
+            'display_instruction' => $s->display_instruction,
+            'status' => $s->isActive() || $s->isVerified() ? $s->status : PhoneVerification::EXPIRED,
+            'expires_at' => $s->expires_at,
+            'verified_at' => $s->verified_at,
+        ];
     }
 }

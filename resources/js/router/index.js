@@ -17,7 +17,6 @@ const routes = [
             { path: 'orders/:number/pay', name: 'pay', component: () => import('../pages/Payment.vue'), meta: { auth: true } },
             { path: 'profile', name: 'profile', component: () => import('../pages/Profile.vue'), meta: { auth: true } },
             { path: 'verify', name: 'verify', component: () => import('../pages/account/Verify.vue'), meta: { auth: true } },
-            { path: 'verify/mock', name: 'verify.mock', component: () => import('../pages/account/VerifyMock.vue'), meta: { auth: true } },
             { path: 'login', name: 'login', component: () => import('../pages/auth/Login.vue'), meta: { guest: true } },
             { path: 'register', name: 'register', component: () => import('../pages/auth/Register.vue'), meta: { guest: true } },
         ],

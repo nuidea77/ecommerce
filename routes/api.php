@@ -32,6 +32,7 @@ Route::delete('/cart', [Api\CartController::class, 'clear']);
 Route::post('/auth/register', [Api\AuthController::class, 'register']);
 Route::post('/auth/login', [Api\AuthController::class, 'login']);
 Route::get('/payments/qpay/callback', [Api\PaymentController::class, 'callback']);
+Route::get('/verify/callback/{token}', [Api\VerifyController::class, 'callback']);
 
 // ---------- Authenticated ----------
 Route::middleware('auth:sanctum')->group(function () {
@@ -42,8 +43,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/account/dashboard', [Api\AccountController::class, 'dashboard']);
     Route::get('/verify/status', [Api\VerifyController::class, 'status']);
     Route::post('/verify/start', [Api\VerifyController::class, 'start']);
-    Route::get('/verify/callback', [Api\VerifyController::class, 'callback']);
-    Route::post('/verify/mock/complete', [Api\VerifyController::class, 'mockComplete']);
+    Route::get('/verify/sessions/{sessionId}/check', [Api\VerifyController::class, 'check']);
+    Route::post('/verify/sessions/{sessionId}/mock-confirm', [Api\VerifyController::class, 'mockConfirm']);
 
     Route::get('/orders', [Api\OrderController::class, 'index']);
     Route::post('/orders', [Api\OrderController::class, 'store']);

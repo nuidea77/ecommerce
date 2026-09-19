@@ -20,11 +20,10 @@ class User extends Authenticatable
 
     protected $fillable = [
         'name', 'email', 'phone', 'role', 'address', 'city', 'is_active', 'password',
-        'is_verified', 'verified_at', 'verify_provider', 'verify_subject', 'register_number',
-        'last_name', 'first_name', 'verify_data',
+        'is_verified', 'verified_at', 'verify_provider', 'verified_phone',
     ];
 
-    protected $hidden = ['password', 'remember_token', 'verify_data', 'verify_subject'];
+    protected $hidden = ['password', 'remember_token'];
 
     protected $attributes = ['role' => self::ROLE_CUSTOMER, 'is_active' => true];
 
@@ -36,7 +35,6 @@ class User extends Authenticatable
             'is_active' => 'boolean',
             'is_verified' => 'boolean',
             'verified_at' => 'datetime',
-            'verify_data' => 'array',
         ];
     }
 
@@ -63,6 +61,11 @@ class User extends Authenticatable
     public function deliveries(): HasMany
     {
         return $this->hasMany(Order::class, 'courier_id');
+    }
+
+    public function phoneVerifications(): HasMany
+    {
+        return $this->hasMany(PhoneVerification::class);
     }
 
     public function cart()

@@ -9,7 +9,7 @@ Laravel 12 + Vue 3 + Tailwind CSS 4 + MySQL дээр бүтээсэн бүрэн
 | **Дэлгүүр (хэрэглэгч)** | Нүүр, ангилал, хайлт, шүүлт (өнгө / хэмжээ / брэнд / үнэ / бэлэн байгаа), эрэмбэ, хуудаслалт |
 | **Бүтээгдэхүүн** | Өнгө · хэмжээ · тоо ширхгийн багц (1 / 6 / 12 / 50 …) сонголт бүр өөрийн SKU, үнэ, үлдэгдэлтэй |
 | **Урьдчилсан захиалга** | Үлдэгдэл дууссан сонголтыг ч захиалж болно (backorder); хугацаа бүтээгдэхүүн тус бүрээр тохируулна |
-| **verify.mn баталгаажуулалт** | Нэвтэрсний дараа хэрэглэгч verify.mn-ээр (OAuth2 / e-Mongolia) овог, нэр, регистрээ баталгаажуулна; баталгаажаагүй бол захиалга өгөх боломжгүй. `VERIFY_MOCK=true` үед локал симуляц |
+| **verify.mn баталгаажуулалт** | Нэвтэрсний дараа хэрэглэгч утаснаасаа 144773 руу нэг удаагийн 6 оронтой код SMS-ээр илгээж дугаараа баталгаажуулна (Mobile-Originated SMS). Баталгаажаагүй бол захиалга өгөх боломжгүй. API түлхүүргүй үед `VERIFY_MOCK=true` локал симуляц |
 | **Хэрэглэгчийн самбар** | Захиалгын статистик, баталгаажуулалтын төлөв, хүргэлт хянах, урьдчилсан захиалгын бараа, төлбөр хүлээгдэж буй захиалга, дахин захиалах |
 | **Сагс** | Зочин сагс (token) → нэвтрэхэд автоматаар нэгтгэнэ, үнэгүй хүргэлтийн босго |
 | **Захиалга** | Хүргэлтийн хаяг, тэмдэглэл, QPay эсвэл бэлэн (хүргэлтээр) төлбөр, цуцлах, түүх/timeline |
@@ -71,20 +71,20 @@ QPAY_CALLBACK_URL=https://yourdomain.mn/api/payments/qpay/callback
 
 ## verify.mn тохиргоо
 
-Интеграц нь стандарт OAuth 2.0 authorization-code урсгалаар хийгдсэн. verify.mn-ээс авсан мерчант мэдээллээ `.env`-д оруулна:
+[verify.mn](https://verify.mn) — Монголын Mobile-Originated SMS баталгаажуулалт. Хэрэглэгч утаснаасаа **144773** дугаарт нэг удаагийн кодыг илгээж, бид `GET /sessions/{id}` дээр `sessionStatus === "VERIFIED"` болсныг шалгаж баталгаажуулна.
 
 ```env
+VERIFY_MN_API_KEY=...                     # verify.mn dashboard-аас (заавал, хэзээ ч commit хийхгүй)
+VERIFY_MN_BASE_URL=https://api.verify.mn
+VERIFY_MN_CALLBACK_URL=https://yourdomain.mn/api/verify/callback   # заавал биш; хүрэх боломжгүй URL бүртгэхгүй
+VERIFY_MN_RESPONSE_SMS=                   # заавал биш хариу SMS (<=160 ASCII); операторын шинж чанараас хамаарна
 VERIFY_MOCK=false
 VERIFY_REQUIRE_FOR_CHECKOUT=true
-VERIFY_CLIENT_ID=...
-VERIFY_CLIENT_SECRET=...
-VERIFY_REDIRECT_URI=https://yourdomain.mn/api/verify/callback
-VERIFY_AUTHORIZE_URL=https://verify.mn/oauth/authorize
-VERIFY_TOKEN_URL=https://verify.mn/oauth/token
-VERIFY_USERINFO_URL=https://verify.mn/oauth/userinfo
 ```
 
-verify.mn-ийн буцаадаг claim нэрс өөр бол `VERIFY_CLAIM_REGISTER`, `VERIFY_CLAIM_LAST_NAME`, `VERIFY_CLAIM_FIRST_NAME`, `VERIFY_CLAIM_PHONE`, `VERIFY_CLAIM_SUBJECT`-ээр тааруулна (`config/verify.php`). Урсгал: `POST /api/verify/start` → verify.mn → `GET /api/verify/callback?code&state` → профайл татаж хэрэглэгчийг баталгаажуулна. `VERIFY_MOCK=true` үед `/verify/mock` симуляцийн хуудас verify.mn-ийг орлоно.
+Урсгал: `POST /api/verify/start {phone}` → verify.mn `POST /sessions` (шинэ санамсаргүй 6 оронтой код) → хэрэглэгчид `displayInstruction`-ийг үгчлэн харуулж, `smsUri` (sms:144773?body=код) товч санал болгоно → SPA 3 секунд тутам `GET /api/verify/sessions/{id}/check` дуудна (verify.mn `GET /sessions/{id}`) → `VERIFIED` болмогц polling зогсоно; хугацаа (`expiresAt`, 300с) дууссан бол шинэ код үүсгэнэ. Callback тохируулсан бол verify.mn `GET /api/verify/callback/{token}` руу дуудна — бид шууд 200 буцааж, хариу илгээсний дараа `GET /sessions/{id}`-ээр дахин шалгана (callback-д өөрт нь итгэхгүй).
+
+Сервер талд `App\Services\VerifyService::verifyPhone(string $phone, ?User $user): bool` — session үүсгээд `VERIFIED` хүртэл 3с тутам шалгаж `true`, хугацаа дуусвал `false` буцаана. SMS бүр хэрэглэгчид 150₮.
 
 ## Бүтэц
 
@@ -93,7 +93,7 @@ app/Http/Controllers/Api       Дэлгүүрийн API (auth, catalog, cart, or
 app/Http/Controllers/Admin     Админ API
 app/Http/Controllers/Courier   Хүргэлтийн ажилтны API
 app/Services/QPayService.php   QPay интеграц
-app/Services/VerifyService.php verify.mn баталгаажуулалт
+app/Services/VerifyService.php verify.mn SMS баталгаажуулалт (verifyPhone)
 app/Services/CartService.php   Зочин / хэрэглэгчийн сагс
 resources/js/pages             Vue хуудсууд (store, admin, courier)
 resources/js/layouts           Store / Admin / Courier layout

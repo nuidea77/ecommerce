@@ -2,40 +2,35 @@
 
 /*
  |--------------------------------------------------------------------------
- | verify.mn identity verification
+ | verify.mn — Mobile-Originated SMS phone verification (Mongolia)
  |--------------------------------------------------------------------------
- | The integration follows the standard OAuth 2.0 / OpenID Connect
- | authorization-code flow: the customer is redirected to verify.mn, confirms
- | their identity (e-Mongolia / DAN), and is sent back to our callback with a
- | code that we exchange for the verified profile (register number, names).
- |
- | Endpoint URLs and claim names are configurable so they can be aligned with
- | the merchant documentation you receive from verify.mn without code changes.
- | With VERIFY_MOCK=true nothing leaves the server: a local simulation page
- | stands in for verify.mn so the whole flow can be exercised in development.
+ | Flow: POST /sessions (phone + one-time 6-digit code) -> user sends that code
+ | by SMS to shortcode 144773 -> we confirm with GET /sessions/{id} until
+ | sessionStatus === VERIFIED (poll every 3s and/or on the GET callback).
+ | Every SMS costs the user 150₮, so the UI stops the send action the moment
+ | the session is VERIFIED and creates a fresh session (new code) on EXPIRED.
  */
 
 return [
-    'mock' => env('VERIFY_MOCK', true),
+    // Local simulation when no API key is configured (development only).
+    'mock' => env('VERIFY_MOCK', false),
 
-    // Require customers to be verified before placing an order.
+    // Require customers to have a verified phone before placing an order.
     'require_for_checkout' => env('VERIFY_REQUIRE_FOR_CHECKOUT', true),
 
-    'client_id' => env('VERIFY_CLIENT_ID'),
-    'client_secret' => env('VERIFY_CLIENT_SECRET'),
-    'redirect_uri' => env('VERIFY_REDIRECT_URI'),
-    'scopes' => env('VERIFY_SCOPES', 'openid profile'),
+    'api_key' => env('VERIFY_MN_API_KEY'),
+    'base_url' => rtrim(env('VERIFY_MN_BASE_URL', 'https://api.verify.mn'), '/'),
 
-    'authorize_url' => env('VERIFY_AUTHORIZE_URL', 'https://verify.mn/oauth/authorize'),
-    'token_url' => env('VERIFY_TOKEN_URL', 'https://verify.mn/oauth/token'),
-    'userinfo_url' => env('VERIFY_USERINFO_URL', 'https://verify.mn/oauth/userinfo'),
+    // Public https URL verify.mn should GET when the SMS arrives. Leave empty
+    // to rely on polling only (never register a URL that is not reachable).
+    'callback_url' => env('VERIFY_MN_CALLBACK_URL'),
 
-    // Claim names returned by the userinfo endpoint (adjust to verify.mn's schema).
-    'claims' => [
-        'subject' => env('VERIFY_CLAIM_SUBJECT', 'sub'),
-        'register_number' => env('VERIFY_CLAIM_REGISTER', 'register_number'),
-        'last_name' => env('VERIFY_CLAIM_LAST_NAME', 'last_name'),
-        'first_name' => env('VERIFY_CLAIM_FIRST_NAME', 'first_name'),
-        'phone' => env('VERIFY_CLAIM_PHONE', 'phone_number'),
-    ],
+    // Optional reply SMS (<=160 ASCII chars). Carrier-dependent: Unitel sends
+    // only the default reply, Lime sends none — never treat it as confirmation.
+    'response_sms' => env('VERIFY_MN_RESPONSE_SMS'),
+
+    'shortcode' => '144773',
+    'poll_interval' => 3,       // seconds; verify.mn asks not to poll faster
+    'session_ttl' => 300,       // seconds; server-side TTL of a session
+    'http_timeout' => 10,       // seconds per API request
 ];

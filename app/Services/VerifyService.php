@@ -2,113 +2,282 @@
 
 namespace App\Services;
 
+use App\Models\PhoneVerification;
 use App\Models\User;
+use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Http\Client\Response;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Sleep;
 use Illuminate\Support\Str;
 use RuntimeException;
 
 /**
- * verify.mn identity verification (OAuth 2.0 authorization-code adapter).
+ * verify.mn — Mobile-Originated SMS phone verification.
+ *
+ * The API key is read from VERIFY_MN_API_KEY and is never logged. A session is
+ * created with a fresh random 6-digit code; verification is confirmed ONLY by
+ * GET /sessions/{id} returning sessionStatus === "VERIFIED" (the callback is a
+ * wake-up signal, the reply SMS is carrier-dependent and is never trusted).
  */
 class VerifyService
 {
+    public const PROVIDER = 'verify.mn';
+
     public function isMock(): bool
     {
-        return (bool) config('verify.mock') || ! config('verify.client_id');
+        return (bool) config('verify.mock') && ! config('verify.api_key');
     }
 
-    public function redirectUri(): string
+    /**
+     * Verify a phone number end-to-end: create a session and poll every 3s
+     * until it is VERIFIED (true) or expires / times out (false).
+     *
+     * @param  callable|null  $onSession  receives the PhoneVerification right after creation,
+     *                                    so the caller can show displayInstruction / smsUri.
+     */
+    public function verifyPhone(string $phone, ?User $user = null, ?callable $onSession = null): bool
     {
-        return config('verify.redirect_uri') ?: url('/api/verify/callback');
+        $verification = $this->createSession($phone, $user);
+
+        if ($onSession) {
+            $onSession($verification);
+        }
+
+        return $this->waitForVerification($verification);
     }
 
-    /** Build the URL the customer is sent to. */
-    public function authorizationUrl(string $state): string
+    /**
+     * Block until the session is VERIFIED or expired. Never polls faster than
+     * the configured interval and never past the session's expiresAt.
+     */
+    public function waitForVerification(PhoneVerification $verification, ?int $hardTimeoutSeconds = null): bool
     {
+        $interval = max(3, (int) config('verify.poll_interval', 3));
+        $deadline = min(
+            $verification->expires_at?->getTimestamp() ?? PHP_INT_MAX,
+            now()->addSeconds($hardTimeoutSeconds ?? config('verify.session_ttl', 300))->getTimestamp(),
+        );
+
+        while (true) {
+            $verification = $this->checkSession($verification);
+
+            if ($verification->isVerified()) {
+                return true;
+            }
+            if ($verification->isExpired() || now()->getTimestamp() >= $deadline) {
+                if ($verification->status !== PhoneVerification::EXPIRED) {
+                    $verification->update(['status' => PhoneVerification::EXPIRED]);
+                }
+
+                return false;
+            }
+
+            Sleep::for($interval)->seconds();
+        }
+    }
+
+    /**
+     * POST /sessions — start a verification with a new one-time code.
+     */
+    public function createSession(string $phone, ?User $user = null): PhoneVerification
+    {
+        $phone = preg_replace('/\D+/', '', $phone) ?? '';
+        if (strlen($phone) < 8 || strlen($phone) > 16) {
+            throw new RuntimeException('Утасны дугаар 8–16 оронтой байх ёстой.');
+        }
+
+        // Reuse a still-active session for the same user+phone so the user is not
+        // asked to pay for a second SMS while the first code is still valid.
+        $active = PhoneVerification::where('phone', $phone)
+            ->when($user, fn ($q) => $q->where('user_id', $user->id))
+            ->where('status', PhoneVerification::PENDING)->where('expires_at', '>', now())
+            ->latest()->first();
+        if ($active) {
+            return $active;
+        }
+
+        $callbackToken = config('verify.callback_url') ? Str::random(48) : null;
+
         if ($this->isMock()) {
-            return url('/verify/mock?state='.$state);
+            return PhoneVerification::create([
+                'user_id' => $user?->id,
+                'phone' => $phone,
+                'session_id' => 'mock-'.Str::uuid(),
+                'code' => $this->generateCode(),
+                'callback_token' => $callbackToken,
+                'sms_uri' => null,
+                'display_instruction' => "[Туршилтын горим] {$phone} дугаараас 144773 руу доорх кодыг илгээнэ үү.",
+                'status' => PhoneVerification::PENDING,
+                'expires_at' => now()->addSeconds(config('verify.session_ttl', 300)),
+            ]);
         }
 
-        return config('verify.authorize_url').'?'.http_build_query([
-            'response_type' => 'code',
-            'client_id' => config('verify.client_id'),
-            'redirect_uri' => $this->redirectUri(),
-            'scope' => config('verify.scopes'),
-            'state' => $state,
-        ]);
-    }
+        $attempt = 0;
+        do {
+            $code = $this->generateCode();
+            $payload = array_filter([
+                'phone' => $phone,
+                'text' => $code,
+                'callback' => $callbackToken ? $this->callbackUrl($callbackToken) : null,
+                'responseSms' => config('verify.response_sms') ?: null,
+            ]);
 
-    /** Exchange the authorization code and fetch the verified profile. */
-    public function fetchProfile(string $code): array
-    {
-        $token = Http::asForm()->acceptJson()->post(config('verify.token_url'), [
-            'grant_type' => 'authorization_code',
+            $response = $this->client()->post('/sessions', $payload);
+            // 409 = an active session already exists for this phone+text; retry with a new code.
+        } while ($response->status() === 409 && ++$attempt < 3);
+
+        $this->throwIfFailed($response, 'create session');
+        $data = $response->json();
+
+        $verification = PhoneVerification::create([
+            'user_id' => $user?->id,
+            'phone' => $data['phone'] ?? $phone,
+            'session_id' => $data['sessionId'],
             'code' => $code,
-            'redirect_uri' => $this->redirectUri(),
-            'client_id' => config('verify.client_id'),
-            'client_secret' => config('verify.client_secret'),
+            'callback_token' => $callbackToken,
+            'sms_uri' => $data['smsUri'] ?? null,
+            'display_instruction' => $data['displayInstruction'] ?? null,
+            'status' => PhoneVerification::PENDING,
+            'expires_at' => isset($data['expiresAt']) ? Carbon::parse($data['expiresAt']) : now()->addSeconds(config('verify.session_ttl', 300)),
         ]);
 
-        if (! $token->successful() || ! $token->json('access_token')) {
-            Log::error('verify.mn token exchange failed', ['body' => $token->body()]);
-            throw new RuntimeException('verify.mn token exchange failed');
-        }
+        Log::info('verify.mn session created', ['session_id' => $verification->session_id, 'user_id' => $user?->id]);
 
-        $info = Http::withToken($token->json('access_token'))->acceptJson()->get(config('verify.userinfo_url'));
-
-        if (! $info->successful()) {
-            Log::error('verify.mn userinfo failed', ['body' => $info->body()]);
-            throw new RuntimeException('verify.mn userinfo failed');
-        }
-
-        return $this->normalize($info->json());
+        return $verification;
     }
 
-    /** Map provider claims onto our profile shape. */
-    public function normalize(array $claims): array
+    /**
+     * GET /sessions/{id} — the only trusted source of truth. Marks the linked
+     * user verified when the session is VERIFIED.
+     */
+    public function checkSession(PhoneVerification $verification): PhoneVerification
     {
-        $c = config('verify.claims');
-
-        return [
-            'subject' => (string) data_get($claims, $c['subject'], ''),
-            'register_number' => Str::upper((string) data_get($claims, $c['register_number'], '')),
-            'last_name' => (string) data_get($claims, $c['last_name'], ''),
-            'first_name' => (string) data_get($claims, $c['first_name'], ''),
-            'phone' => (string) data_get($claims, $c['phone'], ''),
-            'raw' => $claims,
-        ];
-    }
-
-    public function markVerified(User $user, array $profile, string $provider = 'verify.mn'): User
-    {
-        if ($profile['register_number'] === '' || $profile['first_name'] === '') {
-            throw new RuntimeException('Баталгаажуулалтын мэдээлэл дутуу байна.');
+        if ($verification->isVerified()) {
+            return $verification;
         }
 
-        $existing = User::where('register_number', $profile['register_number'])->where('id', '!=', $user->id)->first();
-        if ($existing) {
-            throw new RuntimeException('Энэ регистрийн дугаараар өөр бүртгэл баталгаажсан байна.');
+        if ($this->isMock()) {
+            if ($verification->status === PhoneVerification::PENDING && $verification->expires_at?->isPast()) {
+                $verification->update(['status' => PhoneVerification::EXPIRED]);
+            }
+
+            return $verification->fresh();
         }
 
-        $user->forceFill([
-            'is_verified' => true,
-            'verified_at' => now(),
-            'verify_provider' => $provider,
-            'verify_subject' => $profile['subject'] ?: null,
-            'register_number' => $profile['register_number'],
-            'last_name' => $profile['last_name'],
-            'first_name' => $profile['first_name'],
-            'phone' => $user->phone ?: ($profile['phone'] ?: null),
-            'verify_data' => $profile['raw'] ?? [],
-        ])->save();
+        $response = $this->client(auth: false)->get('/sessions/'.$verification->session_id);
 
-        return $user;
+        if ($response->status() === 404) {
+            $verification->update(['status' => PhoneVerification::EXPIRED, 'last_checked_at' => now()]);
+
+            return $verification->fresh();
+        }
+        if (! $response->successful()) {
+            Log::warning('verify.mn status check failed', ['session_id' => $verification->session_id, 'status' => $response->status()]);
+            $verification->update(['last_checked_at' => now()]);
+
+            return $verification->fresh();
+        }
+
+        $data = $response->json();
+        $status = $data['sessionStatus'] ?? PhoneVerification::PENDING;
+
+        $verification->update([
+            'status' => in_array($status, [PhoneVerification::PENDING, PhoneVerification::VERIFIED, PhoneVerification::EXPIRED], true) ? $status : PhoneVerification::PENDING,
+            'callback_status' => $data['callbackStatus'] ?? $verification->callback_status,
+            'verified_at' => ! empty($data['verifiedAt']) ? Carbon::parse($data['verifiedAt']) : $verification->verified_at,
+            'expires_at' => ! empty($data['expiresAt']) ? Carbon::parse($data['expiresAt']) : $verification->expires_at,
+            'last_checked_at' => now(),
+        ]);
+
+        if ($status === PhoneVerification::VERIFIED) {
+            $this->markVerified($verification);
+        }
+
+        return $verification->fresh();
     }
 
-    /** Mongolian register number: 2 Cyrillic letters + 8 digits (e.g. УБ95010112). */
-    public static function isValidRegisterNumber(string $value): bool
+    /** Mock only: simulate the user's SMS arriving at 144773. */
+    public function mockConfirm(PhoneVerification $verification, string $text): PhoneVerification
     {
-        return (bool) preg_match('/^[А-ЯӨҮЁ]{2}\d{8}$/u', Str::upper($value));
+        abort_unless($this->isMock(), 404);
+
+        if (! $verification->isActive()) {
+            throw new RuntimeException('Энэ код хүчингүй болсон. Шинэ код авна уу.');
+        }
+        if (trim($text) !== $verification->code) {
+            throw new RuntimeException('Илгээсэн код таарахгүй байна.');
+        }
+
+        $verification->update(['status' => PhoneVerification::VERIFIED, 'verified_at' => now(), 'last_checked_at' => now()]);
+        $this->markVerified($verification);
+
+        return $verification->fresh();
+    }
+
+    public function markVerified(PhoneVerification $verification): void
+    {
+        if ($verification->verified_at === null) {
+            $verification->update(['verified_at' => now()]);
+        }
+
+        $user = $verification->user;
+        if ($user && ! $user->is_verified) {
+            $user->forceFill([
+                'is_verified' => true,
+                'verified_at' => $verification->verified_at ?? now(),
+                'verify_provider' => $this->isMock() ? self::PROVIDER.'-mock' : self::PROVIDER,
+                'verified_phone' => $verification->phone,
+                'phone' => $user->phone ?: $verification->phone,
+            ])->save();
+            Log::info('verify.mn phone verified', ['session_id' => $verification->session_id, 'user_id' => $user->id]);
+        }
+    }
+
+    public function callbackUrl(string $token): string
+    {
+        return rtrim(config('verify.callback_url'), '/').'/'.$token;
+    }
+
+    protected function generateCode(): string
+    {
+        return str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+    }
+
+    protected function client(bool $auth = true): PendingRequest
+    {
+        $request = Http::baseUrl(config('verify.base_url'))
+            ->acceptJson()->asJson()
+            ->timeout((int) config('verify.http_timeout', 10));
+
+        if ($auth) {
+            $key = config('verify.api_key');
+            if (! $key) {
+                throw new RuntimeException('VERIFY_MN_API_KEY is not configured. Set it in .env (see .env.example).');
+            }
+            $request = $request->withToken($key);
+        }
+
+        return $request;
+    }
+
+    protected function throwIfFailed(Response $response, string $action): void
+    {
+        if ($response->successful()) {
+            return;
+        }
+
+        $message = match ($response->status()) {
+            400 => 'verify.mn rejected the request: '.($response->json('message') ?? 'validation error'),
+            401 => 'verify.mn rejected the API key (401). Check VERIFY_MN_API_KEY.',
+            409 => 'An active verify.mn session already exists for this phone.',
+            default => "verify.mn {$action} failed with HTTP {$response->status()}.",
+        };
+
+        // Body may echo request data; status + action are enough for diagnostics.
+        Log::error("verify.mn {$action} failed", ['status' => $response->status()]);
+
+        throw new RuntimeException($message);
     }
 }
