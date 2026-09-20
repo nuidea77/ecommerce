@@ -126,7 +126,7 @@ onMounted(load);
 
                 <!-- Info -->
                 <div>
-                    <p class="text-sm font-medium uppercase tracking-wide text-brand-700">{{ product.brand }}</p>
+                    <p class="text-sm font-medium uppercase tracking-wide text-brand-700">{{ product.category.name }}</p>
                     <h1 class="mt-1 font-display text-3xl font-bold leading-tight sm:text-4xl">{{ product.name }}</h1>
                     <p class="mt-3 text-stone-600">{{ product.short_description }}</p>
 

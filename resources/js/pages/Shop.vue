@@ -20,7 +20,7 @@ const result = ref(null);
 const loading = ref(false);
 const mobileFilters = ref(false);
 
-const MULTI = ['category', 'brand', 'color', 'size', 'pack', 'discount', 'status'];
+const MULTI = ['category', 'color', 'size', 'pack', 'discount', 'status'];
 const toArr = (v) => (v == null || v === '' ? [] : Array.isArray(v) ? v : String(v).split(','));
 const fromQuery = (q) => ({
     q: q.q || '', sort: q.sort || '', min_price: q.min_price || '', max_price: q.max_price || '', page: Number(q.page) || 1,
@@ -40,7 +40,6 @@ const chips = computed(() => {
     const out = [];
     const label = (list, key, valueKey, labelKey) => (v) => list?.find((i) => String(i[valueKey]) === String(v))?.[labelKey] ?? v;
     state.category.forEach((v) => out.push({ k: 'category', v, l: label(facets.value?.categories, 'category', 'slug', 'name')(v) }));
-    state.brand.forEach((v) => out.push({ k: 'brand', v, l: v }));
     state.color.forEach((v) => out.push({ k: 'color', v, l: v }));
     state.size.forEach((v) => out.push({ k: 'size', v, l: v }));
     state.pack.forEach((v) => out.push({ k: 'pack', v, l: label(facets.value?.packs, 'pack', 'pack_size', 'label')(v) }));
@@ -123,10 +122,6 @@ onMounted(load);
                         <CheckList :items="facets.statuses" :model-value="state.status" @update:model-value="state.status = $event; apply()" />
                     </FilterSection>
 
-                    <FilterSection title="Брэнд" :count="state.brand.length">
-                        <CheckList :items="facets.brands" value-key="brand" label-key="brand" searchable :limit="8" :model-value="state.brand" @update:model-value="state.brand = $event; apply()" />
-                    </FilterSection>
-
                     <FilterSection title="Өнгө" :count="state.color.length">
                         <div class="grid grid-cols-6 gap-2">
                             <button v-for="c in facets.colors" :key="c.color" type="button" @click="toggle('color', c.color)" :title="`${c.color} (${c.count})`" class="relative aspect-square rounded-md ring-1 ring-black/10 transition hover:scale-110" :class="[state.color.includes(c.color) ? 'ring-2 ring-brand-700 ring-offset-2' : '', !c.count && !state.color.includes(c.color) && 'opacity-30']" :style="{ backgroundColor: c.color_hex || '#ddd' }">
@@ -167,13 +162,6 @@ onMounted(load);
                     </div>
                 </div>
 
-                <!-- Brand strip -->
-                <div v-if="facets?.brands?.length" class="mb-4 rounded-xl bg-paper p-3 ring-1 ring-cream-300/70">
-                    <p class="mb-2 text-xs font-semibold text-stone-500">Брэндүүд</p>
-                    <div class="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none]">
-                        <button v-for="b in facets.brands" :key="b.brand" type="button" @click="toggle('brand', b.brand)" class="flex h-11 shrink-0 items-center rounded-lg px-4 text-xs font-bold uppercase tracking-wide ring-1 transition" :class="state.brand.includes(b.brand) ? 'bg-brand-700 text-white ring-brand-700' : 'bg-cream-100 text-brand-900 ring-cream-300 hover:ring-brand-400'">{{ b.brand }}</button>
-                    </div>
-                </div>
 
                 <div v-if="chips.length" class="mb-4 flex flex-wrap items-center gap-1.5 text-xs">
                     <span v-for="c in chips" :key="c.k + c.v" class="inline-flex items-center gap-1 rounded-full bg-brand-700 py-1 pl-2.5 pr-1.5 text-white"><span>{{ c.l }}</span><button @click="removeChip(c)" class="rounded-full p-0.5 hover:bg-white/20"><XMarkIcon class="h-3 w-3" /></button></span>

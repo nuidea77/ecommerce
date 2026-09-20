@@ -69,13 +69,6 @@ onMounted(async () => { data.value = (await api.get('/home')).data; });
             <ProductSection title="Шинээр ирсэн" :products="data.newest" :to="{ name: 'shop', query: { sort: 'newest' } }" />
             <ProductSection title="Их зарагддаг" :products="data.bestsellers" accent="bg-brand-500" />
 
-            <!-- Brands -->
-            <section class="container-x py-8">
-                <p class="mb-3 text-xs font-semibold uppercase tracking-wider text-stone-500">Брэндүүд</p>
-                <div class="flex flex-wrap gap-2">
-                    <router-link v-for="b in data.brands" :key="b" :to="{ name: 'shop', query: { brand: b } }" class="rounded-lg bg-paper px-4 py-2 text-sm font-semibold text-brand-900 ring-1 ring-cream-300/70 hover:ring-brand-400">{{ b }}</router-link>
-                </div>
-            </section>
         </template>
     </div>
 </template>

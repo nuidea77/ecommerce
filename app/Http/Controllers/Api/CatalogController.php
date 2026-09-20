@@ -27,9 +27,7 @@ class CatalogController extends Controller
         $sale = Product::active()->whereNotNull('compare_price')->whereColumn('compare_price', '>', 'base_price')
             ->with(['variants', 'category'])->orderByDesc('sold_count')->take(10)->get();
 
-        $brands = Product::active()->whereNotNull('brand')->select('brand')->distinct()->orderBy('brand')->pluck('brand');
-
-        return response()->json(compact('categories', 'featured', 'newest', 'bestsellers', 'sale', 'brands'));
+        return response()->json(compact('categories', 'featured', 'newest', 'bestsellers', 'sale'));
     }
 
     public function categories(): JsonResponse
@@ -57,17 +55,12 @@ class CatalogController extends Controller
         if (! in_array('q', $except) && ($search = trim((string) $request->query('q')))) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('brand', 'like', "%{$search}%")
                     ->orWhere('short_description', 'like', "%{$search}%");
             });
         }
 
         if (! in_array('category', $except) && ($cats = $this->many($request, 'category'))) {
             $query->whereHas('category', fn ($q) => $q->whereIn('slug', $cats)->orWhereIn('id', $cats));
-        }
-
-        if (! in_array('brand', $except) && ($brands = $this->many($request, 'brand'))) {
-            $query->whereIn('brand', $brands);
         }
 
         if (! in_array('color', $except) && ($colors = $this->many($request, 'color'))) {
@@ -186,8 +179,6 @@ class CatalogController extends Controller
         return response()->json([
             'categories' => Category::where('is_active', true)->orderBy('sort_order')
                 ->withCount(['products' => fn ($q) => $this->applyFilters($q->active(), $request, ['category'])])->get(['id', 'name', 'slug', 'icon']),
-            'brands' => Product::query()->whereIn('id', $ids(['brand']))->whereNotNull('brand')->where('brand', '!=', '')
-                ->toBase()->selectRaw('brand, COUNT(*) as count')->groupBy('brand')->orderBy('brand')->get(),
             'colors' => $variantFacet('color', ['color'], 'MIN(color_hex) as color_hex')->map(fn ($r) => ['color' => $r->color, 'color_hex' => $r->color_hex, 'count' => $r->count]),
             'sizes' => $variantFacet('size', ['size']),
             'packs' => ProductVariant::query()->whereIn('product_id', $ids(['pack']))->where('is_active', true)

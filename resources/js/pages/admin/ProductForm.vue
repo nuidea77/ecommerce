@@ -16,7 +16,7 @@ const uploading = ref(false);
 const fileInput = ref(null);
 
 const form = reactive({
-    category_id: '', name: '', brand: '', short_description: '', description: '', base_price: 0, compare_price: null,
+    category_id: '', name: '', short_description: '', description: '', base_price: 0, compare_price: null,
     images: [], specs: [], is_active: true, is_featured: false, allow_backorder: true, backorder_days: 14, variants: [],
 });
 const newImageUrl = ref('');
@@ -51,7 +51,7 @@ async function save() {
 }
 function hydrate(p) {
     Object.assign(form, {
-        category_id: p.category_id, name: p.name, brand: p.brand || '', short_description: p.short_description || '', description: p.description || '',
+        category_id: p.category_id, name: p.name, short_description: p.short_description || '', description: p.description || '',
         base_price: p.base_price, compare_price: p.compare_price, images: p.images || [], specs: Object.entries(p.specs || {}).map(([key, value]) => ({ key, value })),
         is_active: p.is_active, is_featured: p.is_featured, allow_backorder: p.allow_backorder, backorder_days: p.backorder_days,
         variants: (p.variants || []).map((v) => ({ ...v, color: v.color || '', color_hex: v.color_hex || '', size: v.size || '', pack_label: v.pack_label || '', image: v.image || '' })),
@@ -78,7 +78,6 @@ onMounted(async () => {
                     <div class="mt-4 grid gap-4 sm:grid-cols-2">
                         <div class="sm:col-span-2"><label class="label">Нэр *</label><input v-model="form.name" class="input" required /><p v-if="errors.name" class="mt-1 text-xs text-red-600">{{ errors.name[0] }}</p></div>
                         <div><label class="label">Ангилал *</label><select v-model="form.category_id" class="input" required><option v-for="c in categories" :key="c.id" :value="c.id">{{ c.name }}</option></select></div>
-                        <div><label class="label">Брэнд</label><input v-model="form.brand" class="input" /></div>
                         <div><label class="label">Үндсэн үнэ (₮) *</label><input v-model.number="form.base_price" type="number" min="0" class="input" required /><p class="mt-1 text-xs text-stone-400">Сонголтуудын хамгийн бага үнээр автоматаар шинэчлэгдэнэ</p></div>
                         <div><label class="label">Хямдралын өмнөх үнэ (₮)</label><input v-model.number="form.compare_price" type="number" min="0" class="input" /></div>
                         <div class="sm:col-span-2"><label class="label">Богино тайлбар</label><input v-model="form.short_description" class="input" maxlength="500" /></div>

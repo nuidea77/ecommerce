@@ -90,7 +90,7 @@ const links = [
 
                 <form @submit.prevent="submitSearch" class="hidden flex-1 md:flex">
                     <div class="flex w-full overflow-hidden rounded-xl bg-paper ring-1 ring-brand-700/40 focus-within:ring-2 focus-within:ring-brand-700">
-                        <input v-model="search" type="search" placeholder="Бараа, брэнд хайх..." class="h-11 flex-1 border-0 bg-transparent px-4 text-sm focus:ring-0" />
+                        <input v-model="search" type="search" placeholder="Бараа хайх..." class="h-11 flex-1 border-0 bg-transparent px-4 text-sm focus:ring-0" />
                         <button class="flex items-center gap-1.5 bg-brand-700 px-5 text-sm font-semibold text-white hover:bg-brand-800"><MagnifyingGlassIcon class="h-5 w-5" /><span class="hidden lg:inline">Хайх</span></button>
                     </div>
                 </form>

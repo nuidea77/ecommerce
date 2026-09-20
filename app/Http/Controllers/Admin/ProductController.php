@@ -17,7 +17,7 @@ class ProductController extends Controller
         $query = Product::with(['category:id,name', 'variants']);
 
         if ($q = trim((string) $request->query('q'))) {
-            $query->where(fn ($w) => $w->where('name', 'like', "%$q%")->orWhere('brand', 'like', "%$q%"));
+            $query->where('name', 'like', "%$q%");
         }
         if ($request->filled('category_id')) {
             $query->where('category_id', $request->query('category_id'));
@@ -93,7 +93,6 @@ class ProductController extends Controller
         return $request->validate([
             'category_id' => ['required', 'exists:categories,id'],
             'name' => ['required', 'string', 'max:190'],
-            'brand' => ['nullable', 'string', 'max:100'],
             'short_description' => ['nullable', 'string', 'max:500'],
             'description' => ['nullable', 'string'],
             'base_price' => ['required', 'numeric', 'min:0'],

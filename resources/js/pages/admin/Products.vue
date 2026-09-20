@@ -37,7 +37,7 @@ onMounted(async () => { categories.value = (await api.get('/admin/categories')).
             <router-link :to="{ name: 'admin.products.new' }" class="btn-brand"><PlusIcon class="h-5 w-5" /> Шинэ бүтээгдэхүүн</router-link>
         </div>
         <div class="card mt-5 flex flex-wrap items-center gap-3 p-4">
-            <input v-model="f.q" placeholder="Нэр, брэндээр хайх..." class="input max-w-xs py-2" />
+            <input v-model="f.q" placeholder="Нэрээр хайх..." class="input max-w-xs py-2" />
             <select v-model="f.category_id" class="input w-auto py-2"><option value="">Бүх ангилал</option><option v-for="c in categories" :key="c.id" :value="c.id">{{ c.name }}</option></select>
             <select v-model="f.status" class="input w-auto py-2"><option value="">Бүх төлөв</option><option value="active">Идэвхтэй</option><option value="inactive">Идэвхгүй</option></select>
             <label class="flex items-center gap-2 text-sm"><input type="checkbox" v-model="f.low_stock" class="rounded border-stone-300 text-brand-600" /> Дуусаж буй</label>
@@ -48,7 +48,7 @@ onMounted(async () => { categories.value = (await api.get('/admin/categories')).
                 <thead class="bg-cream-100 text-left text-xs uppercase text-stone-500"><tr><th class="px-4 py-3">Бүтээгдэхүүн</th><th class="px-4 py-3">Ангилал</th><th class="px-4 py-3">Үнэ</th><th class="px-4 py-3">Сонголт / Үлдэгдэл</th><th class="px-4 py-3">Зарагдсан</th><th class="px-4 py-3">Төлөв</th><th class="px-4 py-3"></th></tr></thead>
                 <tbody class="divide-y divide-stone-100">
                     <tr v-for="p in result.data" :key="p.id" class="hover:bg-cream-100">
-                        <td class="px-4 py-3"><div class="flex items-center gap-3"><img :src="p.thumbnail" class="h-11 w-11 rounded-lg bg-cream-200/60 object-cover" alt="" /><div><p class="font-medium">{{ p.name }}</p><p class="text-xs text-stone-400">{{ p.brand }}<span v-if="p.is_featured" class="ml-1 text-brand-600">★ онцлох</span></p></div></div></td>
+                        <td class="px-4 py-3"><div class="flex items-center gap-3"><img :src="p.thumbnail" class="h-11 w-11 rounded-lg bg-cream-200/60 object-cover" alt="" /><div><p class="font-medium">{{ p.name }}</p><p class="text-xs text-stone-400">{{ p.category?.name }}<span v-if="p.is_featured" class="ml-1 text-brand-600">★ онцлох</span></p></div></div></td>
                         <td class="px-4 py-3 text-stone-600">{{ p.category?.name }}</td>
                         <td class="px-4 py-3 font-medium">{{ p.min_price === p.max_price ? money(p.min_price) : `${money(p.min_price)} – ${money(p.max_price)}` }}</td>
                         <td class="px-4 py-3"><span class="text-stone-600">{{ p.variants.length }} сонголт</span> · <span class="badge" :class="p.total_stock <= 0 ? 'bg-red-100 text-red-700' : p.total_stock <= 5 ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'">{{ p.total_stock }} ш</span></td>
