@@ -3,7 +3,7 @@ import { ref, onMounted, onUnmounted } from 'vue';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/24/outline';
 
 const slides = [
-    { title: 'Салоны тоног төхөөрөмж', sub: 'Үс хатаагч, шулуутгагч, сандал — мэргэжлийн брэндүүд', cta: 'Дэлгүүр үзэх', to: { name: 'shop' }, img: '/images/products/professional-hair-dryer-2200w.svg', bg: 'from-brand-800 to-brand-900', tag: '👑 Албан ёсны нийлүүлэгч' },
+    { title: 'Салоны тоног төхөөрөмж', sub: 'Үс хатаагч, шулуутгагч, сандал — мэргэжлийн бүтээгдэхүүн', cta: 'Дэлгүүр үзэх', to: { name: 'shop' }, img: '/images/products/professional-hair-dryer-2200w.svg', bg: 'from-brand-800 to-brand-900', tag: '👑 Албан ёсны нийлүүлэгч' },
     { title: 'Хүргэлт үнэгүй', sub: '300,000₮-с дээш захиалгад Улаанбаатар хотод 24 цагт', cta: 'Захиалах', to: { name: 'shop', query: { in_stock: '1' } }, img: '/images/products/hydraulic-salon-chair.svg', bg: 'from-gold-500 to-gold-600', tag: '🚚 24 цагт хүргэнэ', dark: true },
     { title: 'Хямдралтай бараа', sub: 'Хумсны лампа, хайч, нөмрөг 20% хүртэл хямдарлаа', cta: 'Хямдрал үзэх', to: { name: 'shop', query: { sort: 'price_asc' } }, img: '/images/products/uv-led-nail-lamp-120w.svg', bg: 'from-brand-600 to-brand-800', tag: '🔥 Хязгаартай' },
 ];
