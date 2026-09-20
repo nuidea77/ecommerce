@@ -28,7 +28,7 @@ class CatalogSeeder extends Seeder
 
         $catModels = [];
         foreach ($categories as $i => $c) {
-            $catModels[$c['slug']] = Category::updateOrCreate(['slug' => $c['slug']], $c + ['sort_order' => $i, 'image' => "/images/categories/{$c['slug']}.svg"]);
+            $catModels[$c['slug']] = Category::updateOrCreate(['slug' => $c['slug']], $c + ['sort_order' => $i, 'image' => file_exists(public_path("images/photos/cat-{$c['slug']}.jpg")) ? "/images/photos/cat-{$c['slug']}.jpg" : "/images/categories/{$c['slug']}.svg"]);
         }
 
         $products = [
@@ -418,13 +418,17 @@ class CatalogSeeder extends Seeder
                 'description' => $p['desc'],
                 'base_price' => min(array_column($p['variants'], 'price')),
                 'compare_price' => $p['compare'],
-                'images' => ["/images/products/{$p['slug']}.svg", "/images/products/{$p['slug']}-2.svg"],
+                'images' => file_exists(public_path("images/photos/{$p['slug']}.jpg"))
+                    ? ["/images/photos/{$p['slug']}.jpg", "/images/products/{$p['slug']}.svg"]
+                    : ["/images/products/{$p['slug']}.svg", "/images/products/{$p['slug']}-2.svg"],
                 'specs' => $p['specs'],
                 'is_active' => true,
                 'is_featured' => $p['featured'],
                 'allow_backorder' => true,
                 'backorder_days' => rand(7, 21),
                 'sold_count' => $p['sold'],
+                'rating' => round(rand(40, 50) / 10, 1),
+                'reviews_count' => (int) max(3, round($p['sold'] * 0.35)),
                 'views' => rand(50, 900),
             ]);
 

@@ -15,7 +15,7 @@ class Product extends Model
     protected $fillable = [
         'category_id', 'name', 'slug', 'brand', 'short_description', 'description',
         'base_price', 'compare_price', 'images', 'specs', 'is_active', 'is_featured',
-        'allow_backorder', 'backorder_days', 'views', 'sold_count',
+        'allow_backorder', 'backorder_days', 'views', 'sold_count', 'rating', 'reviews_count',
     ];
 
     protected $casts = [
@@ -26,6 +26,7 @@ class Product extends Model
         'allow_backorder' => 'boolean',
         'base_price' => 'float',
         'compare_price' => 'float',
+        'rating' => 'float',
     ];
 
     protected $appends = ['total_stock', 'min_price', 'max_price', 'in_stock', 'thumbnail'];
