@@ -52,8 +52,8 @@ const perks = [
 
         <!-- Perks -->
         <section class="border-b border-cream-300/60 bg-cream-50">
-            <div class="container-x grid gap-6 py-8 sm:grid-cols-2 lg:grid-cols-4">
-                <div v-for="p in perks" :key="p.title" class="flex items-start gap-3">
+            <div class="container-x grid gap-4 py-6 sm:grid-cols-2 lg:grid-cols-4 lg:divide-x lg:divide-cream-300/60">
+                <div v-for="p in perks" :key="p.title" class="flex items-start gap-3 lg:px-6 lg:first:pl-0 lg:last:pr-0">
                     <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-100 text-brand-700"><component :is="p.icon" class="h-5 w-5" /></span>
                     <div><p class="text-sm font-semibold">{{ p.title }}</p><p class="text-xs text-stone-500">{{ p.text }}</p></div>
                 </div>
@@ -68,11 +68,13 @@ const perks = [
                     <div><h2 class="font-display text-2xl font-bold sm:text-3xl">Ангиллаар үзэх</h2><p class="mt-1 text-sm text-stone-500">Салоны бүх хэрэгцээг хангах 6 ангилал</p></div>
                     <router-link :to="{ name: 'shop' }" class="hidden text-sm font-medium text-brand-700 hover:underline sm:block">Бүгдийг үзэх →</router-link>
                 </div>
-                <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
-                    <router-link v-for="c in data.categories" :key="c.id" :to="{ name: 'shop', query: { category: c.slug } }" class="group card flex flex-col items-center p-5 text-center transition hover:-translate-y-0.5 hover:shadow-md">
-                        <img :src="c.image" :alt="c.name" class="h-20 w-20 rounded-2xl object-cover transition group-hover:scale-105" />
-                        <p class="mt-3 text-sm font-semibold leading-tight">{{ c.name }}</p>
-                        <p class="mt-1 text-xs text-stone-400">{{ c.products_count }} бараа</p>
+                <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-6">
+                    <router-link v-for="c in data.categories" :key="c.id" :to="{ name: 'shop', query: { category: c.slug } }" class="group relative overflow-hidden rounded-2xl ring-1 ring-cream-300/60 transition hover:-translate-y-1 hover:shadow-lg hover:shadow-brand-900/10">
+                        <img :src="c.image" :alt="c.name" class="aspect-square w-full object-cover transition duration-500 group-hover:scale-105" />
+                        <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-brand-900/90 via-brand-900/50 to-transparent p-3 pt-10 text-cream-50">
+                            <p class="text-sm font-semibold leading-tight">{{ c.name }}</p>
+                            <p class="text-[11px] text-cream-200/80">{{ c.products_count }} бараа</p>
+                        </div>
                     </router-link>
                 </div>
             </section>
@@ -84,7 +86,7 @@ const perks = [
                         <div><h2 class="font-display text-2xl font-bold sm:text-3xl">Онцлох бүтээгдэхүүн</h2><p class="mt-1 text-sm text-stone-500">Салонуудын хамгийн их сонгодог бараа</p></div>
                         <router-link :to="{ name: 'shop' }" class="hidden text-sm font-medium text-brand-700 hover:underline sm:block">Бүгдийг үзэх →</router-link>
                     </div>
-                    <div class="grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-3 lg:grid-cols-4">
+                    <div class="grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 lg:grid-cols-4">
                         <ProductCard v-for="p in data.featured" :key="p.id" :product="p" />
                     </div>
                 </div>
@@ -113,7 +115,7 @@ const perks = [
             <!-- Newest -->
             <section class="container-x pb-14">
                 <div class="mb-6"><h2 class="font-display text-2xl font-bold sm:text-3xl">Шинээр ирсэн</h2></div>
-                <div class="grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-3 lg:grid-cols-4">
+                <div class="grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 lg:grid-cols-4">
                     <ProductCard v-for="p in data.newest" :key="p.id" :product="p" />
                 </div>
             </section>

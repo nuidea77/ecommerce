@@ -84,8 +84,8 @@ const stepIdx = (s) => ['unassigned', 'assigned', 'picked_up', 'in_transit', 'de
             </div>
 
             <!-- Reorder / recommended -->
-            <div v-if="d.reorder.length"><h3 class="mb-4 font-semibold">Дахин захиалах</h3><div class="grid grid-cols-2 gap-4 md:grid-cols-4"><ProductCard v-for="p in d.reorder" :key="p.id" :product="p" /></div></div>
-            <div v-else-if="d.recommended.length"><h3 class="mb-4 font-semibold">Танд санал болгох</h3><div class="grid grid-cols-2 gap-4 md:grid-cols-4"><ProductCard v-for="p in d.recommended" :key="p.id" :product="p" /></div></div>
+            <div v-if="d.reorder.length"><h3 class="mb-4 font-semibold">Дахин захиалах</h3><div class="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4"><ProductCard v-for="p in d.reorder" :key="p.id" :product="p" /></div></div>
+            <div v-else-if="d.recommended.length"><h3 class="mb-4 font-semibold">Танд санал болгох</h3><div class="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4"><ProductCard v-for="p in d.recommended" :key="p.id" :product="p" /></div></div>
         </div>
     </AccountShell>
 </template>

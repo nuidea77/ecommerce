@@ -2,7 +2,7 @@
 import { ref, onMounted, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue';
-import { ShoppingBagIcon, MagnifyingGlassIcon, UserCircleIcon, Bars3Icon, XMarkIcon } from '@heroicons/vue/24/outline';
+import { ShoppingBagIcon, MagnifyingGlassIcon, UserCircleIcon, Bars3Icon, XMarkIcon, ChevronDownIcon, Squares2X2Icon } from '@heroicons/vue/24/outline';
 import { useAuthStore } from '../stores/auth';
 import { useCartStore } from '../stores/cart';
 import { useUiStore } from '../stores/ui';
@@ -58,19 +58,34 @@ const shopName = computed(() => ui.config?.name || 'Чанар Есүй');
                     <img :src="'/images/logo.png'" :alt="shopName" class="h-9 w-auto sm:h-10" />
                 </router-link>
 
-                <nav class="ml-6 hidden items-center gap-6 text-sm font-medium text-brand-900/70 lg:flex">
-                    <router-link :to="{ name: 'shop' }" class="hover:text-brand-700" active-class="text-brand-700 font-semibold">Бүх бараа</router-link>
-                    <router-link v-for="c in categories.slice(0, 5)" :key="c.id" :to="{ name: 'shop', query: { category: c.slug } }" class="hover:text-brand-700" :class="route.query.category === c.slug && 'text-brand-700 font-semibold'">{{ c.name }}</router-link>
+                <nav class="ml-8 hidden items-center gap-1 text-sm font-medium text-brand-900/80 lg:flex">
+                    <Menu as="div" class="relative">
+                        <MenuButton class="flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-2 hover:bg-brand-50 hover:text-brand-700" :class="route.query.category && 'text-brand-700'"><Squares2X2Icon class="h-4 w-4" /> Ангилал <ChevronDownIcon class="h-3.5 w-3.5" /></MenuButton>
+                        <transition enter-active-class="transition duration-100 ease-out" enter-from-class="-translate-y-1 opacity-0" enter-to-class="translate-y-0 opacity-100" leave-active-class="transition duration-75 ease-in" leave-from-class="opacity-100" leave-to-class="opacity-0">
+                            <MenuItems class="absolute left-0 mt-2 grid w-[560px] grid-cols-2 gap-1 rounded-2xl bg-white p-2 shadow-xl ring-1 ring-cream-300/70 focus:outline-none">
+                                <MenuItem v-for="c in categories" :key="c.id" v-slot="{ active }">
+                                    <router-link :to="{ name: 'shop', query: { category: c.slug } }" class="flex items-center gap-3 rounded-xl p-2.5" :class="active && 'bg-brand-50'">
+                                        <img :src="c.image" alt="" class="h-11 w-11 shrink-0 rounded-lg object-cover" />
+                                        <span class="min-w-0"><span class="block truncate text-sm font-semibold text-stone-900">{{ c.name }}</span><span class="block truncate text-xs text-stone-500">{{ c.description }}</span></span>
+                                    </router-link>
+                                </MenuItem>
+                                <MenuItem v-slot="{ active }"><router-link :to="{ name: 'shop' }" class="col-span-2 mt-1 flex items-center justify-center rounded-xl border-t border-cream-200 p-2.5 text-sm font-semibold text-brand-700" :class="active && 'bg-brand-50'">Бүх бараа үзэх →</router-link></MenuItem>
+                            </MenuItems>
+                        </transition>
+                    </Menu>
+                    <router-link :to="{ name: 'shop' }" class="whitespace-nowrap rounded-full px-3 py-2 hover:bg-brand-50 hover:text-brand-700" :class="route.name === 'shop' && !route.query.category && 'text-brand-700'">Бүх бараа</router-link>
+                    <router-link :to="{ name: 'shop', query: { sort: 'newest' } }" class="whitespace-nowrap rounded-full px-3 py-2 hover:bg-brand-50 hover:text-brand-700">Шинэ</router-link>
+                    <router-link :to="{ name: 'shop', query: { in_stock: '1' } }" class="whitespace-nowrap rounded-full px-3 py-2 hover:bg-brand-50 hover:text-brand-700">Бэлэн бараа</router-link>
                 </nav>
 
-                <form @submit.prevent="submitSearch" class="ml-auto hidden w-56 shrink-0 xl:block">
+                <form @submit.prevent="submitSearch" class="ml-auto hidden w-64 shrink-0 md:block">
                     <div class="relative">
                         <MagnifyingGlassIcon class="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-stone-400" />
                         <input v-model="search" type="search" placeholder="Бараа хайх..." class="input pl-9 py-2 rounded-full" />
                     </div>
                 </form>
 
-                <div class="ml-auto flex items-center gap-1 xl:ml-2">
+                <div class="ml-auto flex items-center gap-1 md:ml-2">
                     <Menu v-if="auth.isLoggedIn" as="div" class="relative">
                         <MenuButton class="flex items-center gap-2 rounded-full p-1.5 pr-3 hover:bg-stone-100">
                             <span class="flex h-7 w-7 items-center justify-center rounded-full bg-brand-700 text-xs font-bold text-cream-100">{{ auth.user.name.slice(0, 1) }}</span>

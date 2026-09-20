@@ -112,9 +112,9 @@ onMounted(load);
                 <span class="text-stone-800">{{ product.name }}</span>
             </p>
 
-            <div class="grid gap-10 lg:grid-cols-2">
+            <div class="grid gap-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:gap-12">
                 <!-- Gallery -->
-                <div>
+                <div class="lg:sticky lg:top-24 lg:self-start">
                     <div class="relative aspect-square overflow-hidden rounded-3xl bg-stone-100 ring-1 ring-stone-200">
                         <img :src="images[activeImage] || images[0]" :alt="product.name" class="h-full w-full object-cover" />
                         <span v-if="discount" class="badge absolute left-4 top-4 bg-gold-500 text-brand-900">-{{ discount }}%</span>
@@ -220,7 +220,7 @@ onMounted(load);
 
             <section v-if="related.length" class="mt-10">
                 <h2 class="mb-6 font-display text-2xl font-bold">Төстэй бараа</h2>
-                <div class="grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-4"><ProductCard v-for="p in related" :key="p.id" :product="p" /></div>
+                <div class="grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-4"><ProductCard v-for="p in related" :key="p.id" :product="p" /></div>
             </section>
         </template>
     </div>
