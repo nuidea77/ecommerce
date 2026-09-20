@@ -115,8 +115,8 @@ onMounted(load);
             <div class="grid gap-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:gap-12">
                 <!-- Gallery -->
                 <div class="lg:sticky lg:top-24 lg:self-start">
-                    <div class="relative aspect-square overflow-hidden rounded-3xl bg-cream-200/60 ring-1 ring-stone-200">
-                        <img :src="images[activeImage] || images[0]" :alt="product.name" class="h-full w-full object-cover" />
+                    <div class="relative aspect-square overflow-hidden rounded-3xl bg-white ring-1 ring-stone-200/70">
+                        <img :src="images[activeImage] || images[0]" :alt="product.name" class="h-full w-full object-contain" />
                         <span v-if="discount" class="badge absolute left-4 top-4 bg-gold-500 text-brand-900">-{{ discount }}%</span>
                     </div>
                     <div v-if="images.length > 1" class="mt-4 flex gap-3">
