@@ -17,13 +17,18 @@ class CatalogController extends Controller
             ->withCount(['products' => fn ($q) => $q->active()])->get();
 
         $featured = Product::active()->where('is_featured', true)->with(['variants', 'category'])
-            ->orderByDesc('sold_count')->take(8)->get();
+            ->orderByDesc('sold_count')->take(10)->get();
 
-        $newest = Product::active()->with(['variants', 'category'])->latest()->take(8)->get();
+        $newest = Product::active()->with(['variants', 'category'])->latest()->take(10)->get();
 
-        $bestsellers = Product::active()->with(['variants', 'category'])->orderByDesc('sold_count')->take(4)->get();
+        $bestsellers = Product::active()->with(['variants', 'category'])->orderByDesc('sold_count')->take(10)->get();
 
-        return response()->json(compact('categories', 'featured', 'newest', 'bestsellers'));
+        $sale = Product::active()->whereNotNull('compare_price')->whereColumn('compare_price', '>', 'base_price')
+            ->with(['variants', 'category'])->orderByDesc('sold_count')->take(10)->get();
+
+        $brands = Product::active()->whereNotNull('brand')->select('brand')->distinct()->orderBy('brand')->pluck('brand');
+
+        return response()->json(compact('categories', 'featured', 'newest', 'bestsellers', 'sale', 'brands'));
     }
 
     public function categories(): JsonResponse

@@ -167,7 +167,7 @@ onMounted(async () => {
                         <span v-if="state.in_stock" class="badge bg-cream-200/60 text-stone-700">Бэлэн байгаа <button @click="state.in_stock = false; apply()">×</button></span>
                     </div>
                     <div class="mb-4 flex items-center justify-between text-sm text-stone-500"><p><b class="text-stone-900">{{ result.total }}</b> бараа олдлоо</p><p class="hidden sm:block">{{ result.from }}–{{ result.to }} харуулж байна</p></div>
-                    <div v-if="result.data.length" class="grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 xl:grid-cols-4" :class="loading && 'opacity-50'">
+                    <div v-if="result.data.length" class="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 xl:grid-cols-4" :class="loading && 'opacity-50'">
                         <ProductCard v-for="p in result.data" :key="p.id" :product="p" />
                     </div>
                     <EmptyState v-else title="Бараа олдсонгүй" description="Шүүлтүүрээ өөрчилж эсвэл өөр түлхүүр үгээр хайж үзнэ үү." icon="🔍"><button @click="reset" class="btn-secondary">Шүүлтүүр цэвэрлэх</button></EmptyState>
