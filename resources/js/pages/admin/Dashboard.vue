@@ -59,7 +59,7 @@ const attentionReason = (o) => o.delivery_status === 'failed' ? { t: 'Хүргэ
         <div class="flex flex-wrap items-center justify-between gap-3">
             <div><h1 class="text-2xl font-bold">Хянах самбар</h1><p v-if="d" class="text-sm text-stone-500">{{ d.period.from }} — {{ d.period.to }}</p></div>
             <div class="flex gap-1 rounded-xl bg-white p-1 text-sm ring-1 ring-stone-200">
-                <button v-for="n in [7, 14, 30, 90]" :key="n" @click="days = n" class="rounded-lg px-3 py-1.5 font-medium transition" :class="days === n ? 'bg-stone-900 text-white' : 'text-stone-600 hover:bg-stone-100'">{{ n }} хоног</button>
+                <button v-for="n in [7, 14, 30, 90]" :key="n" @click="days = n" class="rounded-lg px-3 py-1.5 font-medium transition" :class="days === n ? 'bg-brand-800 text-white' : 'text-stone-600 hover:bg-stone-100'">{{ n }} хоног</button>
             </div>
         </div>
 
@@ -100,7 +100,7 @@ const attentionReason = (o) => o.delivery_status === 'failed' ? { t: 'Хүргэ
                             <line :x1="PL" :x2="W - 8" :y1="chart.baseline" :y2="chart.baseline" stroke="#d6d3d1" />
                             <g v-for="(b, i) in chart.bars" :key="b.day" @mouseenter="hover = b" @mouseleave="hover = null">
                                 <rect :x="b.cx - 14" :y="PT" width="28" :height="chart.ih" fill="transparent" />
-                                <rect :x="b.x" :y="b.y" :width="b.w" :height="Math.max(b.h, b.revenue ? 2 : 0)" rx="3" :fill="hover?.day === b.day ? '#be185d' : '#db2777'" :opacity="hover && hover.day !== b.day ? 0.55 : 1" />
+                                <rect :x="b.x" :y="b.y" :width="b.w" :height="Math.max(b.h, b.revenue ? 2 : 0)" rx="3" :fill="hover?.day === b.day ? '#0f3227' : '#24654a'" :opacity="hover && hover.day !== b.day ? 0.55 : 1" />
                                 <text v-if="i % chart.labelEvery === 0" :x="b.cx" :y="H - 8" text-anchor="middle" font-size="10" fill="#78716c">{{ fmtDay(b.day) }}</text>
                             </g>
                         </svg>
@@ -150,7 +150,7 @@ const attentionReason = (o) => o.delivery_status === 'failed' ? { t: 'Хүргэ
                     <ul class="mt-4 space-y-3">
                         <li v-for="c in d.category_sales" :key="c.name">
                             <div class="flex justify-between text-sm"><span class="truncate">{{ c.name }}</span><span class="ml-2 shrink-0 font-medium">{{ money(c.revenue) }}</span></div>
-                            <div class="mt-1 h-2 w-full rounded-full bg-stone-100"><div class="h-2 rounded-full bg-brand-500" :style="{ width: `${(c.revenue / catMax) * 100}%` }"></div></div>
+                            <div class="mt-1 h-2 w-full rounded-full bg-stone-100"><div class="h-2 rounded-full bg-brand-600" :style="{ width: `${(c.revenue / catMax) * 100}%` }"></div></div>
                             <p class="mt-0.5 text-[11px] text-stone-400">{{ c.qty }} ширхэг</p>
                         </li>
                         <li v-if="!d.category_sales.length" class="text-sm text-stone-500">Мэдээлэл алга</li>

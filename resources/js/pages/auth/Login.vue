@@ -16,9 +16,9 @@ const loading = ref(false);
 const error = ref('');
 
 const demo = [
-    { label: 'Админ', email: 'admin@beautypro.mn' },
-    { label: 'Хэрэглэгч', email: 'customer@beautypro.mn' },
-    { label: 'Хүргэлтийн ажилтан', email: 'courier@beautypro.mn' },
+    { label: 'Админ', email: 'admin@chanaresui.mn' },
+    { label: 'Хэрэглэгч', email: 'customer@chanaresui.mn' },
+    { label: 'Хүргэлтийн ажилтан', email: 'courier@chanaresui.mn' },
 ];
 
 async function submit() {
@@ -38,7 +38,7 @@ async function submit() {
 <template>
     <div class="container-x flex min-h-[70vh] items-center justify-center py-12">
         <div class="w-full max-w-md">
-            <div class="text-center"><h1 class="font-display text-3xl font-bold">Нэвтрэх</h1><p class="mt-2 text-sm text-stone-500">Бүртгэлгүй юу? <router-link :to="{ name: 'register', query: route.query }" class="font-medium text-brand-700 hover:underline">Бүртгүүлэх</router-link></p></div>
+            <div class="text-center"><img :src="'/images/logo.png'" alt="Чанар Есүй" class="mx-auto mb-6 h-14 w-auto" /><h1 class="font-display text-3xl font-bold">Нэвтрэх</h1><p class="mt-2 text-sm text-stone-500">Бүртгэлгүй юу? <router-link :to="{ name: 'register', query: route.query }" class="font-medium text-brand-700 hover:underline">Бүртгүүлэх</router-link></p></div>
             <form @submit.prevent="submit" class="card mt-8 space-y-4 p-6 sm:p-8">
                 <div><label class="label">И-мэйл</label><input v-model="form.email" type="email" class="input" required autocomplete="email" /></div>
                 <div><label class="label">Нууц үг</label><input v-model="form.password" type="password" class="input" required autocomplete="current-password" /></div>

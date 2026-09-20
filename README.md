@@ -1,4 +1,6 @@
-# BeautyPro Supply — Гоо сайхны салоны тоног төхөөрөмжийн онлайн дэлгүүр
+# Чанар Есүй — Гоо сайхны салоны тоног төхөөрөмжийн онлайн дэлгүүр
+
+<p><img src="public/images/logo.png" alt="Чанар Есүй" width="260"></p>
 
 Laravel 12 + Vue 3 + Tailwind CSS 4 + MySQL дээр бүтээсэн бүрэн динамик, responsive e-commerce систем.
 
@@ -32,7 +34,7 @@ php artisan key:generate
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=beautypro
+DB_DATABASE=chanar_esui
 DB_USERNAME=root
 DB_PASSWORD=
 ```
@@ -50,9 +52,9 @@ php artisan serve
 
 | Эрх | И-мэйл |
 | --- | --- |
-| Админ | admin@beautypro.mn |
-| Хэрэглэгч | customer@beautypro.mn |
-| Хүргэлтийн ажилтан | courier@beautypro.mn |
+| Админ | admin@chanaresui.mn |
+| Хэрэглэгч | customer@chanaresui.mn |
+| Хүргэлтийн ажилтан | courier@chanaresui.mn |
 
 ## QPay тохиргоо
 

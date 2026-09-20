@@ -21,7 +21,7 @@ watch(tab, load); onMounted(load);
             <div class="card p-4"><p class="text-xs text-stone-500">Нийт хүргэсэн</p><p class="text-2xl font-bold">{{ data.stats.delivered_total }}</p></div>
         </div>
         <div class="mt-5 flex gap-1 rounded-xl bg-white p-1 text-sm ring-1 ring-stone-200 w-fit">
-            <button v-for="t in [['active', 'Идэвхтэй'], ['done', 'Дууссан'], ['all', 'Бүгд']]" :key="t[0]" @click="tab = t[0]" class="rounded-lg px-4 py-1.5 font-medium" :class="tab === t[0] ? 'bg-sky-700 text-white' : 'text-stone-600'">{{ t[1] }}</button>
+            <button v-for="t in [['active', 'Идэвхтэй'], ['done', 'Дууссан'], ['all', 'Бүгд']]" :key="t[0]" @click="tab = t[0]" class="rounded-lg px-4 py-1.5 font-medium" :class="tab === t[0] ? 'bg-brand-700 text-white' : 'text-stone-600'">{{ t[1] }}</button>
         </div>
         <Spinner v-if="!data" />
         <EmptyState v-else-if="!data.deliveries.data.length" class="mt-5" title="Хүргэлт байхгүй" description="Танд томилогдсон хүргэлт одоогоор алга." icon="🛵" />

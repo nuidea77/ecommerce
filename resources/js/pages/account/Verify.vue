@@ -110,9 +110,9 @@ onUnmounted(() => { stopPolling(); clearInterval(clockTimer); });
                 <div v-if="expiredNotice" class="rounded-2xl bg-amber-50 p-4 text-sm text-amber-900 ring-1 ring-amber-200">⏱ Кодын хугацаа дууслаа — хуучин код <b>хүчингүй</b> боллоо, түүнийг илгээх шаардлагагүй. Доороос шинэ код авна уу.</div>
 
                 <div class="card overflow-hidden">
-                    <div class="flex flex-col items-start gap-5 bg-stone-900 p-6 text-white sm:flex-row sm:items-center">
+                    <div class="flex flex-col items-start gap-5 bg-brand-900 p-6 text-cream-100 sm:flex-row sm:items-center">
                         <span class="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-brand-600"><ShieldCheckIcon class="h-10 w-10" /></span>
-                        <div><p class="text-sm text-stone-400">verify.mn · нэг удаагийн SMS</p><h2 class="text-2xl font-bold">Утасны дугаараа баталгаажуулна уу</h2><p class="mt-1 text-stone-300">Захиалга өгөхийн өмнө таны утаснаас <b>144773</b> дугаарт нэг удаагийн код илгээж дугаарыг тань баталгаажуулна.</p></div>
+                        <div><p class="text-sm text-cream-300/70">verify.mn · нэг удаагийн SMS</p><h2 class="text-2xl font-bold">Утасны дугаараа баталгаажуулна уу</h2><p class="mt-1 text-cream-200/80">Захиалга өгөхийн өмнө таны утаснаас <b>144773</b> дугаарт нэг удаагийн код илгээж дугаарыг тань баталгаажуулна.</p></div>
                     </div>
 
                     <!-- Step 1: phone -->

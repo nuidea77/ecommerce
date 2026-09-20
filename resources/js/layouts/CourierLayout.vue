@@ -8,10 +8,10 @@ async function logout() { await auth.logout(); router.push({ name: 'login' }); }
 </script>
 
 <template>
-    <div class="flex min-h-full flex-col bg-stone-100">
-        <header class="sticky top-0 z-20 bg-sky-700 text-white shadow">
+    <div class="flex min-h-full flex-col bg-cream-100">
+        <header class="sticky top-0 z-20 bg-brand-800 text-white shadow">
             <div class="container-x flex h-16 items-center gap-3">
-                <router-link :to="{ name: 'courier.deliveries' }" class="flex items-center gap-2 font-semibold"><TruckIcon class="h-6 w-6" /> Хүргэлтийн систем</router-link>
+                <router-link :to="{ name: 'courier.deliveries' }" class="flex items-center gap-3 font-semibold"><img :src="'/images/logo-mark-light.png'" alt="" class="h-8 w-8" /><span class="flex items-center gap-2"><TruckIcon class="h-5 w-5 text-gold-400" /> Хүргэлтийн систем</span></router-link>
                 <div class="ml-auto flex items-center gap-2 text-sm">
                     <span class="hidden sm:block">{{ auth.user?.name }}</span>
                     <router-link v-if="auth.isAdmin" :to="{ name: 'admin.dashboard' }" class="rounded-lg bg-white/10 px-2.5 py-1.5 text-xs hover:bg-white/20">Админ</router-link>

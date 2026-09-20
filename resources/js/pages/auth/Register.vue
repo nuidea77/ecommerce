@@ -25,7 +25,7 @@ async function submit() {
 <template>
     <div class="container-x flex min-h-[70vh] items-center justify-center py-12">
         <div class="w-full max-w-md">
-            <div class="text-center"><h1 class="font-display text-3xl font-bold">Бүртгүүлэх</h1><p class="mt-2 text-sm text-stone-500">Бүртгэлтэй юу? <router-link :to="{ name: 'login', query: route.query }" class="font-medium text-brand-700 hover:underline">Нэвтрэх</router-link></p></div>
+            <div class="text-center"><img :src="'/images/logo.png'" alt="Чанар Есүй" class="mx-auto mb-6 h-14 w-auto" /><h1 class="font-display text-3xl font-bold">Бүртгүүлэх</h1><p class="mt-2 text-sm text-stone-500">Бүртгэлтэй юу? <router-link :to="{ name: 'login', query: route.query }" class="font-medium text-brand-700 hover:underline">Нэвтрэх</router-link></p></div>
             <form @submit.prevent="submit" class="card mt-8 space-y-4 p-6 sm:p-8">
                 <div><label class="label">Нэр / Салоны нэр</label><input v-model="form.name" class="input" required /><p v-if="errors.name" class="mt-1 text-xs text-red-600">{{ errors.name[0] }}</p></div>
                 <div><label class="label">И-мэйл</label><input v-model="form.email" type="email" class="input" required /><p v-if="errors.email" class="mt-1 text-xs text-red-600">{{ errors.email[0] }}</p></div>

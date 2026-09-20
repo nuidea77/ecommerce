@@ -40,8 +40,8 @@ async function quickAdd() {
         <router-link :to="{ name: 'product', params: { slug: product.slug } }" class="relative block aspect-square overflow-hidden bg-stone-100">
             <img :src="product.thumbnail" :alt="product.name" class="h-full w-full object-cover transition duration-500 group-hover:scale-105" loading="lazy" />
             <div class="absolute left-3 top-3 flex flex-col gap-1.5">
-                <span v-if="discount" class="badge bg-brand-600 text-white">-{{ discount }}%</span>
-                <span v-if="!product.in_stock" class="badge bg-stone-900/80 text-white backdrop-blur">Урьдчилсан захиалга</span>
+                <span v-if="discount" class="badge bg-gold-500 text-brand-900">-{{ discount }}%</span>
+                <span v-if="!product.in_stock" class="badge bg-brand-900/85 text-cream-100 backdrop-blur">Урьдчилсан захиалга</span>
                 <span v-else-if="product.total_stock <= 3" class="badge bg-amber-100 text-amber-800">Цөөн үлдсэн</span>
             </div>
         </router-link>
@@ -57,7 +57,7 @@ async function quickAdd() {
                     <p class="text-base font-bold text-stone-900">{{ priceLabel }}</p>
                     <p v-if="product.compare_price && product.compare_price > product.min_price" class="text-xs text-stone-400 line-through">{{ money(product.compare_price) }}</p>
                 </div>
-                <button v-if="!hasOptions" @click="quickAdd" class="rounded-xl bg-stone-900 p-2.5 text-white transition hover:bg-brand-600" title="Сагсанд нэмэх"><ShoppingBagIcon class="h-4 w-4" /></button>
+                <button v-if="!hasOptions" @click="quickAdd" class="rounded-xl bg-brand-800 p-2.5 text-white transition hover:bg-gold-500 hover:text-brand-900" title="Сагсанд нэмэх"><ShoppingBagIcon class="h-4 w-4" /></button>
                 <router-link v-else :to="{ name: 'product', params: { slug: product.slug } }" class="btn-secondary btn-sm">Сонгох</router-link>
             </div>
         </div>

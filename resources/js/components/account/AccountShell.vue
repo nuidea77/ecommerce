@@ -16,7 +16,7 @@ const nav = [
             <aside class="lg:sticky lg:top-24 lg:self-start">
                 <div class="card p-4">
                     <div class="flex items-center gap-3 border-b border-stone-100 pb-4">
-                        <span class="flex h-11 w-11 items-center justify-center rounded-full bg-brand-100 text-lg font-bold text-brand-700">{{ auth.user.name.slice(0, 1) }}</span>
+                        <span class="flex h-11 w-11 items-center justify-center rounded-full bg-brand-700 text-lg font-bold text-cream-100">{{ auth.user.name.slice(0, 1) }}</span>
                         <div class="min-w-0"><p class="truncate font-semibold">{{ auth.user.name }}</p><p class="truncate text-xs text-stone-500">{{ auth.user.email }}</p></div>
                     </div>
                     <nav class="mt-3 flex gap-1 overflow-x-auto lg:flex-col">

@@ -120,7 +120,7 @@ onMounted(async () => {
                     <div class="card p-5">
                         <h4 class="mb-3 text-sm font-semibold">Өнгө</h4>
                         <div class="flex flex-wrap gap-2">
-                            <button v-for="c in filters.colors" :key="c.color" @click="state.color = state.color === c.color ? '' : c.color; apply()" :title="c.color" class="flex items-center gap-1.5 rounded-full py-1 pl-1 pr-2.5 text-xs ring-1 transition" :class="state.color === c.color ? 'bg-stone-900 text-white ring-stone-900' : 'bg-white text-stone-700 ring-stone-200 hover:ring-stone-400'">
+                            <button v-for="c in filters.colors" :key="c.color" @click="state.color = state.color === c.color ? '' : c.color; apply()" :title="c.color" class="flex items-center gap-1.5 rounded-full py-1 pl-1 pr-2.5 text-xs ring-1 transition" :class="state.color === c.color ? 'bg-brand-800 text-white ring-brand-800' : 'bg-white text-stone-700 ring-stone-200 hover:ring-stone-400'">
                                 <span class="h-4 w-4 rounded-full ring-1 ring-stone-300" :style="{ backgroundColor: c.color_hex || '#ddd' }"></span>{{ c.color }}
                             </button>
                         </div>
@@ -129,7 +129,7 @@ onMounted(async () => {
                     <div class="card p-5" v-if="filters.sizes.length">
                         <h4 class="mb-3 text-sm font-semibold">Хэмжээ</h4>
                         <div class="flex flex-wrap gap-2">
-                            <button v-for="s in filters.sizes" :key="s" @click="state.size = state.size === s ? '' : s; apply()" class="rounded-lg px-2.5 py-1 text-xs ring-1 transition" :class="state.size === s ? 'bg-stone-900 text-white ring-stone-900' : 'bg-white ring-stone-200 hover:ring-stone-400'">{{ s }}</button>
+                            <button v-for="s in filters.sizes" :key="s" @click="state.size = state.size === s ? '' : s; apply()" class="rounded-lg px-2.5 py-1 text-xs ring-1 transition" :class="state.size === s ? 'bg-brand-800 text-white ring-brand-800' : 'bg-white ring-stone-200 hover:ring-stone-400'">{{ s }}</button>
                         </div>
                     </div>
 

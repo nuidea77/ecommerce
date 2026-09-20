@@ -117,7 +117,7 @@ onMounted(load);
                 <div>
                     <div class="relative aspect-square overflow-hidden rounded-3xl bg-stone-100 ring-1 ring-stone-200">
                         <img :src="images[activeImage] || images[0]" :alt="product.name" class="h-full w-full object-cover" />
-                        <span v-if="discount" class="badge absolute left-4 top-4 bg-brand-600 text-white">-{{ discount }}%</span>
+                        <span v-if="discount" class="badge absolute left-4 top-4 bg-gold-500 text-brand-900">-{{ discount }}%</span>
                     </div>
                     <div v-if="images.length > 1" class="mt-4 flex gap-3">
                         <button v-for="(img, i) in images" :key="img + i" @click="activeImage = i" class="h-20 w-20 overflow-hidden rounded-xl ring-2 transition" :class="activeImage === i ? 'ring-brand-600' : 'ring-transparent hover:ring-stone-300'"><img :src="img" class="h-full w-full object-cover" alt="" /></button>
@@ -149,7 +149,7 @@ onMounted(load);
                         <div v-if="colors.length">
                             <p class="mb-2 text-sm font-semibold">Өнгө: <span class="font-normal text-stone-500">{{ sel.color || '—' }}</span></p>
                             <div class="flex flex-wrap gap-2">
-                                <button v-for="c in colors" :key="c.color" @click="pick('color', c.color)" :disabled="!available('color', c.color)" class="flex items-center gap-2 rounded-full py-1.5 pl-1.5 pr-3 text-sm ring-1 transition disabled:cursor-not-allowed disabled:opacity-30" :class="sel.color === c.color ? 'bg-stone-900 text-white ring-stone-900' : 'bg-white ring-stone-200 hover:ring-stone-400'">
+                                <button v-for="c in colors" :key="c.color" @click="pick('color', c.color)" :disabled="!available('color', c.color)" class="flex items-center gap-2 rounded-full py-1.5 pl-1.5 pr-3 text-sm ring-1 transition disabled:cursor-not-allowed disabled:opacity-30" :class="sel.color === c.color ? 'bg-brand-800 text-white ring-brand-800' : 'bg-white ring-stone-200 hover:ring-stone-400'">
                                     <span class="h-5 w-5 rounded-full ring-1 ring-black/10" :style="{ backgroundColor: c.color_hex || '#ddd' }"></span>{{ c.color }}
                                     <span v-if="!anyStock('color', c.color)" class="text-[10px] opacity-70">(захиалгаар)</span>
                                 </button>
@@ -158,7 +158,7 @@ onMounted(load);
                         <div v-if="sizes.length">
                             <p class="mb-2 text-sm font-semibold">Хэмжээ: <span class="font-normal text-stone-500">{{ sel.size || '—' }}</span></p>
                             <div class="flex flex-wrap gap-2">
-                                <button v-for="s in sizes" :key="s" @click="pick('size', s)" :disabled="!available('size', s)" class="min-w-12 rounded-xl px-3 py-2 text-sm font-medium ring-1 transition disabled:cursor-not-allowed disabled:opacity-30" :class="sel.size === s ? 'bg-stone-900 text-white ring-stone-900' : 'bg-white ring-stone-200 hover:ring-stone-400'">{{ s }}<span v-if="!anyStock('size', s)" class="ml-1 text-[10px] opacity-70">•</span></button>
+                                <button v-for="s in sizes" :key="s" @click="pick('size', s)" :disabled="!available('size', s)" class="min-w-12 rounded-xl px-3 py-2 text-sm font-medium ring-1 transition disabled:cursor-not-allowed disabled:opacity-30" :class="sel.size === s ? 'bg-brand-800 text-white ring-brand-800' : 'bg-white ring-stone-200 hover:ring-stone-400'">{{ s }}<span v-if="!anyStock('size', s)" class="ml-1 text-[10px] opacity-70">•</span></button>
                             </div>
                         </div>
                         <div v-if="hasPacks">

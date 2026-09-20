@@ -23,10 +23,10 @@ const stepIdx = (s) => ['unassigned', 'assigned', 'picked_up', 'in_transit', 'de
         <Spinner v-if="!d" />
         <div v-else class="space-y-6">
             <!-- Verification -->
-            <div v-if="!auth.isVerified" class="flex flex-col items-start gap-4 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 p-5 text-white sm:flex-row sm:items-center">
+            <div v-if="!auth.isVerified" class="flex flex-col items-start gap-4 rounded-2xl bg-gradient-to-r from-gold-500 to-gold-600 p-5 text-brand-900 sm:flex-row sm:items-center">
                 <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white/20"><ShieldCheckIcon class="h-7 w-7" /></span>
-                <div class="flex-1"><p class="font-bold">Бүртгэлээ баталгаажуулна уу</p><p class="text-sm text-amber-50">Захиалга өгөхийн өмнө утасны дугаараа SMS-ээр (verify.mn) нэг удаа баталгаажуулна.</p></div>
-                <router-link :to="{ name: 'verify' }" class="btn bg-white text-amber-700 hover:bg-amber-50">Баталгаажуулах</router-link>
+                <div class="flex-1"><p class="font-bold">Бүртгэлээ баталгаажуулна уу</p><p class="text-sm text-brand-900/80">Захиалга өгөхийн өмнө утасны дугаараа SMS-ээр (verify.mn) нэг удаа баталгаажуулна.</p></div>
+                <router-link :to="{ name: 'verify' }" class="btn-primary">Баталгаажуулах</router-link>
             </div>
             <div v-else class="flex items-center gap-3 rounded-2xl bg-emerald-50 px-5 py-3 text-sm text-emerald-800 ring-1 ring-emerald-200"><ShieldCheckIcon class="h-5 w-5" /> Утасны дугаар verify.mn-ээр баталгаажсан · {{ auth.user.verified_phone }}</div>
 
