@@ -78,10 +78,25 @@ class Product extends Model
         return (float) ($this->variants()->max('price') ?? $this->base_price);
     }
 
+    /**
+     * Images with the generated studio photo first. Old placeholder SVGs are
+     * dropped so databases seeded before the photos existed still show them.
+     */
+    public function getImagesAttribute($value): array
+    {
+        $images = is_array($value) ? $value : (json_decode($value ?? '[]', true) ?: []);
+        $images = array_values(array_filter($images, fn ($i) => ! str_contains((string) $i, '/images/products/')));
+
+        $photo = "/images/photos/{$this->slug}.jpg";
+        if ($this->slug && file_exists(public_path($photo)) && ! in_array($photo, $images, true)) {
+            array_unshift($images, $photo);
+        }
+
+        return $images;
+    }
+
     public function getThumbnailAttribute(): ?string
     {
-        $images = $this->images ?? [];
-
-        return $images[0] ?? null;
+        return $this->images[0] ?? null;
     }
 }

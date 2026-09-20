@@ -38,7 +38,7 @@ async function quickAdd() {
 <template>
     <article class="group flex h-full flex-col overflow-hidden rounded-2xl bg-white ring-1 ring-stone-200/70 transition hover:shadow-lg hover:shadow-stone-900/5">
         <router-link :to="{ name: 'product', params: { slug: product.slug } }" class="relative block aspect-[4/5] overflow-hidden bg-cream-100">
-            <img :src="product.thumbnail" :alt="product.name" class="h-full w-full object-cover transition duration-700 group-hover:scale-105" loading="lazy" />
+            <img :src="product.thumbnail" :alt="product.name" class="h-full w-full object-cover transition duration-700 group-hover:scale-105" />
             <div class="absolute right-3 top-3 flex flex-col items-end gap-1.5">
                 <span v-if="product.is_featured" class="rounded-md bg-white/90 px-2 py-0.5 text-[11px] font-medium text-stone-800 shadow-sm">Bestseller</span>
                 <span v-else-if="isNew" class="rounded-md bg-white/90 px-2 py-0.5 text-[11px] font-medium text-stone-800 shadow-sm">Шинэ</span>

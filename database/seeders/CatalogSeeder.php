@@ -28,7 +28,7 @@ class CatalogSeeder extends Seeder
 
         $catModels = [];
         foreach ($categories as $i => $c) {
-            $catModels[$c['slug']] = Category::updateOrCreate(['slug' => $c['slug']], $c + ['sort_order' => $i, 'image' => file_exists(public_path("images/photos/cat-{$c['slug']}.jpg")) ? "/images/photos/cat-{$c['slug']}.jpg" : "/images/categories/{$c['slug']}.svg"]);
+            $catModels[$c['slug']] = Category::updateOrCreate(['slug' => $c['slug']], $c + ['sort_order' => $i, 'image' => "/images/photos/cat-{$c['slug']}.jpg"]);
         }
 
         $products = [
@@ -418,9 +418,7 @@ class CatalogSeeder extends Seeder
                 'description' => $p['desc'],
                 'base_price' => min(array_column($p['variants'], 'price')),
                 'compare_price' => $p['compare'],
-                'images' => file_exists(public_path("images/photos/{$p['slug']}.jpg"))
-                    ? ["/images/photos/{$p['slug']}.jpg", "/images/products/{$p['slug']}.svg"]
-                    : ["/images/products/{$p['slug']}.svg", "/images/products/{$p['slug']}-2.svg"],
+                'images' => ["/images/photos/{$p['slug']}.jpg"],
                 'specs' => $p['specs'],
                 'is_active' => true,
                 'is_featured' => $p['featured'],

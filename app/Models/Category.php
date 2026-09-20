@@ -14,6 +14,16 @@ class Category extends Model
 
     protected $casts = ['is_active' => 'boolean'];
 
+    public function getImageAttribute($value): ?string
+    {
+        $photo = "/images/photos/cat-{$this->slug}.jpg";
+        if ($this->slug && file_exists(public_path($photo))) {
+            return $photo;
+        }
+
+        return $value && ! str_contains($value, '/images/categories/') ? $value : null;
+    }
+
     public function products(): HasMany
     {
         return $this->hasMany(Product::class);

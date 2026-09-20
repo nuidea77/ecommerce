@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
-<rect width="400" height="400" fill="#ffffff"/>
-<g transform="translate(100 80)"><rect x="0" y="0" width="200" height="200" rx="40" fill="#f7f3e5"/>
-<g fill="none" stroke="#0f3227" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"><circle cx="62" cy="140" r="22"/><circle cx="138" cy="140" r="22"/><path d="M76 122L130 40M124 122L70 40"/></g></g>
-<text x="200" y="340" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="600" fill="#0f3227" opacity="0.85">SCISSORS</text>
-</svg>
