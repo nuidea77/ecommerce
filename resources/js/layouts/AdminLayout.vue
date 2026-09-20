@@ -24,7 +24,7 @@ async function logout() {
 </script>
 
 <template>
-    <div class="flex min-h-full bg-cream-100">
+    <div class="flex min-h-full bg-white">
         <!-- Sidebar -->
         <aside class="fixed inset-y-0 left-0 z-40 w-64 transform bg-brand-900 text-cream-200/80 transition-transform lg:static lg:translate-x-0" :class="open ? 'translate-x-0' : '-translate-x-full'">
             <div class="flex h-16 items-center gap-2 px-5">
@@ -45,7 +45,7 @@ async function logout() {
         <div v-if="open" class="fixed inset-0 z-30 bg-stone-900/50 lg:hidden" @click="open = false"></div>
 
         <div class="flex min-w-0 flex-1 flex-col">
-            <header class="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-cream-300/60 bg-cream-100 px-4 sm:px-6">
+            <header class="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-cream-300/60 bg-white px-4 sm:px-6">
                 <button class="lg:hidden" @click="open = true"><Bars3Icon class="h-6 w-6 text-stone-600" /></button>
                 <p class="text-sm text-stone-500">Удирдлагын систем</p>
                 <div class="ml-auto flex items-center gap-2 text-sm">

@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
-<rect width="400" height="400" fill="#fffdf8"/>
+<rect width="400" height="400" fill="#ffffff"/>
 <g transform="translate(100 80)"><rect x="0" y="0" width="200" height="200" rx="40" fill="#f7f3e5"/>
 <g fill="none" stroke="#143f31" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"><path d="M40 80h120v40a10 10 0 0 1-10 10H50a10 10 0 0 1-10-10z"/><path d="M60 130l-10 40M140 130l10 40M100 40v40"/><path d="M80 105h40"/></g></g>
 <text x="200" y="340" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="600" fill="#143f31" opacity="0.85">UV LED LAMP</text>

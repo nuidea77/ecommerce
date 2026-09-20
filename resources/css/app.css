@@ -30,12 +30,12 @@
     --color-cream-100: #f7f3e5;
     --color-cream-200: #ede5cd;
     --color-cream-300: #ddd1ad;
-    --color-paper: #fffdf8;
+    --color-paper: #ffffff;
 }
 
 @layer base {
-    html { scroll-behavior: smooth; background-color: #f7f3e5; }
-    body { @apply font-sans bg-cream-100 text-stone-900; }
+    html { scroll-behavior: smooth; background-color: #ffffff; }
+    body { @apply font-sans bg-white text-stone-900; }
 }
 
 @layer components {

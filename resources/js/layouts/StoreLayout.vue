@@ -64,7 +64,7 @@ const links = [
             </div>
         </div>
 
-        <header class="sticky top-0 z-40 border-b border-cream-300/70 bg-cream-100/95 backdrop-blur">
+        <header class="sticky top-0 z-40 border-b border-cream-300/70 bg-white/95 backdrop-blur">
             <!-- Main row -->
             <div class="container-x flex h-[68px] items-center gap-3 md:gap-5">
                 <button class="-ml-2 p-2 text-brand-900 lg:hidden" @click="mobileOpen = !mobileOpen">
@@ -140,7 +140,7 @@ const links = [
                 <form @submit.prevent="submitSearch" class="flex overflow-hidden rounded-xl bg-paper ring-1 ring-brand-700/40"><input v-model="search" type="search" placeholder="Бараа хайх..." class="h-10 flex-1 border-0 bg-transparent px-3 text-sm focus:ring-0" /><button class="bg-brand-700 px-4 text-white"><MagnifyingGlassIcon class="h-5 w-5" /></button></form>
             </div>
             <transition name="fade">
-                <div v-if="mobileOpen" class="border-t border-cream-300/60 bg-cream-100 lg:hidden">
+                <div v-if="mobileOpen" class="border-t border-cream-300/60 bg-white lg:hidden">
                     <div class="container-x grid gap-1 py-3 sm:grid-cols-2">
                         <router-link v-for="l in links" :key="l.label" :to="l.to" @click="mobileOpen = false" class="rounded-lg px-3 py-2 text-sm font-medium hover:bg-brand-50">{{ l.label }}</router-link>
                         <router-link v-for="c in categories" :key="c.id" :to="{ name: 'shop', query: { category: c.slug } }" @click="mobileOpen = false" class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm hover:bg-brand-50"><img :src="c.image" alt="" class="h-7 w-7 rounded-md" /> {{ c.name }}</router-link>

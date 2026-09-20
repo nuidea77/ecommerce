@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
-<rect width="400" height="400" fill="#fffdf8"/>
+<rect width="400" height="400" fill="#ffffff"/>
 <g transform="translate(100 80)"><rect x="0" y="0" width="200" height="200" rx="40" fill="#f7f3e5"/>
 <g fill="none" stroke="#24654a" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"><rect x="88" y="30" width="24" height="90" rx="8"/><path d="M70 120h60v20a30 30 0 0 1-60 0z"/><path d="M80 150v15M100 150v18M120 150v15"/></g></g>
 <text x="200" y="340" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="600" fill="#24654a" opacity="0.85">BRUSH SET</text>

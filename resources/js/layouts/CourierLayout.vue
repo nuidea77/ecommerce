@@ -8,7 +8,7 @@ async function logout() { await auth.logout(); router.push({ name: 'login' }); }
 </script>
 
 <template>
-    <div class="flex min-h-full flex-col bg-cream-100">
+    <div class="flex min-h-full flex-col bg-white">
         <header class="sticky top-0 z-20 bg-brand-800 text-white shadow">
             <div class="container-x flex h-16 items-center gap-3">
                 <router-link :to="{ name: 'courier.deliveries' }" class="flex items-center gap-3 font-semibold"><img :src="'/images/logo-mark-light.png'" alt="" class="h-8 w-8" /><span class="flex items-center gap-2"><TruckIcon class="h-5 w-5 text-gold-400" /> Хүргэлтийн систем</span></router-link>
