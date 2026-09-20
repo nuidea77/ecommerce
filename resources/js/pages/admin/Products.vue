@@ -45,10 +45,10 @@ onMounted(async () => { categories.value = (await api.get('/admin/categories')).
         <Spinner v-if="!result" />
         <div v-else class="card mt-4 overflow-x-auto">
             <table class="min-w-full text-sm">
-                <thead class="bg-stone-50 text-left text-xs uppercase text-stone-500"><tr><th class="px-4 py-3">Бүтээгдэхүүн</th><th class="px-4 py-3">Ангилал</th><th class="px-4 py-3">Үнэ</th><th class="px-4 py-3">Сонголт / Үлдэгдэл</th><th class="px-4 py-3">Зарагдсан</th><th class="px-4 py-3">Төлөв</th><th class="px-4 py-3"></th></tr></thead>
+                <thead class="bg-cream-100 text-left text-xs uppercase text-stone-500"><tr><th class="px-4 py-3">Бүтээгдэхүүн</th><th class="px-4 py-3">Ангилал</th><th class="px-4 py-3">Үнэ</th><th class="px-4 py-3">Сонголт / Үлдэгдэл</th><th class="px-4 py-3">Зарагдсан</th><th class="px-4 py-3">Төлөв</th><th class="px-4 py-3"></th></tr></thead>
                 <tbody class="divide-y divide-stone-100">
-                    <tr v-for="p in result.data" :key="p.id" class="hover:bg-stone-50">
-                        <td class="px-4 py-3"><div class="flex items-center gap-3"><img :src="p.thumbnail" class="h-11 w-11 rounded-lg bg-stone-100 object-cover" alt="" /><div><p class="font-medium">{{ p.name }}</p><p class="text-xs text-stone-400">{{ p.brand }}<span v-if="p.is_featured" class="ml-1 text-brand-600">★ онцлох</span></p></div></div></td>
+                    <tr v-for="p in result.data" :key="p.id" class="hover:bg-cream-100">
+                        <td class="px-4 py-3"><div class="flex items-center gap-3"><img :src="p.thumbnail" class="h-11 w-11 rounded-lg bg-cream-200/60 object-cover" alt="" /><div><p class="font-medium">{{ p.name }}</p><p class="text-xs text-stone-400">{{ p.brand }}<span v-if="p.is_featured" class="ml-1 text-brand-600">★ онцлох</span></p></div></div></td>
                         <td class="px-4 py-3 text-stone-600">{{ p.category?.name }}</td>
                         <td class="px-4 py-3 font-medium">{{ p.min_price === p.max_price ? money(p.min_price) : `${money(p.min_price)} – ${money(p.max_price)}` }}</td>
                         <td class="px-4 py-3"><span class="text-stone-600">{{ p.variants.length }} сонголт</span> · <span class="badge" :class="p.total_stock <= 0 ? 'bg-red-100 text-red-700' : p.total_stock <= 5 ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'">{{ p.total_stock }} ш</span></td>

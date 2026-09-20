@@ -29,9 +29,9 @@ onMounted(load);
         <Spinner v-if="!result" />
         <div v-else class="card mt-4 overflow-x-auto">
             <table class="min-w-full text-sm">
-                <thead class="bg-stone-50 text-left text-xs uppercase text-stone-500"><tr><th class="px-4 py-3">Захиалга</th><th class="px-4 py-3">Хэрэглэгч</th><th class="px-4 py-3">Төлөв</th><th class="px-4 py-3">Төлбөр</th><th class="px-4 py-3">Хүргэлт</th><th class="px-4 py-3 text-right">Дүн</th></tr></thead>
+                <thead class="bg-cream-100 text-left text-xs uppercase text-stone-500"><tr><th class="px-4 py-3">Захиалга</th><th class="px-4 py-3">Хэрэглэгч</th><th class="px-4 py-3">Төлөв</th><th class="px-4 py-3">Төлбөр</th><th class="px-4 py-3">Хүргэлт</th><th class="px-4 py-3 text-right">Дүн</th></tr></thead>
                 <tbody class="divide-y divide-stone-100">
-                    <tr v-for="o in result.data" :key="o.id" class="hover:bg-stone-50">
+                    <tr v-for="o in result.data" :key="o.id" class="hover:bg-cream-100">
                         <td class="px-4 py-3"><router-link :to="{ name: 'admin.order', params: { id: o.id } }" class="font-semibold text-brand-700 hover:underline">{{ o.order_number }}</router-link><p class="text-xs text-stone-400">{{ dateTime(o.created_at) }} · {{ o.items_count }} бараа</p><span v-if="o.has_backorder" class="badge mt-1 bg-amber-100 text-amber-800">Урьдчилсан</span></td>
                         <td class="px-4 py-3"><p class="font-medium">{{ o.shipping_name }}</p><p class="text-xs text-stone-400">{{ o.shipping_phone }} · {{ o.shipping_city }}</p></td>
                         <td class="px-4 py-3"><StatusBadge :value="o.status" /></td>

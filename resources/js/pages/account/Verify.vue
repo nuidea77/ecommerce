@@ -131,8 +131,8 @@ onUnmounted(() => { stopPolling(); clearInterval(clockTimer); });
                                 <p class="flex items-center gap-2 text-sm font-semibold text-brand-800"><ChatBubbleBottomCenterTextIcon class="h-5 w-5" /> Заавар</p>
                                 <p class="mt-2 text-base leading-relaxed text-stone-900">{{ session.display_instruction }}</p>
                                 <div class="mt-4 flex flex-wrap items-center gap-3">
-                                    <div class="rounded-xl bg-white px-4 py-2 ring-1 ring-stone-200"><p class="text-[11px] uppercase tracking-wide text-stone-400">Хүлээн авагч</p><p class="font-mono text-xl font-bold">144773</p></div>
-                                    <div class="rounded-xl bg-white px-4 py-2 ring-1 ring-stone-200"><p class="text-[11px] uppercase tracking-wide text-stone-400">Мессежийн текст</p><p class="font-mono text-xl font-bold tracking-widest">{{ session.code }}</p></div>
+                                    <div class="rounded-xl bg-paper px-4 py-2 ring-1 ring-stone-200"><p class="text-[11px] uppercase tracking-wide text-stone-400">Хүлээн авагч</p><p class="font-mono text-xl font-bold">144773</p></div>
+                                    <div class="rounded-xl bg-paper px-4 py-2 ring-1 ring-stone-200"><p class="text-[11px] uppercase tracking-wide text-stone-400">Мессежийн текст</p><p class="font-mono text-xl font-bold tracking-widest">{{ session.code }}</p></div>
                                 </div>
                                 <a :href="session.sms_uri" class="btn-brand mt-4 w-full py-3 text-base sm:w-auto"><DevicePhoneMobileIcon class="h-5 w-5" /> SMS илгээх (мессеж нээх)</a>
                                 <p v-if="!isMobile" class="mt-2 text-xs text-stone-500">Компьютер дээр байгаа бол дээрх дугаар руу гар утаснаасаа <b>{{ session.code }}</b> гэж бичиж илгээнэ үү.</p>
@@ -149,7 +149,7 @@ onUnmounted(() => { stopPolling(); clearInterval(clockTimer); });
                                 <form @submit.prevent="mockConfirm" class="mt-2 flex gap-2"><input v-model="mock.text" class="input font-mono" placeholder="SMS текст (код)" required /><button :disabled="mock.busy" class="btn bg-amber-500 text-white hover:bg-amber-600">Илгээх</button></form>
                             </div>
                         </div>
-                        <div class="rounded-2xl bg-stone-50 p-5 text-sm">
+                        <div class="rounded-2xl bg-cream-100 p-5 text-sm">
                             <p class="font-semibold">Анхаарах зүйлс</p>
                             <ul class="mt-3 space-y-2 text-stone-600">
                                 <li>• SMS-ийг зөвхөн <b class="font-mono">{{ session.phone }}</b> дугаараас илгээнэ. Өөр SIM-ээс илгээвэл баталгаажихгүй.</li>

@@ -49,7 +49,7 @@ onMounted(load);
                     <div class="card">
                         <div class="border-b border-stone-100 px-5 py-3 font-semibold">Бараанууд ({{ order.items.length }})</div>
                         <ul class="divide-y divide-stone-100">
-                            <li v-for="i in order.items" :key="i.id" class="flex items-center gap-3 px-5 py-3 text-sm"><img :src="i.image" class="h-12 w-12 rounded-lg bg-stone-100 object-cover" alt="" /><div class="flex-1"><p class="font-medium">{{ i.product_name }}</p><p class="text-xs text-stone-500">{{ i.variant_label }}</p></div><span class="font-semibold">× {{ i.quantity }}</span></li>
+                            <li v-for="i in order.items" :key="i.id" class="flex items-center gap-3 px-5 py-3 text-sm"><img :src="i.image" class="h-12 w-12 rounded-lg bg-cream-200/60 object-cover" alt="" /><div class="flex-1"><p class="font-medium">{{ i.product_name }}</p><p class="text-xs text-stone-500">{{ i.variant_label }}</p></div><span class="font-semibold">× {{ i.quantity }}</span></li>
                         </ul>
                     </div>
                     <div class="card p-5"><h3 class="mb-3 font-semibold">Түүх</h3><OrderTimeline :histories="order.histories" /></div>

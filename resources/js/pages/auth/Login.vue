@@ -48,7 +48,7 @@ async function submit() {
             </form>
             <div class="mt-6 rounded-2xl border border-dashed border-stone-300 p-4 text-xs text-stone-500">
                 <p class="mb-2 font-semibold text-stone-700">Демо бүртгэлүүд (нууц үг: <code>password</code>)</p>
-                <div class="flex flex-wrap gap-2"><button v-for="d in demo" :key="d.email" type="button" @click="form.email = d.email; form.password = 'password'" class="rounded-lg bg-stone-100 px-2.5 py-1 font-medium hover:bg-stone-200">{{ d.label }}</button></div>
+                <div class="flex flex-wrap gap-2"><button v-for="d in demo" :key="d.email" type="button" @click="form.email = d.email; form.password = 'password'" class="rounded-lg bg-cream-200/60 px-2.5 py-1 font-medium hover:bg-stone-200">{{ d.label }}</button></div>
             </div>
         </div>
     </div>

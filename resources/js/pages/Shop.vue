@@ -106,21 +106,21 @@ onMounted(async () => {
 
         <div class="grid gap-8 lg:grid-cols-[250px_1fr]">
             <!-- Filters -->
-            <aside class="fixed inset-0 z-50 overflow-y-auto bg-white p-6 lg:sticky lg:top-24 lg:z-auto lg:block lg:max-h-[calc(100vh-7rem)] lg:self-start lg:overflow-y-auto lg:bg-transparent lg:p-0" :class="mobileFilters ? 'block' : 'hidden'">
+            <aside class="fixed inset-0 z-50 overflow-y-auto bg-paper p-6 lg:sticky lg:top-24 lg:z-auto lg:block lg:max-h-[calc(100vh-7rem)] lg:self-start lg:overflow-y-auto lg:bg-transparent lg:p-0" :class="mobileFilters ? 'block' : 'hidden'">
                 <div class="mb-4 flex items-center justify-between lg:hidden"><h3 class="text-lg font-semibold">Шүүлтүүр</h3><button @click="mobileFilters = false"><XMarkIcon class="h-6 w-6" /></button></div>
                 <div class="space-y-4">
                     <div class="card p-4">
                         <h4 class="mb-2 text-xs font-semibold uppercase tracking-wider text-stone-500">Ангилал</h4>
                         <ul class="space-y-1.5 text-sm">
-                            <li><button @click="state.category = ''; apply()" class="w-full rounded-lg px-2 py-1.5 text-left hover:bg-stone-50" :class="!state.category && 'bg-brand-50 font-semibold text-brand-700'">Бүгд</button></li>
-                            <li v-for="c in categories" :key="c.id"><button @click="state.category = c.slug; apply()" class="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left hover:bg-stone-50" :class="state.category === c.slug && 'bg-brand-50 font-semibold text-brand-700'"><img :src="c.image" alt="" class="h-7 w-7 shrink-0 rounded-md object-cover" /><span class="min-w-0 flex-1 leading-tight">{{ c.name }}</span><span class="rounded-full bg-cream-200 px-1.5 text-[11px] text-stone-500">{{ c.products_count }}</span></button></li>
+                            <li><button @click="state.category = ''; apply()" class="w-full rounded-lg px-2 py-1.5 text-left hover:bg-cream-100" :class="!state.category && 'bg-brand-50 font-semibold text-brand-700'">Бүгд</button></li>
+                            <li v-for="c in categories" :key="c.id"><button @click="state.category = c.slug; apply()" class="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left hover:bg-cream-100" :class="state.category === c.slug && 'bg-brand-50 font-semibold text-brand-700'"><img :src="c.image" alt="" class="h-7 w-7 shrink-0 rounded-md object-cover" /><span class="min-w-0 flex-1 leading-tight">{{ c.name }}</span><span class="rounded-full bg-cream-200 px-1.5 text-[11px] text-stone-500">{{ c.products_count }}</span></button></li>
                         </ul>
                     </div>
 
                     <div class="card p-4">
                         <h4 class="mb-2 text-xs font-semibold uppercase tracking-wider text-stone-500">Өнгө</h4>
                         <div class="flex flex-wrap gap-2">
-                            <button v-for="c in filters.colors" :key="c.color" @click="state.color = state.color === c.color ? '' : c.color; apply()" :title="c.color" class="flex items-center gap-1.5 rounded-full py-1 pl-1 pr-2.5 text-xs ring-1 transition" :class="state.color === c.color ? 'bg-brand-800 text-white ring-brand-800' : 'bg-white text-stone-700 ring-stone-200 hover:ring-stone-400'">
+                            <button v-for="c in filters.colors" :key="c.color" @click="state.color = state.color === c.color ? '' : c.color; apply()" :title="c.color" class="flex items-center gap-1.5 rounded-full py-1 pl-1 pr-2.5 text-xs ring-1 transition" :class="state.color === c.color ? 'bg-brand-800 text-white ring-brand-800' : 'bg-paper text-stone-700 ring-stone-200 hover:ring-stone-400'">
                                 <span class="h-4 w-4 rounded-full ring-1 ring-stone-300" :style="{ backgroundColor: c.color_hex || '#ddd' }"></span>{{ c.color }}
                             </button>
                         </div>
@@ -129,7 +129,7 @@ onMounted(async () => {
                     <div class="card p-4" v-if="filters.sizes.length">
                         <h4 class="mb-2 text-xs font-semibold uppercase tracking-wider text-stone-500">Хэмжээ</h4>
                         <div class="flex flex-wrap gap-2">
-                            <button v-for="s in filters.sizes" :key="s" @click="state.size = state.size === s ? '' : s; apply()" class="rounded-lg px-2.5 py-1 text-xs ring-1 transition" :class="state.size === s ? 'bg-brand-800 text-white ring-brand-800' : 'bg-white ring-stone-200 hover:ring-stone-400'">{{ s }}</button>
+                            <button v-for="s in filters.sizes" :key="s" @click="state.size = state.size === s ? '' : s; apply()" class="rounded-lg px-2.5 py-1 text-xs ring-1 transition" :class="state.size === s ? 'bg-brand-800 text-white ring-brand-800' : 'bg-paper ring-stone-200 hover:ring-stone-400'">{{ s }}</button>
                         </div>
                     </div>
 
@@ -159,12 +159,12 @@ onMounted(async () => {
                 <template v-else-if="result">
                     <div v-if="activeCount || state.q" class="mb-4 flex flex-wrap items-center gap-2 text-sm">
                         <span class="text-stone-500">Шүүлт:</span>
-                        <span v-if="state.q" class="badge bg-stone-100 text-stone-700">"{{ state.q }}" <button @click="state.q = ''; apply()">×</button></span>
-                        <span v-if="state.color" class="badge bg-stone-100 text-stone-700">{{ state.color }} <button @click="state.color = ''; apply()">×</button></span>
-                        <span v-if="state.size" class="badge bg-stone-100 text-stone-700">{{ state.size }} <button @click="state.size = ''; apply()">×</button></span>
-                        <span v-if="state.brand" class="badge bg-stone-100 text-stone-700">{{ state.brand }} <button @click="state.brand = ''; apply()">×</button></span>
-                        <span v-if="state.min_price || state.max_price" class="badge bg-stone-100 text-stone-700">{{ state.min_price ? money(state.min_price) : '0₮' }} – {{ state.max_price ? money(state.max_price) : '∞' }} <button @click="state.min_price = state.max_price = ''; apply()">×</button></span>
-                        <span v-if="state.in_stock" class="badge bg-stone-100 text-stone-700">Бэлэн байгаа <button @click="state.in_stock = false; apply()">×</button></span>
+                        <span v-if="state.q" class="badge bg-cream-200/60 text-stone-700">"{{ state.q }}" <button @click="state.q = ''; apply()">×</button></span>
+                        <span v-if="state.color" class="badge bg-cream-200/60 text-stone-700">{{ state.color }} <button @click="state.color = ''; apply()">×</button></span>
+                        <span v-if="state.size" class="badge bg-cream-200/60 text-stone-700">{{ state.size }} <button @click="state.size = ''; apply()">×</button></span>
+                        <span v-if="state.brand" class="badge bg-cream-200/60 text-stone-700">{{ state.brand }} <button @click="state.brand = ''; apply()">×</button></span>
+                        <span v-if="state.min_price || state.max_price" class="badge bg-cream-200/60 text-stone-700">{{ state.min_price ? money(state.min_price) : '0₮' }} – {{ state.max_price ? money(state.max_price) : '∞' }} <button @click="state.min_price = state.max_price = ''; apply()">×</button></span>
+                        <span v-if="state.in_stock" class="badge bg-cream-200/60 text-stone-700">Бэлэн байгаа <button @click="state.in_stock = false; apply()">×</button></span>
                     </div>
                     <div class="mb-4 flex items-center justify-between text-sm text-stone-500"><p><b class="text-stone-900">{{ result.total }}</b> бараа олдлоо</p><p class="hidden sm:block">{{ result.from }}–{{ result.to }} харуулж байна</p></div>
                     <div v-if="result.data.length" class="grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 xl:grid-cols-4" :class="loading && 'opacity-50'">

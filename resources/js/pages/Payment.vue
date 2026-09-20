@@ -111,7 +111,7 @@ onUnmounted(() => clearInterval(timer));
                     <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 40'><rect width='120' height='40' rx='8' fill='%230b3d91'/><text x='60' y='27' text-anchor='middle' font-family='Arial' font-weight='bold' font-size='20' fill='white'>qPay</text></svg>" class="h-10" alt="qPay" />
                 </div>
                 <div class="mt-6 flex flex-col items-center gap-6 sm:flex-row sm:items-start">
-                    <div class="rounded-2xl bg-white p-3 ring-1 ring-stone-200 shadow-sm">
+                    <div class="rounded-2xl bg-paper p-3 ring-1 ring-stone-200 shadow-sm">
                         <QrCode :text="payment.qr_text" :image="payment.qr_image" :size="220" />
                     </div>
                     <div class="flex-1 text-sm text-stone-600">
@@ -130,7 +130,7 @@ onUnmounted(() => clearInterval(timer));
                 <div class="mt-8">
                     <p class="mb-3 text-sm font-semibold">Гар утаснаас банкны аппаар төлөх</p>
                     <div class="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                        <a v-for="u in payment.urls" :key="u.name" :href="u.link" class="flex items-center gap-2 rounded-xl p-2 ring-1 ring-stone-200 hover:bg-stone-50">
+                        <a v-for="u in payment.urls" :key="u.name" :href="u.link" class="flex items-center gap-2 rounded-xl p-2 ring-1 ring-stone-200 hover:bg-cream-100">
                             <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-stone-900 text-[10px] font-bold text-white">{{ u.description?.slice(0, 2) }}</span>
                             <span class="truncate text-xs font-medium">{{ u.description }}</span>
                         </a>

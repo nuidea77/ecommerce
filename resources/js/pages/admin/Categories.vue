@@ -31,9 +31,9 @@ onMounted(load);
         <div class="flex items-center justify-between"><h1 class="text-2xl font-bold">Ангилал</h1><button @click="create" class="btn-brand"><PlusIcon class="h-5 w-5" /> Шинэ ангилал</button></div>
         <div class="card mt-5 overflow-x-auto">
             <table class="min-w-full text-sm">
-                <thead class="bg-stone-50 text-left text-xs uppercase text-stone-500"><tr><th class="px-4 py-3">#</th><th class="px-4 py-3">Ангилал</th><th class="px-4 py-3">Slug</th><th class="px-4 py-3">Бараа</th><th class="px-4 py-3">Төлөв</th><th></th></tr></thead>
+                <thead class="bg-cream-100 text-left text-xs uppercase text-stone-500"><tr><th class="px-4 py-3">#</th><th class="px-4 py-3">Ангилал</th><th class="px-4 py-3">Slug</th><th class="px-4 py-3">Бараа</th><th class="px-4 py-3">Төлөв</th><th></th></tr></thead>
                 <tbody class="divide-y divide-stone-100">
-                    <tr v-for="c in items" :key="c.id" class="hover:bg-stone-50">
+                    <tr v-for="c in items" :key="c.id" class="hover:bg-cream-100">
                         <td class="px-4 py-3 text-stone-400">{{ c.sort_order }}</td>
                         <td class="px-4 py-3"><div class="flex items-center gap-3"><img v-if="c.image" :src="c.image" class="h-10 w-10 rounded-lg object-cover" alt="" /><span v-else class="text-xl">{{ c.icon }}</span><div><p class="font-medium">{{ c.icon }} {{ c.name }}</p><p class="text-xs text-stone-400">{{ c.description }}</p></div></div></td>
                         <td class="px-4 py-3 text-stone-500">{{ c.slug }}</td>

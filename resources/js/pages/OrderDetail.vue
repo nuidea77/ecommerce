@@ -56,7 +56,7 @@ onMounted(load);
                 <ol class="flex items-center">
                     <li v-for="(s, i) in steps" :key="s.key" class="flex flex-1 items-center">
                         <div class="flex flex-col items-center text-center">
-                            <span class="flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold ring-2" :class="i <= stepIndex ? 'bg-brand-600 text-white ring-brand-600' : 'bg-white text-stone-400 ring-stone-200'">{{ i < stepIndex ? '✓' : i + 1 }}</span>
+                            <span class="flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold ring-2" :class="i <= stepIndex ? 'bg-brand-600 text-white ring-brand-600' : 'bg-paper text-stone-400 ring-stone-200'">{{ i < stepIndex ? '✓' : i + 1 }}</span>
                             <span class="mt-2 hidden text-xs font-medium sm:block" :class="i <= stepIndex ? 'text-stone-900' : 'text-stone-400'">{{ s.label }}</span>
                         </div>
                         <div v-if="i < steps.length - 1" class="mx-2 h-0.5 flex-1" :class="i < stepIndex ? 'bg-brand-600' : 'bg-stone-200'"></div>
@@ -71,7 +71,7 @@ onMounted(load);
                         <div class="border-b border-stone-100 px-5 py-4 font-semibold">Бараанууд</div>
                         <ul class="divide-y divide-stone-100">
                             <li v-for="i in order.items" :key="i.id" class="flex gap-4 px-5 py-4">
-                                <img :src="i.image" class="h-16 w-16 rounded-xl bg-stone-100 object-cover" alt="" />
+                                <img :src="i.image" class="h-16 w-16 rounded-xl bg-cream-200/60 object-cover" alt="" />
                                 <div class="flex-1"><p class="font-medium">{{ i.product_name }}</p><p class="text-sm text-stone-500">{{ i.variant_label }} · SKU {{ i.sku }}</p><span v-if="i.is_backorder" class="badge mt-1 bg-amber-100 text-amber-800">Урьдчилсан захиалга</span></div>
                                 <div class="text-right"><p class="font-semibold">{{ money(i.line_total) }}</p><p class="text-xs text-stone-400">{{ money(i.price) }} × {{ i.quantity }}</p></div>
                             </li>
@@ -92,7 +92,7 @@ onMounted(load);
                         <h3 class="mb-3 font-semibold">Хүргэлтийн хаяг</h3>
                         <p class="font-medium">{{ order.shipping_name }}</p><p>{{ order.shipping_phone }}</p>
                         <p class="mt-1 text-stone-600">{{ order.shipping_city }}<span v-if="order.shipping_district">, {{ order.shipping_district }}</span><br />{{ order.shipping_address }}</p>
-                        <p v-if="order.note" class="mt-2 rounded-lg bg-stone-50 p-2 text-xs text-stone-500">Тэмдэглэл: {{ order.note }}</p>
+                        <p v-if="order.note" class="mt-2 rounded-lg bg-cream-100 p-2 text-xs text-stone-500">Тэмдэглэл: {{ order.note }}</p>
                     </div>
                     <div class="card p-5 text-sm">
                         <h3 class="mb-3 font-semibold">Төлбөр</h3>
@@ -108,7 +108,7 @@ onMounted(load);
                             <div><p class="font-medium">{{ order.courier.name }}</p><a :href="`tel:${order.courier.phone}`" class="text-xs text-brand-700">{{ order.courier.phone }}</a></div>
                         </div>
                         <p v-else class="mt-2 text-xs text-stone-500">Хүргэлтийн ажилтан хараахан томилогдоогүй.</p>
-                        <p v-if="order.courier_note" class="mt-2 rounded-lg bg-stone-50 p-2 text-xs text-stone-600">{{ order.courier_note }}</p>
+                        <p v-if="order.courier_note" class="mt-2 rounded-lg bg-cream-100 p-2 text-xs text-stone-600">{{ order.courier_note }}</p>
                     </div>
                 </div>
             </div>

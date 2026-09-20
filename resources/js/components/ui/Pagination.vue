@@ -16,7 +16,7 @@ const pages = computed(() => {
         <p class="text-sm text-stone-500">Нийт <span class="font-medium text-stone-800">{{ meta.total }}</span> үр дүн</p>
         <div class="flex items-center gap-1">
             <button class="btn-ghost btn-sm" :disabled="meta.current_page <= 1" @click="emit('change', meta.current_page - 1)"><ChevronLeftIcon class="h-4 w-4" /></button>
-            <button v-for="p in pages" :key="p" @click="emit('change', p)" class="h-8 w-8 rounded-lg text-sm font-medium" :class="p === meta.current_page ? 'bg-brand-800 text-white' : 'text-stone-600 hover:bg-stone-100'">{{ p }}</button>
+            <button v-for="p in pages" :key="p" @click="emit('change', p)" class="h-8 w-8 rounded-lg text-sm font-medium" :class="p === meta.current_page ? 'bg-brand-800 text-white' : 'text-stone-600 hover:bg-cream-200/60'">{{ p }}</button>
             <button class="btn-ghost btn-sm" :disabled="meta.current_page >= meta.last_page" @click="emit('change', meta.current_page + 1)"><ChevronRightIcon class="h-4 w-4" /></button>
         </div>
     </nav>

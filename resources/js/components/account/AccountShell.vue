@@ -20,7 +20,7 @@ const nav = [
                         <div class="min-w-0"><p class="truncate font-semibold">{{ auth.user.name }}</p><p class="truncate text-xs text-stone-500">{{ auth.user.email }}</p></div>
                     </div>
                     <nav class="mt-3 flex gap-1 overflow-x-auto lg:flex-col">
-                        <router-link v-for="n in nav" :key="n.name" :to="{ name: n.name }" class="flex shrink-0 items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-medium text-stone-600 hover:bg-stone-50 hover:text-stone-900" :exact-active-class="n.exact ? 'bg-brand-50 text-brand-700' : ''" :active-class="n.exact ? '' : 'bg-brand-50 text-brand-700'">
+                        <router-link v-for="n in nav" :key="n.name" :to="{ name: n.name }" class="flex shrink-0 items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-medium text-stone-600 hover:bg-cream-100 hover:text-stone-900" :exact-active-class="n.exact ? 'bg-brand-50 text-brand-700' : ''" :active-class="n.exact ? '' : 'bg-brand-50 text-brand-700'">
                             <component :is="n.icon" class="h-5 w-5" />{{ n.label }}
                             <span v-if="n.name === 'verify'" class="ml-auto h-2 w-2 rounded-full" :class="auth.isVerified ? 'bg-emerald-500' : 'bg-amber-500'"></span>
                         </router-link>

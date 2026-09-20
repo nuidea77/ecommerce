@@ -51,7 +51,7 @@ const perks = [
         </section>
 
         <!-- Perks -->
-        <section class="border-b border-cream-300/60 bg-cream-50">
+        <section class="border-b border-cream-300/60 bg-cream-200/50">
             <div class="container-x grid gap-4 py-6 sm:grid-cols-2 lg:grid-cols-4 lg:divide-x lg:divide-cream-300/60">
                 <div v-for="p in perks" :key="p.title" class="flex items-start gap-3 lg:px-6 lg:first:pl-0 lg:last:pr-0">
                     <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-100 text-brand-700"><component :is="p.icon" class="h-5 w-5" /></span>
@@ -80,7 +80,7 @@ const perks = [
             </section>
 
             <!-- Featured -->
-            <section class="bg-cream-50 py-14">
+            <section class="bg-cream-200/50 py-14">
                 <div class="container-x">
                     <div class="mb-6 flex items-end justify-between">
                         <div><h2 class="font-display text-2xl font-bold sm:text-3xl">Онцлох бүтээгдэхүүн</h2><p class="mt-1 text-sm text-stone-500">Салонуудын хамгийн их сонгодог бараа</p></div>

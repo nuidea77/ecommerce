@@ -51,15 +51,15 @@ const payColor = { qpay: '#2a78d6', cash: '#eb6834' };
 const catMax = computed(() => d.value ? Math.max(1, ...d.value.category_sales.map((c) => Number(c.revenue))) : 1);
 const statusTotal = computed(() => d.value ? Math.max(1, Object.values(d.value.status_breakdown).reduce((a, b) => a + Number(b), 0)) : 1);
 const statusColor = { pending: '#f59e0b', confirmed: '#0ea5e9', processing: '#6366f1', shipped: '#8b5cf6', delivered: '#10b981', cancelled: '#a8a29e' };
-const attentionReason = (o) => o.delivery_status === 'failed' ? { t: 'Хүргэлт амжилтгүй', c: 'bg-red-100 text-red-700' } : o.status === 'pending' ? { t: 'Баталгаажуулах', c: 'bg-amber-100 text-amber-800' } : o.delivery_status === 'unassigned' ? { t: 'Хүргэгч томилох', c: 'bg-sky-100 text-sky-800' } : { t: 'Шалгах', c: 'bg-stone-100 text-stone-700' };
+const attentionReason = (o) => o.delivery_status === 'failed' ? { t: 'Хүргэлт амжилтгүй', c: 'bg-red-100 text-red-700' } : o.status === 'pending' ? { t: 'Баталгаажуулах', c: 'bg-amber-100 text-amber-800' } : o.delivery_status === 'unassigned' ? { t: 'Хүргэгч томилох', c: 'bg-sky-100 text-sky-800' } : { t: 'Шалгах', c: 'bg-cream-200/60 text-stone-700' };
 </script>
 
 <template>
     <div>
         <div class="flex flex-wrap items-center justify-between gap-3">
             <div><h1 class="text-2xl font-bold">Хянах самбар</h1><p v-if="d" class="text-sm text-stone-500">{{ d.period.from }} — {{ d.period.to }}</p></div>
-            <div class="flex gap-1 rounded-xl bg-white p-1 text-sm ring-1 ring-stone-200">
-                <button v-for="n in [7, 14, 30, 90]" :key="n" @click="days = n" class="rounded-lg px-3 py-1.5 font-medium transition" :class="days === n ? 'bg-brand-800 text-white' : 'text-stone-600 hover:bg-stone-100'">{{ n }} хоног</button>
+            <div class="flex gap-1 rounded-xl bg-paper p-1 text-sm ring-1 ring-stone-200">
+                <button v-for="n in [7, 14, 30, 90]" :key="n" @click="days = n" class="rounded-lg px-3 py-1.5 font-medium transition" :class="days === n ? 'bg-brand-800 text-white' : 'text-stone-600 hover:bg-cream-200/60'">{{ n }} хоног</button>
             </div>
         </div>
 
@@ -92,7 +92,7 @@ const attentionReason = (o) => o.delivery_status === 'failed' ? { t: 'Хүргэ
                 <div class="card p-5 xl:col-span-2">
                     <div class="flex flex-wrap items-center justify-between gap-2">
                         <div><h2 class="font-semibold">Өдрийн орлого</h2><p class="text-xs text-stone-400">Төлөгдсөн захиалгын дүн, ₮ · hover хийж дэлгэрэнгүй</p></div>
-                        <div class="flex gap-1 rounded-lg bg-stone-100 p-0.5"><button @click="chartView = 'chart'" class="rounded-md p-1.5" :class="chartView === 'chart' ? 'bg-white shadow-sm' : 'text-stone-500'" title="График"><ChartBarIcon class="h-4 w-4" /></button><button @click="chartView = 'table'" class="rounded-md p-1.5" :class="chartView === 'table' ? 'bg-white shadow-sm' : 'text-stone-500'" title="Хүснэгт"><TableCellsIcon class="h-4 w-4" /></button></div>
+                        <div class="flex gap-1 rounded-lg bg-cream-200/60 p-0.5"><button @click="chartView = 'chart'" class="rounded-md p-1.5" :class="chartView === 'chart' ? 'bg-paper shadow-sm' : 'text-stone-500'" title="График"><ChartBarIcon class="h-4 w-4" /></button><button @click="chartView = 'table'" class="rounded-md p-1.5" :class="chartView === 'table' ? 'bg-paper shadow-sm' : 'text-stone-500'" title="Хүснэгт"><TableCellsIcon class="h-4 w-4" /></button></div>
                     </div>
                     <div v-if="chartView === 'chart'" class="relative mt-4">
                         <svg :viewBox="`0 0 ${W} ${H}`" class="w-full" role="img" aria-label="Өдрийн орлогын график">
@@ -109,7 +109,7 @@ const attentionReason = (o) => o.delivery_status === 'failed' ? { t: 'Хүргэ
                         </div>
                     </div>
                     <div v-else class="mt-4 max-h-64 overflow-auto rounded-xl ring-1 ring-stone-200">
-                        <table class="min-w-full text-sm"><thead class="sticky top-0 bg-stone-50 text-left text-xs uppercase text-stone-500"><tr><th class="px-3 py-2">Өдөр</th><th class="px-3 py-2 text-right">Захиалга</th><th class="px-3 py-2 text-right">Орлого</th></tr></thead>
+                        <table class="min-w-full text-sm"><thead class="sticky top-0 bg-cream-100 text-left text-xs uppercase text-stone-500"><tr><th class="px-3 py-2">Өдөр</th><th class="px-3 py-2 text-right">Захиалга</th><th class="px-3 py-2 text-right">Орлого</th></tr></thead>
                         <tbody class="divide-y divide-stone-100"><tr v-for="s in d.series" :key="s.day"><td class="px-3 py-1.5">{{ s.day }}</td><td class="px-3 py-1.5 text-right">{{ s.orders }}</td><td class="px-3 py-1.5 text-right font-medium">{{ money(s.revenue) }}</td></tr></tbody></table>
                     </div>
                 </div>
@@ -139,7 +139,7 @@ const attentionReason = (o) => o.delivery_status === 'failed' ? { t: 'Хүргэ
                     <div class="flex items-center justify-between border-b border-stone-100 px-5 py-4"><h2 class="flex items-center gap-2 font-semibold"><ExclamationTriangleIcon class="h-5 w-5 text-amber-500" /> Анхаарал шаардсан захиалга</h2><router-link :to="{ name: 'admin.orders' }" class="text-sm text-brand-700 hover:underline">Бүгд →</router-link></div>
                     <p v-if="!d.attention_orders.length" class="p-5 text-sm text-stone-500">Бүх захиалга хэвийн ✓</p>
                     <ul v-else class="divide-y divide-stone-100">
-                        <li v-for="o in d.attention_orders" :key="o.id"><router-link :to="{ name: 'admin.order', params: { id: o.id } }" class="flex flex-wrap items-center gap-3 px-5 py-3 text-sm hover:bg-stone-50">
+                        <li v-for="o in d.attention_orders" :key="o.id"><router-link :to="{ name: 'admin.order', params: { id: o.id } }" class="flex flex-wrap items-center gap-3 px-5 py-3 text-sm hover:bg-cream-100">
                             <div class="min-w-0 flex-1"><p class="font-semibold text-brand-700">{{ o.order_number }}</p><p class="text-xs text-stone-500">{{ o.user?.name }} · {{ dateTime(o.created_at) }}</p></div>
                             <span class="badge" :class="attentionReason(o).c">{{ attentionReason(o).t }}</span><StatusBadge :value="o.status" /><span class="w-24 text-right font-semibold">{{ money(o.total) }}</span>
                         </router-link></li>
@@ -150,7 +150,7 @@ const attentionReason = (o) => o.delivery_status === 'failed' ? { t: 'Хүргэ
                     <ul class="mt-4 space-y-3">
                         <li v-for="c in d.category_sales" :key="c.name">
                             <div class="flex justify-between text-sm"><span class="truncate">{{ c.name }}</span><span class="ml-2 shrink-0 font-medium">{{ money(c.revenue) }}</span></div>
-                            <div class="mt-1 h-2 w-full rounded-full bg-stone-100"><div class="h-2 rounded-full bg-brand-600" :style="{ width: `${(c.revenue / catMax) * 100}%` }"></div></div>
+                            <div class="mt-1 h-2 w-full rounded-full bg-cream-200/60"><div class="h-2 rounded-full bg-brand-600" :style="{ width: `${(c.revenue / catMax) * 100}%` }"></div></div>
                             <p class="mt-0.5 text-[11px] text-stone-400">{{ c.qty }} ширхэг</p>
                         </li>
                         <li v-if="!d.category_sales.length" class="text-sm text-stone-500">Мэдээлэл алга</li>
@@ -163,7 +163,7 @@ const attentionReason = (o) => o.delivery_status === 'failed' ? { t: 'Хүргэ
                 <div class="card p-5">
                     <h2 class="font-semibold">Шилдэг бүтээгдэхүүн</h2>
                     <ul class="mt-3 divide-y divide-stone-100 text-sm">
-                        <li v-for="(p, i) in d.top_products" :key="p.product_id" class="flex items-center gap-3 py-2.5"><span class="w-4 text-xs text-stone-400">{{ i + 1 }}</span><img :src="p.image" class="h-9 w-9 rounded-lg bg-stone-100 object-cover" alt="" /><div class="min-w-0 flex-1"><p class="truncate font-medium">{{ p.product_name }}</p><p class="text-xs text-stone-400">{{ p.qty }} ш</p></div><span class="font-semibold">{{ money(p.revenue) }}</span></li>
+                        <li v-for="(p, i) in d.top_products" :key="p.product_id" class="flex items-center gap-3 py-2.5"><span class="w-4 text-xs text-stone-400">{{ i + 1 }}</span><img :src="p.image" class="h-9 w-9 rounded-lg bg-cream-200/60 object-cover" alt="" /><div class="min-w-0 flex-1"><p class="truncate font-medium">{{ p.product_name }}</p><p class="text-xs text-stone-400">{{ p.qty }} ш</p></div><span class="font-semibold">{{ money(p.revenue) }}</span></li>
                         <li v-if="!d.top_products.length" class="py-2 text-stone-500">Мэдээлэл алга</li>
                     </ul>
                 </div>
@@ -193,7 +193,7 @@ const attentionReason = (o) => o.delivery_status === 'failed' ? { t: 'Хүргэ
                 <div class="card p-5">
                     <div class="flex items-center justify-between"><h2 class="font-semibold">Хэрэглэгчид</h2><router-link :to="{ name: 'admin.users', query: { role: 'customer' } }" class="text-sm text-brand-700 hover:underline">Бүгд →</router-link></div>
                     <div class="mt-3 flex items-center gap-3 rounded-xl bg-emerald-50 p-3 text-sm text-emerald-800"><ShieldCheckIcon class="h-5 w-5" /><span><b>{{ d.stats.customers_verified }}</b> / {{ d.stats.customers }} verify.mn-ээр баталгаажсан</span></div>
-                    <div class="mt-2 h-1.5 w-full rounded-full bg-stone-100"><div class="h-1.5 rounded-full bg-emerald-500" :style="{ width: `${d.stats.customers ? (d.stats.customers_verified / d.stats.customers) * 100 : 0}%` }"></div></div>
+                    <div class="mt-2 h-1.5 w-full rounded-full bg-cream-200/60"><div class="h-1.5 rounded-full bg-emerald-500" :style="{ width: `${d.stats.customers ? (d.stats.customers_verified / d.stats.customers) * 100 : 0}%` }"></div></div>
                     <ul class="mt-3 divide-y divide-stone-100 text-sm">
                         <li v-for="u in d.recent_customers" :key="u.id" class="flex items-center gap-3 py-2.5"><span class="flex h-8 w-8 items-center justify-center rounded-full bg-brand-100 text-xs font-bold text-brand-700">{{ u.name.slice(0, 1) }}</span><div class="min-w-0 flex-1"><p class="truncate font-medium">{{ u.name }} <span v-if="u.is_verified" class="text-emerald-600" title="Баталгаажсан">✓</span></p><p class="truncate text-xs text-stone-400">{{ u.email }}</p></div><span class="text-xs text-stone-500">{{ u.orders_count }} захиалга</span></li>
                     </ul>
@@ -201,7 +201,7 @@ const attentionReason = (o) => o.delivery_status === 'failed' ? { t: 'Хүргэ
                 <div class="card">
                     <div class="flex items-center justify-between border-b border-stone-100 px-5 py-4"><h2 class="font-semibold">Сүүлийн захиалгууд</h2><router-link :to="{ name: 'admin.orders' }" class="text-sm text-brand-700 hover:underline">Бүгд →</router-link></div>
                     <ul class="divide-y divide-stone-100 text-sm">
-                        <li v-for="o in d.recent_orders" :key="o.id"><router-link :to="{ name: 'admin.order', params: { id: o.id } }" class="flex items-center gap-3 px-5 py-2.5 hover:bg-stone-50"><div class="min-w-0 flex-1"><p class="font-medium text-brand-700">{{ o.order_number }}</p><p class="truncate text-xs text-stone-400">{{ o.user?.name }} · {{ dateTime(o.created_at) }}</p></div><StatusBadge :value="o.payment_status" type="payment" /><span class="w-20 text-right font-semibold">{{ money(o.total) }}</span></router-link></li>
+                        <li v-for="o in d.recent_orders" :key="o.id"><router-link :to="{ name: 'admin.order', params: { id: o.id } }" class="flex items-center gap-3 px-5 py-2.5 hover:bg-cream-100"><div class="min-w-0 flex-1"><p class="font-medium text-brand-700">{{ o.order_number }}</p><p class="truncate text-xs text-stone-400">{{ o.user?.name }} · {{ dateTime(o.created_at) }}</p></div><StatusBadge :value="o.payment_status" type="payment" /><span class="w-20 text-right font-semibold">{{ money(o.total) }}</span></router-link></li>
                     </ul>
                 </div>
             </div>

@@ -48,7 +48,7 @@ const shopName = computed(() => ui.config?.name || 'Чанар Есүй');
             <div class="container-x py-2">👑 300,000₮-с дээш захиалгад хүргэлт үнэгүй · QPay-ээр аюулгүй төлбөр · Дууссан барааг урьдчилан захиалах боломжтой</div>
         </div>
 
-        <header class="sticky top-0 z-40 border-b border-cream-300/60 bg-cream-50/90 backdrop-blur">
+        <header class="sticky top-0 z-40 border-b border-cream-300/60 bg-cream-100/90 backdrop-blur">
             <div class="container-x flex h-16 items-center gap-4">
                 <button class="lg:hidden -ml-2 p-2 text-stone-600" @click="mobileOpen = !mobileOpen">
                     <Bars3Icon v-if="!mobileOpen" class="h-6 w-6" /><XMarkIcon v-else class="h-6 w-6" />
@@ -62,7 +62,7 @@ const shopName = computed(() => ui.config?.name || 'Чанар Есүй');
                     <Menu as="div" class="relative">
                         <MenuButton class="flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-2 hover:bg-brand-50 hover:text-brand-700" :class="route.query.category && 'text-brand-700'"><Squares2X2Icon class="h-4 w-4" /> Ангилал <ChevronDownIcon class="h-3.5 w-3.5" /></MenuButton>
                         <transition enter-active-class="transition duration-100 ease-out" enter-from-class="-translate-y-1 opacity-0" enter-to-class="translate-y-0 opacity-100" leave-active-class="transition duration-75 ease-in" leave-from-class="opacity-100" leave-to-class="opacity-0">
-                            <MenuItems class="absolute left-0 mt-2 grid w-[560px] grid-cols-2 gap-1 rounded-2xl bg-white p-2 shadow-xl ring-1 ring-cream-300/70 focus:outline-none">
+                            <MenuItems class="absolute left-0 mt-2 grid w-[560px] grid-cols-2 gap-1 rounded-2xl bg-paper p-2 shadow-xl ring-1 ring-cream-300/70 focus:outline-none">
                                 <MenuItem v-for="c in categories" :key="c.id" v-slot="{ active }">
                                     <router-link :to="{ name: 'shop', query: { category: c.slug } }" class="flex items-center gap-3 rounded-xl p-2.5" :class="active && 'bg-brand-50'">
                                         <img :src="c.image" alt="" class="h-11 w-11 shrink-0 rounded-lg object-cover" />
@@ -87,27 +87,27 @@ const shopName = computed(() => ui.config?.name || 'Чанар Есүй');
 
                 <div class="ml-auto flex items-center gap-1 md:ml-2">
                     <Menu v-if="auth.isLoggedIn" as="div" class="relative">
-                        <MenuButton class="flex items-center gap-2 rounded-full p-1.5 pr-3 hover:bg-stone-100">
+                        <MenuButton class="flex items-center gap-2 rounded-full p-1.5 pr-3 hover:bg-cream-200/60">
                             <span class="flex h-7 w-7 items-center justify-center rounded-full bg-brand-700 text-xs font-bold text-cream-100">{{ auth.user.name.slice(0, 1) }}</span>
                             <span class="hidden text-sm font-medium sm:block">{{ auth.user.name }}</span>
                         </MenuButton>
                         <transition enter-active-class="transition duration-100 ease-out" enter-from-class="scale-95 opacity-0" enter-to-class="scale-100 opacity-100" leave-active-class="transition duration-75 ease-in" leave-from-class="scale-100 opacity-100" leave-to-class="scale-95 opacity-0">
-                            <MenuItems class="absolute right-0 mt-2 w-52 origin-top-right rounded-xl bg-white p-1.5 shadow-lg ring-1 ring-stone-200 focus:outline-none">
-                                <MenuItem v-if="auth.isAdmin" v-slot="{ active }"><router-link :to="{ name: 'admin.dashboard' }" class="block rounded-lg px-3 py-2 text-sm font-medium text-brand-700" :class="active && 'bg-stone-50'">⚙️ Админ самбар</router-link></MenuItem>
-                                <MenuItem v-if="auth.isCourier || auth.isAdmin" v-slot="{ active }"><router-link :to="{ name: 'courier.deliveries' }" class="block rounded-lg px-3 py-2 text-sm font-medium text-sky-700" :class="active && 'bg-stone-50'">🛵 Хүргэлтүүд</router-link></MenuItem>
-                                <MenuItem v-slot="{ active }"><router-link :to="{ name: 'account' }" class="block rounded-lg px-3 py-2 text-sm" :class="active && 'bg-stone-50'">Миний самбар</router-link></MenuItem>
-                                <MenuItem v-slot="{ active }"><router-link :to="{ name: 'orders' }" class="block rounded-lg px-3 py-2 text-sm" :class="active && 'bg-stone-50'">Миний захиалгууд</router-link></MenuItem>
-                                <MenuItem v-slot="{ active }"><router-link :to="{ name: 'verify' }" class="flex items-center justify-between rounded-lg px-3 py-2 text-sm" :class="active && 'bg-stone-50'">Баталгаажуулалт <span v-if="auth.isVerified" class="text-emerald-600">✓</span><span v-else class="badge bg-amber-100 text-amber-800">Хүлээгдэж буй</span></router-link></MenuItem>
-                                <MenuItem v-slot="{ active }"><router-link :to="{ name: 'profile' }" class="block rounded-lg px-3 py-2 text-sm" :class="active && 'bg-stone-50'">Профайл</router-link></MenuItem>
-                                <MenuItem v-slot="{ active }"><button @click="logout" class="block w-full rounded-lg px-3 py-2 text-left text-sm text-red-600" :class="active && 'bg-stone-50'">Гарах</button></MenuItem>
+                            <MenuItems class="absolute right-0 mt-2 w-52 origin-top-right rounded-xl bg-paper p-1.5 shadow-lg ring-1 ring-stone-200 focus:outline-none">
+                                <MenuItem v-if="auth.isAdmin" v-slot="{ active }"><router-link :to="{ name: 'admin.dashboard' }" class="block rounded-lg px-3 py-2 text-sm font-medium text-brand-700" :class="active && 'bg-cream-100'">⚙️ Админ самбар</router-link></MenuItem>
+                                <MenuItem v-if="auth.isCourier || auth.isAdmin" v-slot="{ active }"><router-link :to="{ name: 'courier.deliveries' }" class="block rounded-lg px-3 py-2 text-sm font-medium text-sky-700" :class="active && 'bg-cream-100'">🛵 Хүргэлтүүд</router-link></MenuItem>
+                                <MenuItem v-slot="{ active }"><router-link :to="{ name: 'account' }" class="block rounded-lg px-3 py-2 text-sm" :class="active && 'bg-cream-100'">Миний самбар</router-link></MenuItem>
+                                <MenuItem v-slot="{ active }"><router-link :to="{ name: 'orders' }" class="block rounded-lg px-3 py-2 text-sm" :class="active && 'bg-cream-100'">Миний захиалгууд</router-link></MenuItem>
+                                <MenuItem v-slot="{ active }"><router-link :to="{ name: 'verify' }" class="flex items-center justify-between rounded-lg px-3 py-2 text-sm" :class="active && 'bg-cream-100'">Баталгаажуулалт <span v-if="auth.isVerified" class="text-emerald-600">✓</span><span v-else class="badge bg-amber-100 text-amber-800">Хүлээгдэж буй</span></router-link></MenuItem>
+                                <MenuItem v-slot="{ active }"><router-link :to="{ name: 'profile' }" class="block rounded-lg px-3 py-2 text-sm" :class="active && 'bg-cream-100'">Профайл</router-link></MenuItem>
+                                <MenuItem v-slot="{ active }"><button @click="logout" class="block w-full rounded-lg px-3 py-2 text-left text-sm text-red-600" :class="active && 'bg-cream-100'">Гарах</button></MenuItem>
                             </MenuItems>
                         </transition>
                     </Menu>
-                    <router-link v-else :to="{ name: 'login' }" class="flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium text-stone-700 hover:bg-stone-100">
+                    <router-link v-else :to="{ name: 'login' }" class="flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium text-stone-700 hover:bg-cream-200/60">
                         <UserCircleIcon class="h-5 w-5" /><span class="hidden sm:block">Нэвтрэх</span>
                     </router-link>
 
-                    <button @click="ui.cartOpen = true" class="relative rounded-full p-2 text-stone-700 hover:bg-stone-100">
+                    <button @click="ui.cartOpen = true" class="relative rounded-full p-2 text-stone-700 hover:bg-cream-200/60">
                         <ShoppingBagIcon class="h-6 w-6" />
                         <span v-if="cart.count" class="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-gold-500 px-1 text-[11px] font-bold text-brand-900">{{ cart.count }}</span>
                     </button>
@@ -116,11 +116,11 @@ const shopName = computed(() => ui.config?.name || 'Чанар Есүй');
 
             <!-- Mobile nav -->
             <transition name="fade">
-                <div v-if="mobileOpen" class="border-t border-cream-300/60 bg-cream-50 lg:hidden">
+                <div v-if="mobileOpen" class="border-t border-cream-300/60 bg-cream-100 lg:hidden">
                     <div class="container-x space-y-1 py-3">
                         <form @submit.prevent="submitSearch" class="mb-2"><input v-model="search" type="search" placeholder="Бараа хайх..." class="input rounded-full" /></form>
-                        <router-link :to="{ name: 'shop' }" @click="mobileOpen = false" class="block rounded-lg px-3 py-2 text-sm font-medium hover:bg-stone-50">Бүх бараа</router-link>
-                        <router-link v-for="c in categories" :key="c.id" :to="{ name: 'shop', query: { category: c.slug } }" @click="mobileOpen = false" class="block rounded-lg px-3 py-2 text-sm hover:bg-stone-50">{{ c.icon }} {{ c.name }}</router-link>
+                        <router-link :to="{ name: 'shop' }" @click="mobileOpen = false" class="block rounded-lg px-3 py-2 text-sm font-medium hover:bg-cream-100">Бүх бараа</router-link>
+                        <router-link v-for="c in categories" :key="c.id" :to="{ name: 'shop', query: { category: c.slug } }" @click="mobileOpen = false" class="block rounded-lg px-3 py-2 text-sm hover:bg-cream-100">{{ c.icon }} {{ c.name }}</router-link>
                     </div>
                 </div>
             </transition>

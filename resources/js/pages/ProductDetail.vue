@@ -115,7 +115,7 @@ onMounted(load);
             <div class="grid gap-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:gap-12">
                 <!-- Gallery -->
                 <div class="lg:sticky lg:top-24 lg:self-start">
-                    <div class="relative aspect-square overflow-hidden rounded-3xl bg-stone-100 ring-1 ring-stone-200">
+                    <div class="relative aspect-square overflow-hidden rounded-3xl bg-cream-200/60 ring-1 ring-stone-200">
                         <img :src="images[activeImage] || images[0]" :alt="product.name" class="h-full w-full object-cover" />
                         <span v-if="discount" class="badge absolute left-4 top-4 bg-gold-500 text-brand-900">-{{ discount }}%</span>
                     </div>
@@ -149,7 +149,7 @@ onMounted(load);
                         <div v-if="colors.length">
                             <p class="mb-2 text-sm font-semibold">Өнгө: <span class="font-normal text-stone-500">{{ sel.color || '—' }}</span></p>
                             <div class="flex flex-wrap gap-2">
-                                <button v-for="c in colors" :key="c.color" @click="pick('color', c.color)" :disabled="!available('color', c.color)" class="flex items-center gap-2 rounded-full py-1.5 pl-1.5 pr-3 text-sm ring-1 transition disabled:cursor-not-allowed disabled:opacity-30" :class="sel.color === c.color ? 'bg-brand-800 text-white ring-brand-800' : 'bg-white ring-stone-200 hover:ring-stone-400'">
+                                <button v-for="c in colors" :key="c.color" @click="pick('color', c.color)" :disabled="!available('color', c.color)" class="flex items-center gap-2 rounded-full py-1.5 pl-1.5 pr-3 text-sm ring-1 transition disabled:cursor-not-allowed disabled:opacity-30" :class="sel.color === c.color ? 'bg-brand-800 text-white ring-brand-800' : 'bg-paper ring-stone-200 hover:ring-stone-400'">
                                     <span class="h-5 w-5 rounded-full ring-1 ring-black/10" :style="{ backgroundColor: c.color_hex || '#ddd' }"></span>{{ c.color }}
                                     <span v-if="!anyStock('color', c.color)" class="text-[10px] opacity-70">(захиалгаар)</span>
                                 </button>
@@ -158,13 +158,13 @@ onMounted(load);
                         <div v-if="sizes.length">
                             <p class="mb-2 text-sm font-semibold">Хэмжээ: <span class="font-normal text-stone-500">{{ sel.size || '—' }}</span></p>
                             <div class="flex flex-wrap gap-2">
-                                <button v-for="s in sizes" :key="s" @click="pick('size', s)" :disabled="!available('size', s)" class="min-w-12 rounded-xl px-3 py-2 text-sm font-medium ring-1 transition disabled:cursor-not-allowed disabled:opacity-30" :class="sel.size === s ? 'bg-brand-800 text-white ring-brand-800' : 'bg-white ring-stone-200 hover:ring-stone-400'">{{ s }}<span v-if="!anyStock('size', s)" class="ml-1 text-[10px] opacity-70">•</span></button>
+                                <button v-for="s in sizes" :key="s" @click="pick('size', s)" :disabled="!available('size', s)" class="min-w-12 rounded-xl px-3 py-2 text-sm font-medium ring-1 transition disabled:cursor-not-allowed disabled:opacity-30" :class="sel.size === s ? 'bg-brand-800 text-white ring-brand-800' : 'bg-paper ring-stone-200 hover:ring-stone-400'">{{ s }}<span v-if="!anyStock('size', s)" class="ml-1 text-[10px] opacity-70">•</span></button>
                             </div>
                         </div>
                         <div v-if="hasPacks">
                             <p class="mb-2 text-sm font-semibold">Багц: <span class="font-normal text-stone-500">{{ packs.find((p) => p.pack_size === sel.pack)?.pack_label || '—' }}</span></p>
                             <div class="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                                <button v-for="p in packs" :key="p.pack_size" @click="pick('pack', p.pack_size)" :disabled="!available('pack', p.pack_size)" class="rounded-xl p-3 text-left ring-1 transition disabled:cursor-not-allowed disabled:opacity-30" :class="sel.pack === p.pack_size ? 'bg-brand-50 ring-2 ring-brand-600' : 'bg-white ring-stone-200 hover:ring-stone-400'">
+                                <button v-for="p in packs" :key="p.pack_size" @click="pick('pack', p.pack_size)" :disabled="!available('pack', p.pack_size)" class="rounded-xl p-3 text-left ring-1 transition disabled:cursor-not-allowed disabled:opacity-30" :class="sel.pack === p.pack_size ? 'bg-brand-50 ring-2 ring-brand-600' : 'bg-paper ring-stone-200 hover:ring-stone-400'">
                                     <p class="text-sm font-semibold">{{ p.pack_label || `${p.pack_size} ширхэг` }}</p>
                                     <p class="text-xs text-stone-500">{{ money(variants.filter((v) => matches(v, { ...sel, pack: p.pack_size }))[0]?.price ?? p.price) }}<span v-if="p.pack_size > 1"> · {{ money((variants.filter((v) => matches(v, { ...sel, pack: p.pack_size }))[0]?.price ?? p.price) / p.pack_size) }}/ш</span></p>
                                 </button>
@@ -209,9 +209,9 @@ onMounted(load);
                     </dl>
                     <div v-else class="card overflow-x-auto">
                         <table class="min-w-full text-sm">
-                            <thead class="bg-stone-50 text-left text-xs uppercase text-stone-500"><tr><th class="px-4 py-3">SKU</th><th class="px-4 py-3">Сонголт</th><th class="px-4 py-3">Үнэ</th><th class="px-4 py-3">Үлдэгдэл</th></tr></thead>
+                            <thead class="bg-cream-100 text-left text-xs uppercase text-stone-500"><tr><th class="px-4 py-3">SKU</th><th class="px-4 py-3">Сонголт</th><th class="px-4 py-3">Үнэ</th><th class="px-4 py-3">Үлдэгдэл</th></tr></thead>
                             <tbody class="divide-y divide-stone-100">
-                                <tr v-for="v in variants" :key="v.id" class="hover:bg-stone-50"><td class="px-4 py-2.5 text-stone-500">{{ v.sku }}</td><td class="px-4 py-2.5 font-medium">{{ v.label }}</td><td class="px-4 py-2.5">{{ money(v.price) }}</td><td class="px-4 py-2.5"><span class="badge" :class="v.stock > 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'">{{ v.stock > 0 ? `${v.stock} ш` : 'Захиалгаар' }}</span></td></tr>
+                                <tr v-for="v in variants" :key="v.id" class="hover:bg-cream-100"><td class="px-4 py-2.5 text-stone-500">{{ v.sku }}</td><td class="px-4 py-2.5 font-medium">{{ v.label }}</td><td class="px-4 py-2.5">{{ money(v.price) }}</td><td class="px-4 py-2.5"><span class="badge" :class="v.stock > 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'">{{ v.stock > 0 ? `${v.stock} ш` : 'Захиалгаар' }}</span></td></tr>
                             </tbody>
                         </table>
                     </div>

@@ -30,10 +30,11 @@
     --color-cream-100: #f7f3e5;
     --color-cream-200: #ede5cd;
     --color-cream-300: #ddd1ad;
+    --color-paper: #fffdf8;
 }
 
 @layer base {
-    html { scroll-behavior: smooth; }
+    html { scroll-behavior: smooth; background-color: #f7f3e5; }
     body { @apply font-sans bg-cream-100 text-stone-900; }
 }
 
@@ -42,13 +43,13 @@
     .btn-primary { @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 bg-brand-800 text-white hover:bg-brand-900; }
     .btn-brand { @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 bg-brand-700 text-white hover:bg-brand-800 shadow-sm shadow-brand-700/30; }
       .btn-gold { @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 bg-gold-500 text-brand-900 hover:bg-gold-400; }
-    .btn-secondary { @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 bg-white text-stone-800 ring-1 ring-stone-200 hover:bg-stone-50; }
+    .btn-secondary { @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 bg-paper text-stone-800 ring-1 ring-cream-300 hover:bg-cream-100; }
     .btn-ghost { @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 text-stone-600 hover:bg-stone-100; }
     .btn-danger { @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 bg-red-600 text-white hover:bg-red-700; }
     .btn-sm { @apply px-3 py-1.5 text-xs rounded-lg; }
-    .input { @apply block w-full rounded-xl border-0 bg-white px-3.5 py-2.5 text-sm text-stone-900 shadow-sm ring-1 ring-inset ring-stone-200 placeholder:text-stone-400 focus:ring-2 focus:ring-inset focus:ring-brand-500 disabled:bg-stone-50; }
+    .input { @apply block w-full rounded-xl border-0 bg-paper px-3.5 py-2.5 text-sm text-stone-900 shadow-sm ring-1 ring-inset ring-cream-300 placeholder:text-stone-400 focus:ring-2 focus:ring-inset focus:ring-brand-500 disabled:bg-stone-50; }
     .label { @apply mb-1.5 block text-sm font-medium text-stone-700; }
-    .card { @apply rounded-2xl bg-white shadow-sm ring-1 ring-cream-300/60; }
+    .card { @apply rounded-2xl bg-paper shadow-sm shadow-brand-900/5 ring-1 ring-cream-300/70; }
     .badge { @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium; }
     .container-x { @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8; }
 }

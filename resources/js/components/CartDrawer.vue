@@ -26,10 +26,10 @@ async function setQty(item, q) {
                     <div class="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10">
                         <TransitionChild as="template" enter="transform transition ease-in-out duration-300" enter-from="translate-x-full" enter-to="translate-x-0" leave="transform transition ease-in-out duration-300" leave-from="translate-x-0" leave-to="translate-x-full">
                             <DialogPanel class="pointer-events-auto w-screen max-w-md">
-                                <div class="flex h-full flex-col bg-white shadow-xl">
+                                <div class="flex h-full flex-col bg-paper shadow-xl">
                                     <div class="flex items-center justify-between border-b border-stone-200 px-5 py-4">
                                         <h2 class="text-lg font-semibold">Сагс <span class="text-sm font-normal text-stone-500">({{ cart.count }})</span></h2>
-                                        <button @click="ui.cartOpen = false" class="rounded-lg p-1 text-stone-400 hover:bg-stone-100"><XMarkIcon class="h-5 w-5" /></button>
+                                        <button @click="ui.cartOpen = false" class="rounded-lg p-1 text-stone-400 hover:bg-cream-200/60"><XMarkIcon class="h-5 w-5" /></button>
                                     </div>
                                     <div class="flex-1 overflow-y-auto px-5 py-4">
                                         <div v-if="!cart.items.length" class="flex h-full flex-col items-center justify-center text-center">
@@ -39,7 +39,7 @@ async function setQty(item, q) {
                                         </div>
                                         <ul v-else class="divide-y divide-stone-100">
                                             <li v-for="item in cart.items" :key="item.id" class="flex gap-4 py-4">
-                                                <img :src="item.image" :alt="item.name" class="h-20 w-20 shrink-0 rounded-xl bg-stone-100 object-cover" />
+                                                <img :src="item.image" :alt="item.name" class="h-20 w-20 shrink-0 rounded-xl bg-cream-200/60 object-cover" />
                                                 <div class="flex flex-1 flex-col">
                                                     <div class="flex justify-between gap-2">
                                                         <router-link :to="{ name: 'product', params: { slug: item.slug } }" @click="ui.cartOpen = false" class="text-sm font-semibold leading-tight hover:text-brand-700">{{ item.name }}</router-link>

@@ -13,7 +13,7 @@
     <meta name="theme-color" content="#184d3b">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="h-full bg-cream-100 text-stone-900">
+<body class="h-full bg-cream-100 text-stone-900" style="background-color:#f7f3e5">
     <div id="app"></div>
 </body>
 </html>

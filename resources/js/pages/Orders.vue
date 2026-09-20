@@ -34,7 +34,7 @@ onMounted(load);
                     <p class="text-lg font-bold">{{ money(o.total) }}</p>
                 </div>
                 <div class="mt-4 flex items-center gap-2">
-                    <img v-for="i in o.items.slice(0, 5)" :key="i.id" :src="i.image" class="h-12 w-12 rounded-lg bg-stone-100 object-cover ring-1 ring-stone-200" :alt="i.product_name" />
+                    <img v-for="i in o.items.slice(0, 5)" :key="i.id" :src="i.image" class="h-12 w-12 rounded-lg bg-cream-200/60 object-cover ring-1 ring-stone-200" :alt="i.product_name" />
                     <span v-if="o.items.length > 5" class="text-xs text-stone-500">+{{ o.items.length - 5 }}</span>
                     <span class="ml-auto text-sm text-stone-500">{{ o.items.length }} бараа</span>
                 </div>

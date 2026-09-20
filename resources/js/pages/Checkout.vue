@@ -69,7 +69,7 @@ async function submit() {
                     <h2 class="text-lg font-semibold">2. Төлбөрийн хэлбэр</h2>
                     <RadioGroup v-model="form.payment_method" class="mt-4 grid gap-3 sm:grid-cols-2">
                         <RadioGroupOption v-for="m in methods" :key="m.value" :value="m.value" v-slot="{ checked }" as="template">
-                            <div class="relative cursor-pointer rounded-2xl p-4 ring-1 transition" :class="checked ? 'bg-brand-50 ring-2 ring-brand-600' : 'bg-white ring-stone-200 hover:ring-stone-400'">
+                            <div class="relative cursor-pointer rounded-2xl p-4 ring-1 transition" :class="checked ? 'bg-brand-50 ring-2 ring-brand-600' : 'bg-paper ring-stone-200 hover:ring-stone-400'">
                                 <div class="flex items-start gap-3"><span class="text-2xl">{{ m.icon }}</span><div><p class="font-semibold">{{ m.title }}</p><p class="text-xs text-stone-500">{{ m.text }}</p></div></div>
                                 <CheckCircleIcon v-if="checked" class="absolute right-3 top-3 h-5 w-5 text-brand-600" />
                             </div>
@@ -82,7 +82,7 @@ async function submit() {
                 <h2 class="text-lg font-semibold">Таны захиалга</h2>
                 <ul class="mt-4 divide-y divide-stone-100">
                     <li v-for="item in cart.items" :key="item.id" class="flex gap-3 py-3">
-                        <img :src="item.image" class="h-14 w-14 rounded-lg bg-stone-100 object-cover" alt="" />
+                        <img :src="item.image" class="h-14 w-14 rounded-lg bg-cream-200/60 object-cover" alt="" />
                         <div class="flex-1 text-sm"><p class="font-medium leading-tight">{{ item.name }}</p><p class="text-xs text-stone-500">{{ item.variant_label }} × {{ item.quantity }}</p><span v-if="item.is_backorder" class="text-xs font-medium text-amber-600">Урьдчилсан захиалга</span></div>
                         <p class="text-sm font-semibold">{{ money(item.line_total) }}</p>
                     </li>

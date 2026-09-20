@@ -19,7 +19,7 @@ async function setQty(item, q) { try { await cart.update(item.id, q); } catch (e
         <div v-else class="mt-6 grid gap-8 lg:grid-cols-[1fr_360px]">
             <div class="card divide-y divide-stone-100">
                 <div v-for="item in cart.items" :key="item.id" class="flex gap-4 p-4 sm:p-5">
-                    <img :src="item.image" class="h-24 w-24 shrink-0 rounded-xl bg-stone-100 object-cover" :alt="item.name" />
+                    <img :src="item.image" class="h-24 w-24 shrink-0 rounded-xl bg-cream-200/60 object-cover" :alt="item.name" />
                     <div class="flex flex-1 flex-col">
                         <div class="flex items-start justify-between gap-3">
                             <div>

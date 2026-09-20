@@ -37,7 +37,7 @@ onMounted(load);
                         <div class="border-b border-stone-100 px-5 py-4 font-semibold">Бараанууд</div>
                         <ul class="divide-y divide-stone-100">
                             <li v-for="i in order.items" :key="i.id" class="flex gap-4 px-5 py-4 text-sm">
-                                <img :src="i.image" class="h-14 w-14 rounded-lg bg-stone-100 object-cover" alt="" />
+                                <img :src="i.image" class="h-14 w-14 rounded-lg bg-cream-200/60 object-cover" alt="" />
                                 <div class="flex-1"><p class="font-medium">{{ i.product_name }}</p><p class="text-stone-500">{{ i.variant_label }} · {{ i.sku }}</p><span v-if="i.is_backorder" class="badge mt-1 bg-amber-100 text-amber-800">Урьдчилсан — бараа ирэхийг хүлээж буй</span></div>
                                 <div class="text-right"><p class="font-semibold">{{ money(i.line_total) }}</p><p class="text-xs text-stone-400">{{ money(i.price) }} × {{ i.quantity }}</p></div>
                             </li>

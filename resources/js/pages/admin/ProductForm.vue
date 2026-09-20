@@ -90,7 +90,7 @@ onMounted(async () => {
                     <div class="flex items-center justify-between"><div><h2 class="font-semibold">Сонголтууд (өнгө / хэмжээ / багц)</h2><p class="text-xs text-stone-500">Сонголт бүр өөрийн SKU, үнэ, үлдэгдэлтэй. Үлдэгдэл 0 бол урьдчилсан захиалгаар зарагдана.</p></div><button type="button" @click="addVariant()" class="btn-secondary btn-sm"><PlusIcon class="h-4 w-4" /> Нэмэх</button></div>
                     <p v-if="errors.variants" class="mt-2 text-xs text-red-600">{{ errors.variants[0] }}</p>
                     <div class="mt-4 space-y-3">
-                        <div v-for="(v, i) in form.variants" :key="i" class="rounded-xl bg-stone-50 p-4 ring-1 ring-stone-200">
+                        <div v-for="(v, i) in form.variants" :key="i" class="rounded-xl bg-cream-100 p-4 ring-1 ring-stone-200">
                             <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                                 <div><label class="label text-xs">Өнгө</label><div class="flex gap-1.5"><input v-model="v.color" @input="onColorInput(v)" list="colors" class="input py-2" placeholder="Хар" /><input v-model="v.color_hex" type="color" class="h-10 w-10 shrink-0 cursor-pointer rounded-lg border-0 bg-transparent p-0" /></div></div>
                                 <div><label class="label text-xs">Хэмжээ</label><input v-model="v.size" class="input py-2" placeholder="M / 25мм / 6.0&quot;" /></div>
@@ -122,7 +122,7 @@ onMounted(async () => {
                 <section class="card p-6">
                     <h2 class="font-semibold">Зураг</h2>
                     <div class="mt-4 grid grid-cols-3 gap-2">
-                        <div v-for="(img, i) in form.images" :key="i" class="group relative aspect-square overflow-hidden rounded-lg bg-stone-100 ring-1 ring-stone-200"><img :src="img" class="h-full w-full object-cover" alt="" /><button type="button" @click="form.images.splice(i, 1)" class="absolute right-1 top-1 hidden rounded-full bg-white/90 p-0.5 text-red-600 group-hover:block"><XMarkIcon class="h-4 w-4" /></button><span v-if="i === 0" class="absolute bottom-1 left-1 rounded bg-stone-900/70 px-1 text-[10px] text-white">Үндсэн</span></div>
+                        <div v-for="(img, i) in form.images" :key="i" class="group relative aspect-square overflow-hidden rounded-lg bg-cream-200/60 ring-1 ring-stone-200"><img :src="img" class="h-full w-full object-cover" alt="" /><button type="button" @click="form.images.splice(i, 1)" class="absolute right-1 top-1 hidden rounded-full bg-white/90 p-0.5 text-red-600 group-hover:block"><XMarkIcon class="h-4 w-4" /></button><span v-if="i === 0" class="absolute bottom-1 left-1 rounded bg-stone-900/70 px-1 text-[10px] text-white">Үндсэн</span></div>
                         <button type="button" @click="fileInput.click()" :disabled="uploading" class="flex aspect-square flex-col items-center justify-center rounded-lg border-2 border-dashed border-stone-300 text-stone-400 hover:border-brand-400 hover:text-brand-600"><PhotoIcon class="h-6 w-6" /><span class="text-[10px]">{{ uploading ? '...' : 'Хуулах' }}</span></button>
                     </div>
                     <input ref="fileInput" type="file" accept="image/*" class="hidden" @change="upload" />
