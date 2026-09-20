@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductVariant;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -39,11 +40,21 @@ class CatalogController extends Controller
         );
     }
 
-    public function products(Request $request): JsonResponse
+    /** Multi-value query param: ?brand=A&brand=B or ?brand[]=A or ?brand=A,B */
+    protected function many(Request $request, string $key): array
     {
-        $query = Product::active()->with(['variants', 'category']);
+        $raw = $request->query($key);
+        if ($raw === null || $raw === '') {
+            return [];
+        }
+        $values = is_array($raw) ? $raw : explode(',', (string) $raw);
 
-        if ($search = trim((string) $request->query('q'))) {
+        return array_values(array_filter(array_map('trim', $values), fn ($v) => $v !== ''));
+    }
+
+    protected function applyFilters(Builder $query, Request $request, array $except = []): Builder
+    {
+        if (! in_array('q', $except) && ($search = trim((string) $request->query('q')))) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                     ->orWhere('brand', 'like', "%{$search}%")
@@ -51,20 +62,24 @@ class CatalogController extends Controller
             });
         }
 
-        if ($category = $request->query('category')) {
-            $query->whereHas('category', fn ($q) => $q->where('slug', $category)->orWhere('id', $category));
+        if (! in_array('category', $except) && ($cats = $this->many($request, 'category'))) {
+            $query->whereHas('category', fn ($q) => $q->whereIn('slug', $cats)->orWhereIn('id', $cats));
         }
 
-        if ($brand = $request->query('brand')) {
-            $query->where('brand', $brand);
+        if (! in_array('brand', $except) && ($brands = $this->many($request, 'brand'))) {
+            $query->whereIn('brand', $brands);
         }
 
-        if ($color = $request->query('color')) {
-            $query->whereHas('variants', fn ($q) => $q->where('color', $color));
+        if (! in_array('color', $except) && ($colors = $this->many($request, 'color'))) {
+            $query->whereHas('variants', fn ($q) => $q->whereIn('color', $colors));
         }
 
-        if ($size = $request->query('size')) {
-            $query->whereHas('variants', fn ($q) => $q->where('size', $size));
+        if (! in_array('size', $except) && ($sizes = $this->many($request, 'size'))) {
+            $query->whereHas('variants', fn ($q) => $q->whereIn('size', $sizes));
+        }
+
+        if (! in_array('pack', $except) && ($packs = $this->many($request, 'pack'))) {
+            $query->whereHas('variants', fn ($q) => $q->whereIn('pack_size', array_map('intval', $packs)));
         }
 
         if ($request->filled('min_price')) {
@@ -74,15 +89,65 @@ class CatalogController extends Controller
             $query->whereHas('variants', fn ($q) => $q->where('price', '<=', (float) $request->query('max_price')));
         }
 
-        if ($request->boolean('in_stock')) {
-            $query->whereHas('variants', fn ($q) => $q->where('stock', '>', 0));
+        if (! in_array('discount', $except) && ($ranges = $this->many($request, 'discount'))) {
+            $query->where(function ($q) use ($ranges) {
+                foreach ($ranges as $range) {
+                    [$min, $max] = array_pad(explode('-', $range), 2, null);
+                    $q->orWhere(fn ($w) => $this->discountBetween($w, (int) $min, $max === null || $max === '' ? null : (int) $max));
+                }
+            });
         }
+
+        if (! in_array('status', $except)) {
+            $statuses = $this->many($request, 'status');
+            if ($request->has('in_stock') && $request->query('in_stock') !== '') {
+                $statuses[] = $request->boolean('in_stock') ? 'in_stock' : 'preorder';
+            }
+            if ($statuses) {
+                $query->where(function ($q) use ($statuses) {
+                    foreach ($statuses as $status) {
+                        $q->orWhere(fn ($w) => $this->statusScope($w, $status));
+                    }
+                });
+            }
+        }
+
+        return $query;
+    }
+
+    protected function discountBetween(Builder $q, int $min, ?int $max): void
+    {
+        // discount % = (compare_price - base_price) / compare_price * 100
+        $q->whereNotNull('compare_price')->where('compare_price', '>', 0)
+            ->whereRaw('(compare_price - base_price) * 100 >= compare_price * ?', [$min]);
+        if ($max !== null) {
+            $q->whereRaw('(compare_price - base_price) * 100 < compare_price * ?', [$max]);
+        }
+    }
+
+    protected function statusScope(Builder $q, string $status): void
+    {
+        match ($status) {
+            'new' => $q->where('created_at', '>=', now()->subDays(30)),
+            'sale' => $q->whereNotNull('compare_price')->whereColumn('compare_price', '>', 'base_price'),
+            'featured' => $q->where('is_featured', true),
+            'in_stock' => $q->whereHas('variants', fn ($v) => $v->where('stock', '>', 0)),
+            'preorder' => $q->where('allow_backorder', true)->whereDoesntHave('variants', fn ($v) => $v->where('stock', '>', 0)),
+            default => $q->whereRaw('1 = 0'),
+        };
+    }
+
+    public function products(Request $request): JsonResponse
+    {
+        $query = $this->applyFilters(Product::active()->with(['variants', 'category']), $request);
 
         match ($request->query('sort')) {
             'price_asc' => $query->orderBy('base_price'),
             'price_desc' => $query->orderByDesc('base_price'),
             'newest' => $query->latest(),
             'name' => $query->orderBy('name'),
+            'discount' => $query->orderByRaw('CASE WHEN compare_price > base_price THEN (compare_price - base_price) / compare_price ELSE 0 END DESC'),
+            'popular' => $query->orderByDesc('sold_count'),
             default => $query->orderByDesc('is_featured')->orderByDesc('sold_count'),
         };
 
@@ -91,18 +156,49 @@ class CatalogController extends Controller
         return response()->json($products);
     }
 
-    public function filters(): JsonResponse
+    /**
+     * Facets with counts. Each facet is counted against the other active
+     * filters (not its own) so the numbers stay meaningful while filtering.
+     */
+    public function filters(Request $request): JsonResponse
     {
+        $base = fn (array $except = []) => $this->applyFilters(Product::active(), $request, $except);
+        $ids = fn (array $except = []) => $base($except)->select('id');
+
+        $variantFacet = function (string $column, array $except, ?string $extra = null) use ($ids) {
+            return ProductVariant::query()->whereIn('product_id', $ids($except))->where('is_active', true)
+                ->whereNotNull($column)->where($column, '!=', '')
+                ->toBase()->selectRaw($column.($extra ? ", {$extra}" : '').', COUNT(DISTINCT product_id) as count')
+                ->groupBy($column)->orderBy($column)->get();
+        };
+
+        $discountRanges = [];
+        foreach ([[0, 10, '10% хүртэл'], [10, 20, '10% – 20%'], [20, 30, '20% – 30%'], [30, 50, '30% – 50%'], [50, null, '50% ба дээш']] as [$min, $max, $label]) {
+            $count = (clone $base(['discount']))->where(fn ($q) => $this->discountBetween($q, $min, $max))->count();
+            $discountRanges[] = ['value' => $min.'-'.($max ?? ''), 'label' => $label, 'count' => $count];
+        }
+
+        $statuses = [];
+        foreach ([['new', 'Шинэ'], ['sale', 'Хямдралтай'], ['featured', 'Онцлох'], ['in_stock', 'Бэлэн байгаа'], ['preorder', 'Урьдчилсан захиалга']] as [$value, $label]) {
+            $statuses[] = ['value' => $value, 'label' => $label, 'count' => (clone $base(['status']))->where(fn ($q) => $this->statusScope($q, $value))->count()];
+        }
+
         return response()->json([
-            'colors' => ProductVariant::query()->whereNotNull('color')->where('color', '!=', '')
-                ->toBase()->select('color', 'color_hex')->distinct()->orderBy('color')->get()->values(),
-            'sizes' => ProductVariant::query()->whereNotNull('size')->where('size', '!=', '')
-                ->toBase()->distinct()->orderBy('size')->pluck('size'),
-            'brands' => Product::active()->whereNotNull('brand')->distinct()->orderBy('brand')->pluck('brand'),
+            'categories' => Category::where('is_active', true)->orderBy('sort_order')
+                ->withCount(['products' => fn ($q) => $this->applyFilters($q->active(), $request, ['category'])])->get(['id', 'name', 'slug', 'icon']),
+            'brands' => Product::query()->whereIn('id', $ids(['brand']))->whereNotNull('brand')->where('brand', '!=', '')
+                ->toBase()->selectRaw('brand, COUNT(*) as count')->groupBy('brand')->orderBy('brand')->get(),
+            'colors' => $variantFacet('color', ['color'], 'MIN(color_hex) as color_hex')->map(fn ($r) => ['color' => $r->color, 'color_hex' => $r->color_hex, 'count' => $r->count]),
+            'sizes' => $variantFacet('size', ['size']),
+            'packs' => ProductVariant::query()->whereIn('product_id', $ids(['pack']))->where('is_active', true)
+                ->toBase()->selectRaw('pack_size, MIN(pack_label) as label, COUNT(DISTINCT product_id) as count')->groupBy('pack_size')->orderBy('pack_size')->get(),
+            'discounts' => $discountRanges,
+            'statuses' => $statuses,
             'price' => [
-                'min' => (float) (ProductVariant::min('price') ?? 0),
-                'max' => (float) (ProductVariant::max('price') ?? 0),
+                'min' => (float) (ProductVariant::whereIn('product_id', Product::active()->select('id'))->min('price') ?? 0),
+                'max' => (float) (ProductVariant::whereIn('product_id', Product::active()->select('id'))->max('price') ?? 0),
             ],
+            'total' => $base()->count(),
         ]);
     }
 
