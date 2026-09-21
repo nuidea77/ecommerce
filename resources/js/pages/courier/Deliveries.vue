@@ -36,7 +36,7 @@ watch(tab, load); onMounted(load);
                     <p class="flex items-center gap-2"><PhoneIcon class="h-4 w-4 text-sky-600" />{{ o.shipping_name }} · {{ o.shipping_phone }}</p>
                 </div>
                 <div class="mt-3 flex items-center justify-between border-t border-stone-100 pt-3 text-sm">
-                    <span class="badge" :class="o.payment_status === 'paid' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'">{{ o.payment_status === 'paid' ? 'Төлбөр төлөгдсөн' : `Бэлнээр авах: ${money(o.total)}` }}</span>
+                    <span class="badge" :class="o.payment_status === 'paid' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'">{{ o.payment_status === 'paid' ? 'Төлбөр төлөгдсөн' : 'Төлбөр төлөгдөөгүй' }}</span>
                     <span class="text-xs text-stone-400">{{ PAYMENT_METHOD[o.payment_method] }}</span>
                 </div>
             </router-link>

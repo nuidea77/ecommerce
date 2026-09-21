@@ -147,7 +147,7 @@ const shopName = computed(() => ui.config?.name || 'Чанар Есүй');
                 <div class="lg:col-span-2">
                     <img :src="'/images/logo.png'" :alt="shopName" class="h-10 w-auto" />
                     <p class="mt-4 max-w-sm text-sm text-stone-600">Гоо сайхны салон, үсчин, косметологичдод зориулсан мэргэжлийн тоног төхөөрөмж, хэрэгслийн нэгдсэн нийлүүлэгч.</p>
-                    <div class="mt-5 flex gap-2"><span v-for="b in ['QPay', 'Хаан банк', 'Голомт', 'ХХБ', 'Бэлэн']" :key="b" class="rounded-md bg-white px-2 py-1 text-[11px] font-medium text-stone-600 ring-1 ring-stone-200/70">{{ b }}</span></div>
+                    <div class="mt-5 flex gap-2"><span v-for="b in ['QPay', 'Хаан банк', 'Голомт', 'ХХБ', 'Хас банк']" :key="b" class="rounded-md bg-white px-2 py-1 text-[11px] font-medium text-stone-600 ring-1 ring-stone-200/70">{{ b }}</span></div>
                 </div>
                 <div>
                     <h4 class="font-display text-lg text-stone-900">Ангилал</h4>
@@ -158,6 +158,7 @@ const shopName = computed(() => ui.config?.name || 'Чанар Есүй');
                     <ul class="mt-4 space-y-2 text-sm text-stone-600">
                         <li><router-link :to="{ name: 'account' }" class="hover:text-brand-700">Миний самбар</router-link></li>
                         <li><router-link :to="{ name: 'orders' }" class="hover:text-brand-700">Захиалга хянах</router-link></li>
+                        <li><router-link :to="{ name: 'addresses' }" class="hover:text-brand-700">Хүргэлтийн хаягууд</router-link></li>
                         <li><router-link :to="{ name: 'verify' }" class="hover:text-brand-700">Баталгаажуулалт</router-link></li>
                         <li><router-link :to="{ name: 'cart' }" class="hover:text-brand-700">Сагс</router-link></li>
                     </ul>

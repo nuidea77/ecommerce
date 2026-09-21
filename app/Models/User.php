@@ -63,6 +63,11 @@ class User extends Authenticatable
         return $this->hasMany(Order::class, 'courier_id');
     }
 
+    public function addresses(): HasMany
+    {
+        return $this->hasMany(Address::class);
+    }
+
     public function phoneVerifications(): HasMany
     {
         return $this->hasMany(PhoneVerification::class);

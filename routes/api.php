@@ -12,12 +12,11 @@ Route::get('/config', fn () => response()->json([
     'currency' => config('shop.currency'),
     'shipping_fee' => config('shop.shipping_fee'),
     'free_shipping_threshold' => config('shop.free_shipping_threshold'),
-    'cities' => config('shop.cities'),
-    'districts' => config('shop.districts'),
     'qpay_mock' => app(QPayService::class)->isMock(),
 ]));
 
 Route::get('/home', [Api\CatalogController::class, 'home']);
+Route::get('/locations', [Api\AddressController::class, 'locations']);
 Route::get('/categories', [Api\CatalogController::class, 'categories']);
 Route::get('/products', [Api\CatalogController::class, 'products']);
 Route::get('/products/filters', [Api\CatalogController::class, 'filters']);
@@ -45,6 +44,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/verify/start', [Api\VerifyController::class, 'start']);
     Route::get('/verify/sessions/{sessionId}/check', [Api\VerifyController::class, 'check']);
     Route::post('/verify/sessions/{sessionId}/mock-confirm', [Api\VerifyController::class, 'mockConfirm']);
+
+    Route::get('/addresses', [Api\AddressController::class, 'index']);
+    Route::post('/addresses', [Api\AddressController::class, 'store']);
+    Route::put('/addresses/{address}', [Api\AddressController::class, 'update']);
+    Route::patch('/addresses/{address}/default', [Api\AddressController::class, 'setDefault']);
+    Route::delete('/addresses/{address}', [Api\AddressController::class, 'destroy']);
 
     Route::get('/orders', [Api\OrderController::class, 'index']);
     Route::post('/orders', [Api\OrderController::class, 'store']);

@@ -10,7 +10,7 @@ import Spinner from '../../components/ui/Spinner.vue';
 
 const route = useRoute(); const ui = useUiStore();
 const order = ref(null); const busy = ref(false);
-const form = reactive({ courier_note: '', cash_collected: true });
+const form = reactive({ courier_note: '' });
 
 const next = computed(() => ({
     assigned: [{ status: 'picked_up', label: 'Барааг хүлээн авлаа', cls: 'btn-primary' }],
@@ -42,7 +42,7 @@ onMounted(load);
                         <p class="mt-2 text-lg font-bold">{{ order.shipping_name }}</p>
                         <a :href="`tel:${order.shipping_phone}`" class="btn-secondary btn-sm mt-1">📞 {{ order.shipping_phone }}</a>
                         <p class="mt-3 text-stone-700">📍 {{ order.shipping_city }}<span v-if="order.shipping_district">, {{ order.shipping_district }}</span></p>
-                        <p class="text-stone-700">{{ order.shipping_address }}</p>
+                        <p class="text-stone-700"><span v-if="order.shipping_khoroo">{{ order.shipping_khoroo }}{{ order.shipping_city === 'Улаанбаатар' ? '-р хороо, ' : ' баг, ' }}</span>{{ order.shipping_address }}</p>
                         <a :href="`https://maps.google.com/?q=${encodeURIComponent(order.shipping_city + ' ' + (order.shipping_district || '') + ' ' + order.shipping_address)}`" target="_blank" class="mt-2 inline-block text-sm text-sky-700 hover:underline">Газрын зураг дээр харах →</a>
                         <p v-if="order.note" class="mt-3 rounded-lg bg-amber-50 p-3 text-sm text-amber-800">📝 Хэрэглэгчийн тэмдэглэл: {{ order.note }}</p>
                     </div>
@@ -59,12 +59,11 @@ onMounted(load);
                         <h3 class="font-semibold">Төлбөр</h3>
                         <p class="mt-2 text-sm text-stone-600">{{ PAYMENT_METHOD[order.payment_method] }}</p>
                         <p v-if="order.payment_status === 'paid'" class="mt-1 text-emerald-700 font-semibold">✓ Төлөгдсөн</p>
-                        <div v-else class="mt-1"><p class="text-2xl font-bold text-amber-700">{{ money(order.total) }}</p><p class="text-xs text-amber-700">Хүргэлт дээр бэлнээр авна</p></div>
+                        <div v-else class="mt-1"><p class="text-2xl font-bold text-amber-700">{{ money(order.total) }}</p><p class="text-xs text-amber-700">Төлбөр төлөгдөөгүй — хүргэхээс өмнө админтай холбогдоно уу</p></div>
                     </div>
                     <div v-if="next.length" class="card p-5">
                         <h3 class="font-semibold">Төлөв шинэчлэх</h3>
                         <textarea v-model="form.courier_note" rows="2" class="input mt-3" placeholder="Тэмдэглэл (амжилтгүй бол шалтгаан)"></textarea>
-                        <label v-if="order.payment_method === 'cash' && order.payment_status !== 'paid'" class="mt-3 flex items-center gap-2 text-sm"><input type="checkbox" v-model="form.cash_collected" class="rounded border-stone-300 text-emerald-600" /> Бэлэн мөнгө хүлээн авсан</label>
                         <div class="mt-3 flex flex-col gap-2"><button v-for="n in next" :key="n.status" @click="set(n.status)" :disabled="busy" :class="n.cls" class="w-full py-3">{{ n.label }}</button></div>
                     </div>
                     <div v-else class="card p-5 text-center text-sm text-stone-500">Хүргэлт {{ dateTime(order.delivered_at) }}-д дууссан ✓</div>

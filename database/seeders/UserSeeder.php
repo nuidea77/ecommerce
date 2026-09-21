@@ -21,5 +21,24 @@ class UserSeeder extends Seeder
         foreach ($users as $u) {
             User::updateOrCreate(['phone' => $u['phone']], $u + ['password' => 'password']);
         }
+
+        $addresses = [
+            '99887766' => [
+                ['label' => 'Салон', 'recipient_name' => 'Сарнай', 'phone' => '99887766', 'province' => 'Улаанбаатар', 'district' => 'Хан-Уул', 'khoroo' => '15', 'address' => 'Мишээл экспо, Beauty Studio, 2 давхар', 'is_default' => true],
+                ['label' => 'Гэр', 'recipient_name' => 'Сарнай', 'phone' => '99887766', 'province' => 'Улаанбаатар', 'district' => 'Баянзүрх', 'khoroo' => '26', 'address' => 'Жуковын 45-р байр, 3 орц, 56 тоот', 'is_default' => false],
+            ],
+            '95123456' => [
+                ['label' => 'Салон', 'recipient_name' => 'Номин', 'phone' => '95123456', 'province' => 'Улаанбаатар', 'district' => 'Баянгол', 'khoroo' => '6', 'address' => 'Nomin Beauty Salon, Ард Аюушийн өргөн чөлөө 12', 'is_default' => true],
+            ],
+            '96543210' => [
+                ['label' => 'Салон', 'recipient_name' => 'Ариунаа', 'phone' => '96543210', 'province' => 'Дархан-Уул', 'district' => 'Дархан', 'khoroo' => '5', 'address' => 'Glam Salon, Их дэлгүүрийн хойно', 'is_default' => true],
+            ],
+        ];
+        foreach ($addresses as $phone => $rows) {
+            $user = User::where('phone', $phone)->first();
+            if ($user && ! $user->addresses()->exists()) {
+                $user->addresses()->createMany($rows);
+            }
+        }
     }
 }

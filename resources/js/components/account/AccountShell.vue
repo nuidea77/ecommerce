@@ -1,11 +1,12 @@
 <script setup>
 import { useAuthStore } from '../../stores/auth';
-import { Squares2X2Icon, ClipboardDocumentListIcon, UserCircleIcon, ShieldCheckIcon } from '@heroicons/vue/24/outline';
+import { Squares2X2Icon, ClipboardDocumentListIcon, UserCircleIcon, ShieldCheckIcon, MapPinIcon } from '@heroicons/vue/24/outline';
 defineProps({ title: String });
 const auth = useAuthStore();
 const nav = [
     { name: 'account', label: 'Самбар', icon: Squares2X2Icon, exact: true },
     { name: 'orders', label: 'Захиалгууд', icon: ClipboardDocumentListIcon },
+    { name: 'addresses', label: 'Хаягууд', icon: MapPinIcon },
     { name: 'verify', label: 'Баталгаажуулалт', icon: ShieldCheckIcon },
     { name: 'profile', label: 'Профайл', icon: UserCircleIcon },
 ];

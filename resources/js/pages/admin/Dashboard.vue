@@ -47,7 +47,7 @@ const kpiCards = computed(() => d.value ? [
 ] : []);
 
 const payTotal = computed(() => d.value ? Math.max(1, d.value.payment_methods.reduce((a, p) => a + Number(p.orders), 0)) : 1);
-const payColor = { qpay: '#2a78d6', cash: '#eb6834' };
+const payColor = { qpay: '#2a78d6' };
 const catMax = computed(() => d.value ? Math.max(1, ...d.value.category_sales.map((c) => Number(c.revenue))) : 1);
 const statusTotal = computed(() => d.value ? Math.max(1, Object.values(d.value.status_breakdown).reduce((a, b) => a + Number(b), 0)) : 1);
 const statusColor = { pending: '#f59e0b', confirmed: '#0ea5e9', processing: '#6366f1', shipped: '#8b5cf6', delivered: '#10b981', cancelled: '#a8a29e' };

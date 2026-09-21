@@ -47,7 +47,6 @@ class DeliveryController extends Controller
         $data = $request->validate([
             'delivery_status' => ['required', Rule::in(['picked_up', 'in_transit', 'delivered', 'failed'])],
             'courier_note' => ['nullable', 'string', 'max:500'],
-            'cash_collected' => ['boolean'],
         ]);
 
         $updates = ['delivery_status' => $data['delivery_status']];
@@ -62,17 +61,10 @@ class DeliveryController extends Controller
         if ($data['delivery_status'] === 'delivered') {
             $updates['status'] = 'delivered';
             $updates['delivered_at'] = now();
-            if ($order->payment_method === 'cash' && $request->boolean('cash_collected')) {
-                $updates['payment_status'] = 'paid';
-                $updates['paid_at'] = now();
-            }
         }
 
         $order->update($updates);
         $order->addHistory($data['delivery_status'], $data['courier_note'] ?? null, 'delivery');
-        if ($data['delivery_status'] === 'delivered' && ($updates['payment_status'] ?? null) === 'paid') {
-            $order->addHistory('paid', 'Бэлэн мөнгөөр төлбөр хүлээн авлаа', 'payment');
-        }
 
         return response()->json($order->fresh(['items', 'user:id,name,phone', 'histories.user:id,name,role']));
     }

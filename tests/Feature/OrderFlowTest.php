@@ -53,9 +53,11 @@ class OrderFlowTest extends TestCase
             ->assertOk()->assertJsonPath('has_backorder', true);
 
         $res = $this->as($user)->postJson('/api/orders', [
-            'shipping_name' => 'C', 'shipping_phone' => '99001122', 'shipping_city' => 'Улаанбаатар',
-            'shipping_address' => 'Somewhere', 'payment_method' => 'qpay',
+            'recipient_name' => 'Сарнай', 'phone' => '99001122', 'province' => 'Улаанбаатар', 'district' => 'Хан-Уул', 'khoroo' => '15',
+            'address' => 'Мишээл экспо, Beauty Studio', 'save_address' => true,
         ])->assertCreated();
+        $this->assertSame(1, $user->addresses()->count());
+        $this->assertSame('qpay', $res->json('order.payment_method'));
 
         $number = $res->json('order.order_number');
         $this->assertTrue($res->json('order.has_backorder'));
@@ -77,10 +79,12 @@ class OrderFlowTest extends TestCase
         $user = User::create(['phone' => '99000004', 'name' => 'C', 'email' => 'c@x.mn', 'password' => 'password', 'role' => 'customer', 'is_verified' => true]);
 
         $this->as($user)->postJson('/api/cart/items', ['variant_id' => $variant->id, 'quantity' => 1]);
-        $orderId = $this->as($user)->postJson('/api/orders', [
-            'shipping_name' => 'C', 'shipping_phone' => '99001122', 'shipping_city' => 'Улаанбаатар',
-            'shipping_address' => 'Somewhere', 'payment_method' => 'cash',
-        ])->json('order.id');
+        $address = $user->addresses()->create(['recipient_name' => 'Болд', 'phone' => '99001122', 'province' => 'Дархан-Уул', 'district' => 'Дархан', 'khoroo' => '5', 'address' => 'Glam Salon', 'is_default' => true]);
+        $orderRes = $this->as($user)->postJson('/api/orders', ['address_id' => $address->id])->assertCreated();
+        $orderId = $orderRes->json('order.id');
+        $this->assertSame('Дархан-Уул', $orderRes->json('order.shipping_city'));
+        // an invalid province/district pair is rejected
+        $this->as($user)->postJson('/api/orders', ['recipient_name' => 'Болд', 'phone' => '99001122', 'province' => 'Улаанбаатар', 'district' => 'Дархан', 'address' => 'x y z 12'])->assertStatus(422);
 
         $this->as($user)->getJson('/api/admin/orders')->assertForbidden();
         $this->as($admin)->patchJson("/api/admin/orders/{$orderId}/courier", ['courier_id' => $courier->id])
@@ -88,7 +92,7 @@ class OrderFlowTest extends TestCase
 
         $this->as($courier)->getJson('/api/courier/deliveries')->assertOk()->assertJsonPath('stats.assigned', 1);
         $this->as($courier)->patchJson("/api/courier/deliveries/{$orderId}/status", ['delivery_status' => 'picked_up'])->assertOk()->assertJsonPath('status', 'shipped');
-        $this->as($courier)->patchJson("/api/courier/deliveries/{$orderId}/status", ['delivery_status' => 'delivered', 'cash_collected' => true])
-            ->assertOk()->assertJsonPath('status', 'delivered')->assertJsonPath('payment_status', 'paid');
+        $this->as($courier)->patchJson("/api/courier/deliveries/{$orderId}/status", ['delivery_status' => 'delivered'])
+            ->assertOk()->assertJsonPath('status', 'delivered')->assertJsonPath('payment_status', 'unpaid');
     }
 }

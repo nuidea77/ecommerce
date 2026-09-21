@@ -8,7 +8,7 @@ import AccountShell from '../components/account/AccountShell.vue';
 
 const auth = useAuthStore();
 const ui = useUiStore();
-const form = reactive({ name: auth.user.name, email: auth.user.email || '', city: auth.user.city || '', address: auth.user.address || '', password: '', password_confirmation: '' });
+const form = reactive({ name: auth.user.name, email: auth.user.email || '', password: '', password_confirmation: '' });
 const saving = ref(false);
 async function save() {
     saving.value = true;
@@ -28,8 +28,7 @@ async function save() {
             <form @submit.prevent="save" class="mt-6 grid gap-4 sm:grid-cols-2">
                 <div><label class="label">Нэр</label><input v-model="form.name" class="input" required /></div>
                 <div><label class="label">И-мэйл (заавал биш)</label><input v-model="form.email" type="email" class="input" placeholder="name@example.mn" /></div>
-                <div><label class="label">Хот</label><input v-model="form.city" class="input" /></div>
-                <div class="sm:col-span-2"><label class="label">Хаяг</label><textarea v-model="form.address" rows="2" class="input"></textarea></div>
+                <div class="sm:col-span-2 rounded-xl bg-cream-100 p-3 text-sm text-stone-600">Хүргэлтийн хаягуудаа <router-link :to="{ name: 'addresses' }" class="font-medium text-brand-700 hover:underline">Хаягууд</router-link> хэсгээс удирдана.</div>
                 <div><label class="label">Шинэ нууц үг</label><input v-model="form.password" type="password" class="input" placeholder="Өөрчлөхгүй бол хоосон (8+, үсэг ба тоо)" /></div>
                 <div><label class="label">Нууц үг давтах</label><input v-model="form.password_confirmation" type="password" class="input" /></div>
                 <div class="sm:col-span-2"><button :disabled="saving" class="btn-brand">Хадгалах</button></div>

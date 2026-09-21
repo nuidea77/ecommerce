@@ -37,8 +37,7 @@ onMounted(load);
     <div class="container-x py-8">
         <Spinner v-if="!order" />
         <template v-else>
-            <div v-if="route.query.created" class="mb-6 rounded-2xl bg-emerald-50 p-4 text-sm text-emerald-800 ring-1 ring-emerald-200">🎉 Захиалга амжилттай үүслээ! Хүргэлтийн ажилтан тантай удахгүй холбогдоно. Төлбөрийг барааг хүлээн авахдаа төлнө үү.</div>
-            <div class="flex flex-wrap items-start justify-between gap-4">
+                        <div class="flex flex-wrap items-start justify-between gap-4">
                 <div>
                     <p class="text-sm text-stone-500"><router-link :to="{ name: 'orders' }" class="hover:text-brand-700">Захиалгууд</router-link> / {{ order.order_number }}</p>
                     <h1 class="mt-1 font-display text-3xl font-bold">Захиалга {{ order.order_number }}</h1>
@@ -91,7 +90,7 @@ onMounted(load);
                     <div class="card p-5 text-sm">
                         <h3 class="mb-3 font-semibold">Хүргэлтийн хаяг</h3>
                         <p class="font-medium">{{ order.shipping_name }}</p><p>{{ order.shipping_phone }}</p>
-                        <p class="mt-1 text-stone-600">{{ order.shipping_city }}<span v-if="order.shipping_district">, {{ order.shipping_district }}</span><br />{{ order.shipping_address }}</p>
+                        <p class="mt-1 text-stone-600">{{ order.shipping_city }}<span v-if="order.shipping_district">, {{ order.shipping_district }}</span><span v-if="order.shipping_khoroo">, {{ order.shipping_city === 'Улаанбаатар' ? order.shipping_khoroo + '-р хороо' : order.shipping_khoroo + ' баг' }}</span><br />{{ order.shipping_address }}</p>
                         <p v-if="order.note" class="mt-2 rounded-lg bg-cream-100 p-2 text-xs text-stone-500">Тэмдэглэл: {{ order.note }}</p>
                     </div>
                     <div class="card p-5 text-sm">

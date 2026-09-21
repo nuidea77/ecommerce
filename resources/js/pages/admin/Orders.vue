@@ -23,7 +23,6 @@ onMounted(load);
             <select v-model="f.status" class="input w-auto py-2"><option value="">Бүх төлөв</option><option v-for="(s, k) in ORDER_STATUS" :key="k" :value="k">{{ s.label }}</option></select>
             <select v-model="f.payment_status" class="input w-auto py-2"><option value="">Төлбөр: бүгд</option><option v-for="(s, k) in PAYMENT_STATUS" :key="k" :value="k">{{ s.label }}</option></select>
             <select v-model="f.delivery_status" class="input w-auto py-2"><option value="">Хүргэлт: бүгд</option><option v-for="(s, k) in DELIVERY_STATUS" :key="k" :value="k">{{ s.label }}</option></select>
-            <select v-model="f.payment_method" class="input w-auto py-2"><option value="">Хэлбэр: бүгд</option><option v-for="(s, k) in PAYMENT_METHOD" :key="k" :value="k">{{ s }}</option></select>
             <label class="flex items-center gap-2 text-sm"><input type="checkbox" v-model="f.backorder" class="rounded border-stone-300 text-brand-600" /> Урьдчилсан захиалга</label>
         </div>
         <Spinner v-if="!result" />

@@ -15,6 +15,7 @@ const routes = [
             { path: 'orders', name: 'orders', component: () => import('../pages/Orders.vue'), meta: { auth: true } },
             { path: 'orders/:number', name: 'order', component: () => import('../pages/OrderDetail.vue'), meta: { auth: true } },
             { path: 'orders/:number/pay', name: 'pay', component: () => import('../pages/Payment.vue'), meta: { auth: true } },
+            { path: 'account/addresses', name: 'addresses', component: () => import('../pages/account/Addresses.vue'), meta: { auth: true } },
             { path: 'profile', name: 'profile', component: () => import('../pages/Profile.vue'), meta: { auth: true } },
             { path: 'verify', name: 'verify', component: () => import('../pages/account/Verify.vue'), meta: { auth: true } },
             { path: 'login', name: 'login', component: () => import('../pages/auth/Login.vue'), meta: { guest: true } },

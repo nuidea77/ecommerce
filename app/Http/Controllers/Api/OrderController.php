@@ -7,6 +7,8 @@ use App\Models\Order;
 use App\Models\ProductVariant;
 use App\Services\CartService;
 use App\Services\QPayService;
+use App\Support\Locations;
+use App\Support\Phone;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -42,15 +44,38 @@ class OrderController extends Controller
             ], 403);
         }
 
-        $data = $request->validate([
-            'shipping_name' => ['required', 'string', 'max:100'],
-            'shipping_phone' => ['required', 'string', 'max:32'],
-            'shipping_city' => ['required', 'string', 'max:100'],
-            'shipping_district' => ['nullable', 'string', 'max:100'],
-            'shipping_address' => ['required', 'string', 'max:1000'],
+        $request->validate([
+            'address_id' => ['nullable', 'integer'],
             'note' => ['nullable', 'string', 'max:1000'],
-            'payment_method' => ['required', 'in:qpay,cash'],
+            'save_address' => ['nullable', 'boolean'],
         ]);
+
+        // Delivery address: a saved one (address_id) or a new one validated like the address book.
+        if ($request->filled('address_id')) {
+            $address = $request->user()->addresses()->findOrFail($request->input('address_id'));
+            $addr = $address->only('recipient_name', 'phone', 'province', 'district', 'khoroo', 'address');
+        } else {
+            $request->merge(['phone' => Phone::normalize($request->input('phone')) ?? $request->input('phone')]);
+            $addr = $request->validate(AddressController::rules(), AddressController::messages());
+            if (! Locations::isValid($addr['province'], $addr['district'], $addr['khoroo'] ?? null)) {
+                throw ValidationException::withMessages(['district' => 'Хот/аймаг, дүүрэг/сум, хорооны мэдээлэл таарахгүй байна.']);
+            }
+            if ($request->boolean('save_address')) {
+                $isFirst = ! $request->user()->addresses()->exists();
+                $request->user()->addresses()->create(array_merge($addr, ['label' => $request->input('label'), 'is_default' => $isFirst]));
+            }
+        }
+
+        $data = [
+            'shipping_name' => $addr['recipient_name'],
+            'shipping_phone' => $addr['phone'],
+            'shipping_city' => $addr['province'],
+            'shipping_district' => $addr['district'],
+            'shipping_khoroo' => $addr['khoroo'] ?? null,
+            'shipping_address' => $addr['address'],
+            'note' => $request->input('note'),
+            'payment_method' => 'qpay',
+        ];
 
         $cart = $this->carts->resolve($request, false);
         $payload = $cart ? $this->carts->payload($cart) : null;
@@ -110,10 +135,7 @@ class OrderController extends Controller
             return $order;
         });
 
-        $payment = null;
-        if ($order->payment_method === 'qpay') {
-            $payment = $this->qpay->createInvoice($order);
-        }
+        $payment = $this->qpay->createInvoice($order);
 
         return response()->json([
             'order' => $order->load('items'),

@@ -29,7 +29,6 @@ export const PAYMENT_STATUS = {
 
 export const PAYMENT_METHOD = {
     qpay: 'QPay',
-    cash: 'Бэлнээр (хүргэлтээр)',
 };
 
 export const DELIVERY_STATUS = {
