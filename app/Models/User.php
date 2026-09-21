@@ -25,7 +25,7 @@ class User extends Authenticatable
 
     protected $hidden = ['password', 'remember_token'];
 
-    protected $attributes = ['role' => self::ROLE_CUSTOMER, 'is_active' => true];
+    protected $attributes = ['role' => self::ROLE_CUSTOMER, 'is_active' => true, 'is_verified' => false];
 
     protected function casts(): array
     {

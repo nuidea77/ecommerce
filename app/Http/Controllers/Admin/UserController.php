@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Support\Phone;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -33,10 +34,11 @@ class UserController extends Controller
 
     public function store(Request $request): JsonResponse
     {
+        $request->merge(['phone' => Phone::normalize($request->input('phone')) ?? $request->input('phone')]);
         $data = $request->validate([
             'name' => ['required', 'string', 'max:100'],
-            'email' => ['required', 'email', 'max:190', 'unique:users,email'],
-            'phone' => ['nullable', 'string', 'max:32'],
+            'phone' => ['required', 'regex:'.Phone::REGEX, 'unique:users,phone'],
+            'email' => ['nullable', 'email', 'max:190', 'unique:users,email'],
             'role' => ['required', Rule::in(['admin', 'customer', 'courier'])],
             'password' => ['required', Password::min(6)],
             'is_active' => ['boolean'],
@@ -47,10 +49,11 @@ class UserController extends Controller
 
     public function update(Request $request, User $user): JsonResponse
     {
+        $request->merge(['phone' => Phone::normalize($request->input('phone')) ?? $request->input('phone')]);
         $data = $request->validate([
             'name' => ['required', 'string', 'max:100'],
-            'email' => ['required', 'email', 'max:190', Rule::unique('users', 'email')->ignore($user->id)],
-            'phone' => ['nullable', 'string', 'max:32'],
+            'phone' => ['required', 'regex:'.Phone::REGEX, Rule::unique('users', 'phone')->ignore($user->id)],
+            'email' => ['nullable', 'email', 'max:190', Rule::unique('users', 'email')->ignore($user->id)],
             'role' => ['required', Rule::in(['admin', 'customer', 'courier'])],
             'password' => ['nullable', Password::min(6)],
             'is_active' => ['boolean'],

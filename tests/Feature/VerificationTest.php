@@ -47,7 +47,7 @@ class VerificationTest extends TestCase
                 return Http::response($this->sessionResponse(++$calls < 3 ? 'PENDING' : 'VERIFIED', ['verifiedAt' => now()->toIso8601String()]));
             },
         ]);
-        $user = User::create(['name' => 'C', 'email' => 'c@x.mn', 'password' => 'password', 'role' => 'customer']);
+        $user = User::create(['phone' => '99000001', 'name' => 'C', 'email' => 'c@x.mn', 'password' => 'password', 'role' => 'customer']);
 
         $seen = null;
         $result = app(VerifyService::class)->verifyPhone('99001122', $user, function (PhoneVerification $s) use (&$seen) {
@@ -82,7 +82,7 @@ class VerificationTest extends TestCase
                 return Http::response($this->sessionResponse('PENDING'));
             },
         ]);
-        $user = User::create(['name' => 'C', 'email' => 'c@x.mn', 'password' => 'password', 'role' => 'customer']);
+        $user = User::create(['phone' => '99000002', 'name' => 'C', 'email' => 'c@x.mn', 'password' => 'password', 'role' => 'customer']);
 
         $this->assertFalse(app(VerifyService::class)->verifyPhone('99001122', $user));
         $this->assertFalse($user->fresh()->is_verified);
@@ -148,17 +148,17 @@ class VerificationTest extends TestCase
             ->push($this->sessionResponse('PENDING'))
             ->push($this->sessionResponse('VERIFIED', ['verifiedAt' => now()->toIso8601String()])),
         ]);
-        $user = User::create(['name' => 'C', 'email' => 'c@x.mn', 'password' => 'password', 'role' => 'customer']);
+        $user = User::create(['phone' => '99000003', 'name' => 'C', 'email' => 'c@x.mn', 'password' => 'password', 'role' => 'customer']);
 
         $this->actingAs($user)->postJson('/api/orders', ['shipping_name' => 'C'])->assertForbidden()->assertJsonPath('verification_required', true);
 
-        $start = $this->actingAs($user)->postJson('/api/verify/start', ['phone' => '9900 1122'])->assertOk();
+        $start = $this->actingAs($user)->postJson('/api/verify/start')->assertOk();
         $this->assertSame('sess-1', $start->json('session.session_id'));
-        $this->assertStringContainsString('99001122', $start->json('session.display_instruction'));
+        $this->assertStringContainsString($user->phone, $start->json('session.display_instruction'));
         $this->assertSame('sms:144773?body='.$start->json('session.code'), $start->json('session.sms_uri'));
 
         // Starting again while the session is active reuses it (no second paid SMS).
-        $this->actingAs($user)->postJson('/api/verify/start', ['phone' => '99001122'])->assertOk()->assertJsonPath('session.session_id', 'sess-1');
+        $this->actingAs($user)->postJson('/api/verify/start')->assertOk()->assertJsonPath('session.session_id', 'sess-1');
         Http::assertSentCount(1);
 
         $this->actingAs($user)->getJson('/api/verify/sessions/sess-1/check')->assertOk()->assertJsonPath('verified', false)->assertJsonPath('session.status', 'PENDING');
@@ -166,8 +166,8 @@ class VerificationTest extends TestCase
         $this->actingAs($user)->getJson('/api/verify/sessions/sess-1/check')->assertOk()->assertJsonPath('verified', true)->assertJsonPath('session.status', 'VERIFIED');
 
         $user = $user->fresh();
-        $this->actingAs($user)->getJson('/api/verify/status')->assertOk()->assertJsonPath('verified', true)->assertJsonPath('verified_phone', '99001122');
-        $this->actingAs($user)->postJson('/api/verify/start', ['phone' => '99001122'])->assertOk()->assertJsonPath('verified', true);
+        $this->actingAs($user)->getJson('/api/verify/status')->assertOk()->assertJsonPath('verified', true)->assertJsonPath('verified_phone', $user->phone);
+        $this->actingAs($user)->postJson('/api/verify/start')->assertOk()->assertJsonPath('verified', true);
     }
 
     public function test_callback_returns_200_quickly_and_triggers_status_check(): void
@@ -177,7 +177,7 @@ class VerificationTest extends TestCase
             'https://api.verify.mn/sessions' => Http::response(['sessionId' => 'sess-1', 'phone' => '99001122', 'text' => '123456', 'expiresAt' => now()->addSeconds(300)->toIso8601String()], 201),
             'https://api.verify.mn/sessions/sess-1' => Http::response($this->sessionResponse('VERIFIED', ['verifiedAt' => now()->toIso8601String()])),
         ]);
-        $user = User::create(['name' => 'C', 'email' => 'c@x.mn', 'password' => 'password', 'role' => 'customer']);
+        $user = User::create(['phone' => '99000004', 'name' => 'C', 'email' => 'c@x.mn', 'password' => 'password', 'role' => 'customer']);
         $session = app(VerifyService::class)->createSession('99001122', $user);
 
         Http::assertSent(fn (Request $r) => $r->url() === 'https://api.verify.mn/sessions'
@@ -196,9 +196,9 @@ class VerificationTest extends TestCase
     {
         config(['verify.mock' => true, 'verify.api_key' => null]);
         Http::fake();
-        $user = User::create(['name' => 'C', 'email' => 'c@x.mn', 'password' => 'password', 'role' => 'customer']);
+        $user = User::create(['phone' => '99000005', 'name' => 'C', 'email' => 'c@x.mn', 'password' => 'password', 'role' => 'customer']);
 
-        $start = $this->actingAs($user)->postJson('/api/verify/start', ['phone' => '99001122'])->assertOk()->assertJsonPath('mock', true);
+        $start = $this->actingAs($user)->postJson('/api/verify/start')->assertOk()->assertJsonPath('mock', true);
         $id = $start->json('session.session_id');
         $code = $start->json('session.code');
 
@@ -210,14 +210,14 @@ class VerificationTest extends TestCase
 
     public function test_account_dashboard_responds(): void
     {
-        $user = User::create(['name' => 'C', 'email' => 'c@x.mn', 'password' => 'password', 'role' => 'customer']);
+        $user = User::create(['phone' => '99000006', 'name' => 'C', 'email' => 'c@x.mn', 'password' => 'password', 'role' => 'customer']);
         $this->actingAs($user)->getJson('/api/account/dashboard')->assertOk()->assertJsonPath('stats.orders_total', 0);
     }
 
     public function test_admin_dashboard_responds_with_period(): void
     {
-        User::create(['name' => 'C', 'email' => 'c@x.mn', 'password' => 'password', 'role' => 'customer']);
-        $admin = User::create(['name' => 'A', 'email' => 'a@x.mn', 'password' => 'password', 'role' => 'admin']);
+        User::create(['phone' => '99000007', 'name' => 'C', 'email' => 'c@x.mn', 'password' => 'password', 'role' => 'customer']);
+        $admin = User::create(['phone' => '99000008', 'name' => 'A', 'email' => 'a@x.mn', 'password' => 'password', 'role' => 'admin']);
         $this->actingAs($admin)->getJson('/api/admin/dashboard?days=30')->assertOk()
             ->assertJsonPath('period.days', 30)->assertJsonCount(30, 'series')->assertJsonPath('stats.customers', 1);
     }

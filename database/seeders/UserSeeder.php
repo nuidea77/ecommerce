@@ -19,7 +19,7 @@ class UserSeeder extends Seeder
         ];
 
         foreach ($users as $u) {
-            User::updateOrCreate(['email' => $u['email']], $u + ['password' => 'password']);
+            User::updateOrCreate(['phone' => $u['phone']], $u + ['password' => 'password']);
         }
     }
 }

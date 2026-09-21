@@ -41,10 +41,13 @@ class VerifyController extends Controller
             return response()->json(['verified' => true]);
         }
 
-        $data = $request->validate(['phone' => ['required', 'regex:/^\+?[\d\s-]{8,20}$/']]);
+        // Verification must come from the SIM registered on the account.
+        if (! $user->phone) {
+            throw ValidationException::withMessages(['phone' => 'Бүртгэлд утасны дугаар байхгүй байна.']);
+        }
 
         try {
-            $session = $this->verify->createSession($data['phone'], $user);
+            $session = $this->verify->createSession($user->phone, $user);
         } catch (RuntimeException $e) {
             throw ValidationException::withMessages(['phone' => $e->getMessage()]);
         }

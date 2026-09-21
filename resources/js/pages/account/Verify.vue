@@ -15,7 +15,6 @@ const auth = useAuthStore(); const ui = useUiStore();
 
 const status = ref(null);
 const session = ref(null);
-const form = reactive({ phone: auth.user?.phone || '' });
 const errors = ref({});
 const starting = ref(false);
 const expiredNotice = ref(false);
@@ -36,12 +35,13 @@ async function load() {
     status.value = data;
     if (data.verified && !auth.isVerified) await auth.fetch();
     if (data.session) { session.value = data.session; startPolling(); }
+    else if (!data.verified) await start(); // create the code right away for the registered number
 }
 
 async function start() {
     starting.value = true; errors.value = {}; expiredNotice.value = false;
     try {
-        const { data } = await api.post('/verify/start', { phone: form.phone });
+        const { data } = await api.post('/verify/start');
         if (data.verified) { await load(); return; }
         session.value = data.session;
         mock.text = '';
@@ -115,13 +115,13 @@ onUnmounted(() => { stopPolling(); clearInterval(clockTimer); });
                         <div><p class="text-sm text-cream-300/70">verify.mn · нэг удаагийн SMS</p><h2 class="text-2xl font-bold">Утасны дугаараа баталгаажуулна уу</h2><p class="mt-1 text-cream-200/80">Захиалга өгөхийн өмнө таны утаснаас <b>144773</b> дугаарт нэг удаагийн код илгээж дугаарыг тань баталгаажуулна.</p></div>
                     </div>
 
-                    <!-- Step 1: phone -->
+                    <!-- Expired / no session: request a new code for the registered number -->
                     <div v-if="!session || isExpired" class="p-6">
-                        <form @submit.prevent="start" class="flex flex-col gap-3 sm:flex-row sm:items-end">
-                            <div class="flex-1"><label class="label">Утасны дугаар (SMS илгээх дугаар)</label><input v-model="form.phone" class="input font-mono text-lg" placeholder="99001122" required inputmode="tel" /><p v-if="errors.phone" class="mt-1 text-xs text-red-600">{{ errors.phone[0] }}</p></div>
-                            <button :disabled="starting" class="btn-brand px-6 py-3"><DevicePhoneMobileIcon class="h-5 w-5" /> {{ starting ? 'Үүсгэж байна...' : isExpired ? 'Шинэ код авах' : 'Код авах' }}</button>
-                        </form>
-                        <p class="mt-3 text-xs text-stone-500">Та зөвхөн энэ дугаарын SIM-ээс SMS илгээх ёстой. Илгээх SMS бүр операторын тарифаар <b>150₮</b>.</p>
+                        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                            <div><p class="text-xs text-stone-500">Бүртгэлтэй дугаар</p><p class="font-mono text-2xl font-bold tracking-wider text-stone-900">{{ auth.user.phone }}</p><p class="mt-1 text-xs text-stone-500">SMS-ийг зөвхөн энэ дугаарын SIM-ээс илгээнэ. Дугаараа өөрчлөх бол профайлаас засна.</p></div>
+                            <button @click="start" :disabled="starting" class="btn-brand px-6 py-3"><DevicePhoneMobileIcon class="h-5 w-5" /> {{ starting ? 'Үүсгэж байна...' : 'Шинэ код авах' }}</button>
+                        </div>
+                        <p v-if="errors.phone" class="mt-3 text-xs text-red-600">{{ errors.phone[0] }}</p>
                     </div>
 
                     <!-- Step 2: send the SMS -->
@@ -157,7 +157,6 @@ onUnmounted(() => { stopPolling(); clearInterval(clockTimer); });
                                 <li>• SMS бүр <b>150₮</b>. Баталгаажмагц дахин илгээх шаардлагагүй.</li>
                                 <li>• Код <b>5 минут</b> хүчинтэй. Хугацаа дууссан бол шинэ код авна.</li>
                             </ul>
-                            <button @click="onExpired(); session = null" class="btn-ghost btn-sm mt-4 w-full">Өөр дугаар ашиглах</button>
                         </div>
                     </div>
                 </div>

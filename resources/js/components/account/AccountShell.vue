@@ -17,7 +17,7 @@ const nav = [
                 <div class="card p-4">
                     <div class="flex items-center gap-3 border-b border-stone-100 pb-4">
                         <span class="flex h-11 w-11 items-center justify-center rounded-full bg-brand-700 text-lg font-bold text-cream-100">{{ auth.user.name.slice(0, 1) }}</span>
-                        <div class="min-w-0"><p class="truncate font-semibold">{{ auth.user.name }}</p><p class="truncate text-xs text-stone-500">{{ auth.user.email }}</p></div>
+                        <div class="min-w-0"><p class="truncate font-semibold">{{ auth.user.name }}</p><p class="truncate font-mono text-xs text-stone-500">{{ auth.user.phone }}</p></div>
                     </div>
                     <nav class="mt-3 flex gap-1 overflow-x-auto lg:flex-col">
                         <router-link v-for="n in nav" :key="n.name" :to="{ name: n.name }" class="flex shrink-0 items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-medium text-stone-600 hover:bg-cream-100 hover:text-stone-900" :exact-active-class="n.exact ? 'bg-brand-50 text-brand-700' : ''" :active-class="n.exact ? '' : 'bg-brand-50 text-brand-700'">
