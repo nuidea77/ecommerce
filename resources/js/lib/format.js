@@ -13,6 +13,7 @@ export const dateOnly = (v) => {
 
 export const ORDER_STATUS = {
     pending: { label: 'Хүлээгдэж буй', cls: 'bg-amber-100 text-amber-800' },
+    awaiting_payment: { label: 'Төлбөр хүлээгдэж буй', cls: 'bg-orange-100 text-orange-800' },
     confirmed: { label: 'Баталгаажсан', cls: 'bg-sky-100 text-sky-800' },
     processing: { label: 'Бэлтгэж буй', cls: 'bg-indigo-100 text-indigo-800' },
     shipped: { label: 'Хүргэлтэнд гарсан', cls: 'bg-violet-100 text-violet-800' },
@@ -42,6 +43,7 @@ export const DELIVERY_STATUS = {
 
 export const HISTORY_LABEL = {
     pending: 'Захиалга үүссэн',
+    awaiting_payment: 'Төлбөр хүлээгдэж байна',
     confirmed: 'Баталгаажсан',
     processing: 'Бэлтгэж эхэлсэн',
     shipped: 'Хүргэлтэнд гарсан',

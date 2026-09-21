@@ -7,6 +7,7 @@ import { useUiStore } from '../stores/ui';
 import QrCode from '../components/ui/QrCode.vue';
 import Spinner from '../components/ui/Spinner.vue';
 import { CheckCircleIcon, ArrowPathIcon } from '@heroicons/vue/24/outline';
+import CheckoutSteps from '../components/CheckoutSteps.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -89,6 +90,7 @@ onUnmounted(() => clearInterval(timer));
 
 <template>
     <div class="container-x py-10">
+        <CheckoutSteps :current="4" />
         <Spinner v-if="loading" />
         <div v-else-if="!order" class="text-center"><p>Захиалга олдсонгүй.</p></div>
 
@@ -107,7 +109,7 @@ onUnmounted(() => clearInterval(timer));
         <div v-else-if="payment" class="mx-auto grid max-w-4xl gap-8 lg:grid-cols-[1fr_320px]">
             <div class="card p-6 sm:p-8">
                 <div class="flex items-center justify-between">
-                    <div><p class="text-sm text-stone-500">Захиалга {{ order.order_number }}</p><h1 class="font-display text-2xl font-bold">QPay-ээр төлөх</h1></div>
+                    <div><p class="text-sm text-stone-500">Захиалга {{ order.order_number }} · <span class="text-orange-700">Төлбөр хүлээгдэж буй</span></p><h1 class="font-display text-2xl font-bold">Захиалгын мэдээлэл · QPay төлбөр</h1></div>
                     <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 40'><rect width='120' height='40' rx='8' fill='%230b3d91'/><text x='60' y='27' text-anchor='middle' font-family='Arial' font-weight='bold' font-size='20' fill='white'>qPay</text></svg>" class="h-10" alt="qPay" />
                 </div>
                 <div class="mt-6 flex flex-col items-center gap-6 sm:flex-row sm:items-start">
@@ -153,7 +155,7 @@ onUnmounted(() => clearInterval(timer));
                     <div class="flex justify-between"><dt class="text-stone-500">Хүргэлт</dt><dd>{{ order.shipping_fee ? money(order.shipping_fee) : 'Үнэгүй' }}</dd></div>
                     <div class="flex justify-between text-base font-bold"><dt>Нийт</dt><dd>{{ money(order.total) }}</dd></div>
                 </dl>
-                <router-link :to="{ name: 'order', params: { number: order.order_number } }" class="btn-ghost mt-4 w-full">Дараа төлөх</router-link>
+                <router-link :to="{ name: 'order', params: { number: order.order_number } }" class="btn-ghost mt-4 w-full">Дараа төлөх (захиалга хадгалагдана)</router-link>
             </aside>
         </div>
 

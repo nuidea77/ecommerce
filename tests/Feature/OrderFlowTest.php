@@ -58,6 +58,7 @@ class OrderFlowTest extends TestCase
         ])->assertCreated();
         $this->assertSame(1, $user->addresses()->count());
         $this->assertSame('qpay', $res->json('order.payment_method'));
+        $this->assertSame('awaiting_payment', $res->json('order.status'));
 
         $number = $res->json('order.order_number');
         $this->assertTrue($res->json('order.has_backorder'));
@@ -68,6 +69,26 @@ class OrderFlowTest extends TestCase
         $this->as($user)->postJson("/api/orders/{$number}/payment/simulate")->assertOk()->assertJsonPath('paid', true);
         $this->as($user)->getJson("/api/orders/{$number}")->assertOk()
             ->assertJsonPath('order.payment_status', 'paid')->assertJsonPath('order.status', 'confirmed');
+    }
+
+    public function test_awaiting_payment_order_can_be_paid_again_or_cancelled(): void
+    {
+        config(['qpay.mock' => true]);
+        $product = $this->makeProduct(stock: 3);
+        $variant = $product->variants->first();
+        $user = User::create(['phone' => '99009999', 'name' => 'C', 'email' => 'c9@x.mn', 'password' => 'password', 'role' => 'customer', 'is_verified' => true]);
+
+        $this->as($user)->postJson('/api/cart/items', ['variant_id' => $variant->id, 'quantity' => 2]);
+        $number = $this->as($user)->postJson('/api/orders', [
+            'recipient_name' => 'Сарнай', 'phone' => '99009999', 'province' => 'Улаанбаатар', 'district' => 'Хан-Уул', 'address' => 'Мишээл экспо',
+        ])->assertCreated()->assertJsonPath('order.status', 'awaiting_payment')->json('order.order_number');
+        $this->assertSame(1, $variant->fresh()->stock);
+
+        // "Pay again" reuses the open invoice, then the order can still be cancelled which restores stock
+        $this->as($user)->postJson("/api/orders/{$number}/payment/invoice")->assertOk()->assertJsonPath('paid', false);
+        $this->as($user)->postJson("/api/orders/{$number}/cancel")->assertOk()->assertJsonPath('order.status', 'cancelled');
+        $this->assertSame(3, $variant->fresh()->stock);
+        $this->as($user)->postJson("/api/orders/{$number}/payment/invoice")->assertStatus(422);
     }
 
     public function test_admin_assigns_courier_and_courier_completes_delivery(): void

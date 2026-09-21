@@ -25,7 +25,7 @@ class AccountController extends Controller
             'stats' => [
                 'orders_total' => (clone $orders)->count(),
                 'orders_active' => (clone $orders)->whereNotIn('status', ['delivered', 'cancelled'])->count(),
-                'unpaid' => (clone $orders)->where('payment_status', 'unpaid')->where('status', '!=', 'cancelled')->where('payment_method', 'qpay')->count(),
+                'unpaid' => (clone $orders)->where('status', 'awaiting_payment')->count(),
                 'spent_total' => (float) (clone $orders)->where('payment_status', 'paid')->sum('total'),
                 'backorders' => (clone $orders)->where('has_backorder', true)->whereNotIn('status', ['delivered', 'cancelled'])->count(),
                 'delivered' => (clone $orders)->where('status', 'delivered')->count(),
@@ -33,7 +33,7 @@ class AccountController extends Controller
             'recent_orders' => (clone $orders)->with('items:id,order_id,image,product_name')->latest()->take(5)->get(),
             'active_deliveries' => (clone $orders)->whereIn('delivery_status', ['assigned', 'picked_up', 'in_transit'])
                 ->with('courier:id,name,phone')->latest()->take(3)->get(),
-            'unpaid_orders' => (clone $orders)->where('payment_status', 'unpaid')->where('payment_method', 'qpay')->where('status', '!=', 'cancelled')->latest()->take(3)->get(),
+            'unpaid_orders' => (clone $orders)->where('status', 'awaiting_payment')->with('latestPayment')->latest()->take(3)->get(),
             'backorder_items' => $backorderItems,
             'reorder' => Product::active()->whereIn('id', $recentProductIds)->with(['variants', 'category'])->get(),
             'recommended' => Product::active()->where('is_featured', true)->with(['variants', 'category'])->inRandomOrder()->take(4)->get(),

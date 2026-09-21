@@ -88,7 +88,7 @@ class OrderController extends Controller
             $order = Order::create($data + [
                 'order_number' => Order::generateNumber(),
                 'user_id' => $request->user()->id,
-                'status' => 'pending',
+                'status' => 'awaiting_payment',
                 'payment_status' => 'unpaid',
                 'subtotal' => $payload['subtotal'],
                 'shipping_fee' => $payload['shipping_fee'],
@@ -129,6 +129,7 @@ class OrderController extends Controller
             $order->addHistory('pending', $payload['has_backorder']
                 ? 'Захиалга үүслээ (урьдчилсан захиалга агуулсан)'
                 : 'Захиалга үүслээ');
+            $order->addHistory('awaiting_payment', 'QPay төлбөр хүлээгдэж байна');
 
             $cart->items()->delete();
 
@@ -147,7 +148,7 @@ class OrderController extends Controller
     {
         $order = $request->user()->orders()->where('order_number', $orderNumber)->firstOrFail();
 
-        if (! in_array($order->status, ['pending', 'confirmed'])) {
+        if (! in_array($order->status, Order::CANCELLABLE)) {
             throw ValidationException::withMessages(['status' => 'Энэ захиалгыг цуцлах боломжгүй.']);
         }
 

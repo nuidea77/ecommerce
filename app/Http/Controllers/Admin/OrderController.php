@@ -103,7 +103,7 @@ class OrderController extends Controller
         $order->update([
             'courier_id' => $data['courier_id'],
             'delivery_status' => $data['courier_id'] ? 'assigned' : 'unassigned',
-            'status' => $data['courier_id'] && in_array($order->status, ['pending', 'confirmed']) ? 'processing' : $order->status,
+            'status' => $data['courier_id'] && in_array($order->status, ['pending', 'awaiting_payment', 'confirmed']) ? 'processing' : $order->status,
         ]);
 
         $courier = $data['courier_id'] ? User::find($data['courier_id']) : null;

@@ -12,7 +12,10 @@ class Order extends Model
 {
     use HasFactory;
 
-    public const STATUSES = ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'];
+    public const STATUSES = ['pending', 'awaiting_payment', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'];
+
+    /** Statuses the customer may still cancel from. */
+    public const CANCELLABLE = ['pending', 'awaiting_payment', 'confirmed'];
 
     public const DELIVERY_STATUSES = ['unassigned', 'assigned', 'picked_up', 'in_transit', 'delivered', 'failed'];
 

@@ -14,7 +14,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('courier_id')->nullable()->constrained('users')->nullOnDelete();
             $table->enum('status', [
-                'pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled',
+                'pending', 'awaiting_payment', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled',
             ])->default('pending')->index();
             $table->enum('payment_method', ['qpay', 'cash'])->default('qpay');
             $table->enum('payment_status', ['unpaid', 'paid', 'refunded', 'failed'])->default('unpaid')->index();

@@ -50,8 +50,8 @@ const payTotal = computed(() => d.value ? Math.max(1, d.value.payment_methods.re
 const payColor = { qpay: '#2a78d6' };
 const catMax = computed(() => d.value ? Math.max(1, ...d.value.category_sales.map((c) => Number(c.revenue))) : 1);
 const statusTotal = computed(() => d.value ? Math.max(1, Object.values(d.value.status_breakdown).reduce((a, b) => a + Number(b), 0)) : 1);
-const statusColor = { pending: '#f59e0b', confirmed: '#0ea5e9', processing: '#6366f1', shipped: '#8b5cf6', delivered: '#10b981', cancelled: '#a8a29e' };
-const attentionReason = (o) => o.delivery_status === 'failed' ? { t: 'Хүргэлт амжилтгүй', c: 'bg-red-100 text-red-700' } : o.status === 'pending' ? { t: 'Баталгаажуулах', c: 'bg-amber-100 text-amber-800' } : o.delivery_status === 'unassigned' ? { t: 'Хүргэгч томилох', c: 'bg-sky-100 text-sky-800' } : { t: 'Шалгах', c: 'bg-cream-200/60 text-stone-700' };
+const statusColor = { pending: '#f59e0b', awaiting_payment: '#f97316', confirmed: '#0ea5e9', processing: '#6366f1', shipped: '#8b5cf6', delivered: '#10b981', cancelled: '#a8a29e' };
+const attentionReason = (o) => o.delivery_status === 'failed' ? { t: 'Хүргэлт амжилтгүй', c: 'bg-red-100 text-red-700' } : o.status === 'awaiting_payment' ? { t: 'Төлбөр хүлээгдэж буй', c: 'bg-orange-100 text-orange-800' } : o.status === 'pending' ? { t: 'Баталгаажуулах', c: 'bg-amber-100 text-amber-800' } : o.delivery_status === 'unassigned' ? { t: 'Хүргэгч томилох', c: 'bg-sky-100 text-sky-800' } : { t: 'Шалгах', c: 'bg-cream-200/60 text-stone-700' };
 </script>
 
 <template>
@@ -80,7 +80,7 @@ const attentionReason = (o) => o.delivery_status === 'failed' ? { t: 'Хүргэ
             <!-- Operational strip -->
             <div class="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
                 <router-link :to="{ name: 'admin.orders', query: { status: 'pending' } }" class="card p-4 hover:ring-brand-300"><p class="text-xs text-stone-500">Баталгаажуулах</p><p class="text-xl font-bold text-amber-600">{{ d.stats.orders_pending }}</p></router-link>
-                <router-link :to="{ name: 'admin.orders', query: { payment_status: 'unpaid' } }" class="card p-4 hover:ring-brand-300"><p class="text-xs text-stone-500">Төлбөр хүлээж буй</p><p class="text-xl font-bold">{{ d.stats.awaiting_payment }}</p></router-link>
+                <router-link :to="{ name: 'admin.orders', query: { status: 'awaiting_payment' } }" class="card p-4 hover:ring-brand-300"><p class="text-xs text-stone-500">Төлбөр хүлээж буй</p><p class="text-xl font-bold text-orange-600">{{ d.stats.awaiting_payment }}</p></router-link>
                 <router-link :to="{ name: 'admin.orders', query: { delivery_status: 'unassigned' } }" class="card p-4 hover:ring-brand-300"><p class="text-xs text-stone-500">Хүргэгч томилох</p><p class="text-xl font-bold text-sky-700">{{ d.stats.unassigned }}</p></router-link>
                 <router-link :to="{ name: 'admin.orders', query: { delivery_status: 'in_transit' } }" class="card p-4 hover:ring-brand-300"><p class="text-xs text-stone-500">Идэвхтэй хүргэлт</p><p class="text-xl font-bold">{{ d.stats.deliveries_active }}</p></router-link>
                 <router-link :to="{ name: 'admin.orders', query: { backorder: 1 } }" class="card p-4 hover:ring-brand-300"><p class="text-xs text-stone-500">Урьдчилсан захиалга</p><p class="text-xl font-bold text-amber-600">{{ d.stats.backorders }}</p></router-link>

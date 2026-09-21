@@ -6,6 +6,7 @@ import { errorMessage } from '../lib/api';
 import QuantityInput from '../components/ui/QuantityInput.vue';
 import EmptyState from '../components/ui/EmptyState.vue';
 import { TrashIcon } from '@heroicons/vue/24/outline';
+import CheckoutSteps from '../components/CheckoutSteps.vue';
 
 const cart = useCartStore();
 const ui = useUiStore();
@@ -14,7 +15,8 @@ async function setQty(item, q) { try { await cart.update(item.id, q); } catch (e
 
 <template>
     <div class="container-x py-8">
-        <h1 class="font-display text-3xl font-bold">Сагс</h1>
+        <CheckoutSteps :current="1" />
+        <h1 class="font-display text-3xl font-bold">Миний сагс</h1>
         <EmptyState v-if="cart.loaded && !cart.items.length" class="mt-6" title="Сагс хоосон байна" description="Дэлгүүрээс бараагаа сонгоод сагсандаа нэмнэ үү." icon="🛒"><router-link :to="{ name: 'shop' }" class="btn-brand">Дэлгүүр үзэх</router-link></EmptyState>
         <div v-else class="mt-6 grid gap-8 lg:grid-cols-[1fr_360px]">
             <div class="card divide-y divide-stone-100">
@@ -46,7 +48,7 @@ async function setQty(item, q) { try { await cart.update(item.id, q); } catch (e
                     <div class="flex justify-between border-t border-stone-200 pt-3 text-base font-bold"><dt>Нийт</dt><dd>{{ money(cart.total) }}</dd></div>
                 </dl>
                 <p v-if="cart.has_backorder" class="mt-3 text-xs text-amber-700">⏳ Сагсанд урьдчилсан захиалгын бараа байна. Хүргэлт бүх бараа бэлэн болсны дараа хийгдэнэ.</p>
-                <router-link :to="{ name: 'checkout' }" class="btn-brand mt-5 w-full py-3">Захиалга хийх</router-link>
+                <router-link :to="{ name: 'checkout' }" class="btn-brand mt-5 w-full py-3">Захиалгын хаяг руу →</router-link>
                 <router-link :to="{ name: 'shop' }" class="btn-ghost mt-2 w-full">Худалдан авалт үргэлжлүүлэх</router-link>
             </aside>
         </div>

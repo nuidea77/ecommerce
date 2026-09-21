@@ -8,9 +8,11 @@ import StatusBadge from '../../components/ui/StatusBadge.vue';
 import ProductCard from '../../components/ProductCard.vue';
 import Spinner from '../../components/ui/Spinner.vue';
 import { ShieldCheckIcon, TruckIcon, CreditCardIcon, ClockIcon } from '@heroicons/vue/24/outline';
+import OrderActions from '../../components/OrderActions.vue';
 
 const auth = useAuthStore(); const d = ref(null);
-onMounted(async () => { d.value = (await api.get('/account/dashboard')).data; });
+async function load() { d.value = (await api.get('/account/dashboard')).data; }
+onMounted(load);
 const greet = () => { const h = new Date().getHours(); return h < 12 ? 'Өглөөний мэнд' : h < 18 ? 'Өдрийн мэнд' : 'Оройн мэнд'; };
 const stepIdx = (s) => ['unassigned', 'assigned', 'picked_up', 'in_transit', 'delivered'].indexOf(s);
 </script>
@@ -42,7 +44,7 @@ const stepIdx = (s) => ['unassigned', 'assigned', 'picked_up', 'in_transit', 'de
             <div v-if="d.unpaid_orders.length" class="card p-5">
                 <h3 class="flex items-center gap-2 font-semibold"><CreditCardIcon class="h-5 w-5 text-amber-600" /> Төлбөр хүлээгдэж буй захиалга</h3>
                 <ul class="mt-3 divide-y divide-stone-100">
-                    <li v-for="o in d.unpaid_orders" :key="o.id" class="flex flex-wrap items-center justify-between gap-3 py-3 text-sm"><div><p class="font-medium">{{ o.order_number }}</p><p class="text-xs text-stone-500">{{ dateTime(o.created_at) }}</p></div><div class="flex items-center gap-3"><span class="font-semibold">{{ money(o.total) }}</span><router-link :to="{ name: 'pay', params: { number: o.order_number } }" class="btn-brand btn-sm">QPay-ээр төлөх</router-link></div></li>
+                    <li v-for="o in d.unpaid_orders" :key="o.id" class="flex flex-wrap items-center justify-between gap-3 py-3 text-sm"><div><p class="font-medium">{{ o.order_number }}</p><p class="text-xs text-stone-500">{{ dateTime(o.created_at) }}</p></div><div class="flex items-center gap-3"><span class="font-semibold">{{ money(o.total) }}</span><OrderActions :order="o" @updated="load" /></div></li>
                 </ul>
             </div>
 

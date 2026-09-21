@@ -83,6 +83,7 @@ class DashboardController extends Controller
                 'orders_total' => Order::count(),
                 'revenue_total' => (float) $paid()->sum('total'),
                 'orders_pending' => Order::whereIn('status', ['pending', 'confirmed'])->count(),
+                'awaiting_payment' => Order::where('status', 'awaiting_payment')->count(),
                 'awaiting_payment' => Order::where('payment_status', 'unpaid')->where('payment_method', 'qpay')->where('status', '!=', 'cancelled')->count(),
                 'unassigned' => Order::where('delivery_status', 'unassigned')->whereIn('status', ['confirmed', 'processing'])->count(),
                 'deliveries_active' => Order::whereIn('delivery_status', ['assigned', 'picked_up', 'in_transit'])->count(),
@@ -105,6 +106,7 @@ class DashboardController extends Controller
             'recent_orders' => Order::with('user:id,name,is_verified')->latest()->take(8)->get(),
             'attention_orders' => Order::with('user:id,name')->where(function ($q) {
                 $q->whereIn('status', ['pending', 'confirmed'])->orWhere('delivery_status', 'failed')
+                    ->orWhere(fn ($w) => $w->where('status', 'awaiting_payment')->where('created_at', '<', now()->subHours(6)))
                     ->orWhere(fn ($w) => $w->where('status', 'processing')->where('delivery_status', 'unassigned'));
             })->where('status', '!=', 'cancelled')->oldest()->take(6)->get(),
             'low_stock_variants' => ProductVariant::with('product:id,name,slug')->where('stock', '<=', 3)->orderBy('stock')->take(8)->get(),

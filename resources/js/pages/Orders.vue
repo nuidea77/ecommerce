@@ -6,6 +6,7 @@ import StatusBadge from '../components/ui/StatusBadge.vue';
 import Pagination from '../components/ui/Pagination.vue';
 import EmptyState from '../components/ui/EmptyState.vue';
 import Spinner from '../components/ui/Spinner.vue';
+import OrderActions from '../components/OrderActions.vue';
 import AccountShell from '../components/account/AccountShell.vue';
 
 const result = ref(null);
@@ -38,7 +39,10 @@ onMounted(load);
                     <span v-if="o.items.length > 5" class="text-xs text-stone-500">+{{ o.items.length - 5 }}</span>
                     <span class="ml-auto text-sm text-stone-500">{{ o.items.length }} бараа</span>
                 </div>
-                <div v-if="o.payment_method === 'qpay' && o.payment_status === 'unpaid' && o.status !== 'cancelled'" class="mt-3 rounded-lg bg-brand-50 px-3 py-2 text-xs text-brand-800">Төлбөр хүлээгдэж байна — дарж QPay-ээр төлнө үү</div>
+                <div v-if="o.status === 'awaiting_payment' || ['pending', 'confirmed', 'cancelled', 'delivered'].includes(o.status)" class="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-stone-100 pt-3">
+                    <p v-if="o.status === 'awaiting_payment'" class="text-xs text-orange-700">⏳ Төлбөр хүлээгдэж байна — QPay-ээр төлснөөр захиалга баталгаажна</p><span v-else></span>
+                    <OrderActions :order="o" @updated="load(result.current_page)" />
+                </div>
             </router-link>
             <Pagination :meta="result" @change="load" />
         </div>

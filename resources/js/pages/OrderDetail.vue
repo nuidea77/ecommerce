@@ -1,34 +1,26 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
-import api, { errorMessage } from '../lib/api';
+import api from '../lib/api';
 import { money, dateTime, PAYMENT_METHOD } from '../lib/format';
-import { useUiStore } from '../stores/ui';
 import StatusBadge from '../components/ui/StatusBadge.vue';
 import OrderTimeline from '../components/OrderTimeline.vue';
 import Spinner from '../components/ui/Spinner.vue';
+import OrderActions from '../components/OrderActions.vue';
+import CheckoutSteps from '../components/CheckoutSteps.vue';
 
 const route = useRoute();
-const ui = useUiStore();
 const order = ref(null);
-const cancelling = ref(false);
 
 const steps = [
-    { key: 'pending', label: 'Захиалсан' }, { key: 'confirmed', label: 'Баталгаажсан' },
+    { key: 'pending', label: 'Захиалсан' }, { key: 'awaiting_payment', label: 'Төлбөр' }, { key: 'confirmed', label: 'Баталгаажсан' },
     { key: 'processing', label: 'Бэлтгэж буй' }, { key: 'shipped', label: 'Хүргэлтэнд' }, { key: 'delivered', label: 'Хүргэгдсэн' },
 ];
-const stepIndex = computed(() => steps.findIndex((s) => s.key === order.value?.status));
+const stepIndex = computed(() => { const i = steps.findIndex((s) => s.key === order.value?.status); return i === 1 ? 1 : i; });
 
 async function load() {
     const { data } = await api.get(`/orders/${route.params.number}`);
     order.value = data.order;
-}
-async function cancel() {
-    if (!confirm('Захиалгаа цуцлахдаа итгэлтэй байна уу?')) return;
-    cancelling.value = true;
-    try { const { data } = await api.post(`/orders/${route.params.number}/cancel`); order.value = data.order; ui.toast('Захиалга цуцлагдлаа', 'info'); }
-    catch (e) { ui.toast(errorMessage(e), 'error'); }
-    finally { cancelling.value = false; }
 }
 onMounted(load);
 </script>
@@ -37,7 +29,10 @@ onMounted(load);
     <div class="container-x py-8">
         <Spinner v-if="!order" />
         <template v-else>
-                        <div class="flex flex-wrap items-start justify-between gap-4">
+                        <CheckoutSteps v-if="route.query.created || order.status === 'awaiting_payment'" :current="4" />
+            <div v-if="order.status === 'awaiting_payment'" class="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-orange-50 p-4 text-sm text-orange-900 ring-1 ring-orange-200"><span>⏳ Захиалга үүссэн боловч төлбөр төлөгдөөгүй байна. QPay-ээр төлснөөр захиалга баталгаажиж бэлтгэгдэнэ.</span><router-link :to="{ name: 'pay', params: { number: order.order_number } }" class="btn-brand btn-sm">Дахин төлөх</router-link></div>
+            <div v-else-if="order.status === 'cancelled'" class="mb-6 rounded-2xl bg-stone-100 p-4 text-sm text-stone-700">Энэ захиалга {{ dateTime(order.cancelled_at) }}-д цуцлагдсан. Барааны үлдэгдэл буцаагдсан.</div>
+            <div class="flex flex-wrap items-start justify-between gap-4">
                 <div>
                     <p class="text-sm text-stone-500"><router-link :to="{ name: 'orders' }" class="hover:text-brand-700">Захиалгууд</router-link> / {{ order.order_number }}</p>
                     <h1 class="mt-1 font-display text-3xl font-bold">Захиалга {{ order.order_number }}</h1>
@@ -45,8 +40,7 @@ onMounted(load);
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
                     <StatusBadge :value="order.status" type="order" /><StatusBadge :value="order.payment_status" type="payment" />
-                    <router-link v-if="order.payment_method === 'qpay' && order.payment_status === 'unpaid' && order.status !== 'cancelled'" :to="{ name: 'pay', params: { number: order.order_number } }" class="btn-brand btn-sm">QPay-ээр төлөх</router-link>
-                    <button v-if="['pending', 'confirmed'].includes(order.status)" @click="cancel" :disabled="cancelling" class="btn-secondary btn-sm text-red-600">Цуцлах</button>
+                    <OrderActions :order="order" @updated="(o) => (order = o)" />
                 </div>
             </div>
 

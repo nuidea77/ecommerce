@@ -7,6 +7,7 @@ import { useCartStore } from '../stores/cart';
 import { useAuthStore } from '../stores/auth';
 import { useUiStore } from '../stores/ui';
 import AddressForm from '../components/address/AddressForm.vue';
+import CheckoutSteps from '../components/CheckoutSteps.vue';
 import { CheckCircleIcon, PlusIcon, MapPinIcon } from '@heroicons/vue/24/outline';
 
 const router = useRouter();
@@ -24,6 +25,22 @@ const errors = ref({});
 const submitting = ref(false);
 
 const selected = computed(() => addresses.value.find((a) => a.id === selectedId.value));
+const step = ref(2); // 2 = address, 3 = review
+const reviewAddress = computed(() => addingNew.value ? { ...newAddress.value, full: [newAddress.value.province, newAddress.value.district, newAddress.value.khoroo, newAddress.value.address].filter(Boolean).join(', ') } : selected.value);
+
+function goReview() {
+    errors.value = {};
+    if (!addingNew.value && !selectedId.value) return ui.toast('Хүргэлтийн хаягаа сонгоно уу', 'error');
+    if (addingNew.value) {
+        const a = newAddress.value; const e = {};
+        if (!a.recipient_name) e.recipient_name = ['Хүлээн авагчийн нэрээ оруулна уу.'];
+        if (!a.phone) e.phone = ['Утасны дугаараа оруулна уу.'];
+        if (!a.province || !a.district) e.district = ['Хот/аймаг, дүүрэг/сумаа сонгоно уу.'];
+        if (!a.address || a.address.length < 5) e.address = ['Дэлгэрэнгүй хаягаа бүрэн бичнэ үү.'];
+        if (Object.keys(e).length) { errors.value = e; return ui.toast('Хаягийн мэдээллээ бүрэн бөглөнө үү', 'error'); }
+    }
+    step.value = 3; window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
 onMounted(async () => {
     cart.fetch();
@@ -45,6 +62,7 @@ async function submit() {
     } catch (e) {
         if (e.response?.data?.verification_required) return router.push({ name: 'verify', query: { redirect: '/checkout' } });
         errors.value = e.response?.data?.errors || {};
+        if (Object.keys(errors.value).length) step.value = 2;
         ui.toast(errorMessage(e), 'error');
     } finally {
         submitting.value = false;
@@ -54,11 +72,12 @@ async function submit() {
 
 <template>
     <div class="container-x py-8">
-        <h1 class="font-display text-3xl font-bold">Захиалга хийх</h1>
-        <form @submit.prevent="submit" novalidate class="mt-6 grid gap-8 lg:grid-cols-[1fr_380px]">
-            <div class="space-y-6">
+        <CheckoutSteps :current="step" />
+        <h1 class="font-display text-3xl font-bold">{{ step === 2 ? 'Захиалгын хаяг' : 'Захиалга баталгаажуулах' }}</h1>
+        <form @submit.prevent="step === 2 ? goReview() : submit()" novalidate class="mt-6 grid gap-8 lg:grid-cols-[1fr_380px]">
+            <div v-if="step === 2" class="space-y-6">
                 <section class="card p-6">
-                    <div class="flex items-center justify-between"><h2 class="text-lg font-semibold">1. Хүргэлтийн хаяг</h2><router-link :to="{ name: 'addresses' }" class="text-xs text-brand-700 hover:underline">Хаягуудаа удирдах</router-link></div>
+                    <div class="flex items-center justify-between"><h2 class="text-lg font-semibold">Хүргэлтийн хаяг</h2><router-link :to="{ name: 'addresses' }" class="text-xs text-brand-700 hover:underline">Хаягуудаа удирдах</router-link></div>
 
                     <div v-if="addresses.length" class="mt-4 grid gap-3 sm:grid-cols-2">
                         <button v-for="a in addresses" :key="a.id" type="button" @click="selectedId = a.id; addingNew = false" class="relative rounded-2xl p-4 text-left ring-1 transition" :class="!addingNew && selectedId === a.id ? 'bg-brand-50 ring-2 ring-brand-600' : 'bg-white ring-stone-200 hover:ring-stone-400'">
@@ -79,14 +98,33 @@ async function submit() {
                     <div class="mt-5"><label class="label">Нэмэлт тэмдэглэл</label><textarea v-model="note" rows="2" class="input" placeholder="Хүргэлтийн цаг, тусгай заавар..."></textarea></div>
                 </section>
 
+            </div>
+
+            <!-- Step 3: review -->
+            <div v-else class="space-y-6">
                 <section class="card p-6">
-                    <h2 class="text-lg font-semibold">2. Төлбөр</h2>
+                    <div class="flex items-center justify-between"><h2 class="text-lg font-semibold">Хүргэлтийн хаяг</h2><button type="button" @click="step = 2" class="text-xs font-medium text-brand-700 hover:underline">Өөрчлөх</button></div>
+                    <div v-if="reviewAddress" class="mt-3 rounded-2xl bg-cream-100 p-4 text-sm"><p class="font-semibold">{{ reviewAddress.recipient_name }} · <span class="font-mono font-normal">{{ reviewAddress.phone }}</span></p><p class="mt-1 text-stone-600">{{ reviewAddress.full }}</p><p v-if="note" class="mt-2 text-xs text-stone-500">📝 {{ note }}</p></div>
+                </section>
+                <section class="card p-6">
+                    <div class="flex items-center justify-between"><h2 class="text-lg font-semibold">Бараанууд ({{ cart.count }})</h2><router-link :to="{ name: 'cart' }" class="text-xs font-medium text-brand-700 hover:underline">Сагс засах</router-link></div>
+                    <ul class="mt-3 divide-y divide-stone-100">
+                        <li v-for="item in cart.items" :key="item.id" class="flex items-center gap-4 py-3 text-sm">
+                            <img :src="item.image" class="h-14 w-14 rounded-lg bg-white object-contain ring-1 ring-stone-200/70" alt="" />
+                            <div class="flex-1"><p class="font-medium">{{ item.name }}</p><p class="text-xs text-stone-500">{{ item.variant_label }} · {{ money(item.price) }} × {{ item.quantity }}</p><span v-if="item.is_backorder" class="text-xs font-medium text-amber-600">Урьдчилсан захиалга · ~{{ item.backorder_days }} хоног</span></div>
+                            <p class="font-semibold">{{ money(item.line_total) }}</p>
+                        </li>
+                    </ul>
+                </section>
+                <section class="card p-6">
+                    <h2 class="text-lg font-semibold">Төлбөрийн хэлбэр</h2>
                     <div class="mt-4 flex items-start gap-4 rounded-2xl bg-brand-50 p-4 ring-2 ring-brand-600">
                         <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 40'><rect width='120' height='40' rx='8' fill='%230b3d91'/><text x='60' y='27' text-anchor='middle' font-family='Arial' font-weight='bold' font-size='20' fill='white'>qPay</text></svg>" class="h-10" alt="qPay" />
                         <div class="flex-1"><p class="font-semibold">QPay-ээр төлөх</p><p class="text-sm text-stone-600">Захиалга үүсмэгц QR код гарна. Хаан, Голомт, ХХБ, Хас, Төрийн банк болон бусад банкны аппаар уншуулж шууд төлнө. Төлбөр баталгаажсаны дараа захиалга бэлтгэгдэнэ.</p></div>
                         <CheckCircleIcon class="h-5 w-5 shrink-0 text-brand-600" />
                     </div>
                 </section>
+                <p class="text-xs text-stone-500">"Захиалга баталгаажуулах" дарснаар захиалга "Төлбөр хүлээгдэж буй" төлөвтэй үүсч, QPay QR код гарна. Төлбөрөө дараа ч төлж болно.</p>
             </div>
 
             <aside class="card h-fit p-6">
@@ -105,7 +143,11 @@ async function submit() {
                     <div class="flex justify-between border-t border-stone-200 pt-3 text-base font-bold"><dt>Нийт төлөх</dt><dd>{{ money(cart.total) }}</dd></div>
                 </dl>
                 <p v-if="errors.cart" class="mt-3 text-sm text-red-600">{{ errors.cart[0] }}</p>
-                <button type="submit" :disabled="submitting || !cart.items.length" class="btn-brand mt-5 w-full py-3 text-base">{{ submitting ? 'Үүсгэж байна...' : 'QPay-ээр төлөх' }}</button>
+                <button v-if="step === 2" type="submit" :disabled="!cart.items.length" class="btn-brand mt-5 w-full py-3 text-base">Баталгаажуулах руу →</button>
+                <template v-else>
+                    <button type="submit" :disabled="submitting || !cart.items.length" class="btn-brand mt-5 w-full py-3 text-base">{{ submitting ? 'Үүсгэж байна...' : 'Захиалга баталгаажуулах' }}</button>
+                    <button type="button" @click="step = 2" class="btn-ghost mt-2 w-full">← Хаяг руу буцах</button>
+                </template>
                 <p class="mt-3 text-center text-xs text-stone-400">Захиалга өгснөөр үйлчилгээний нөхцөлийг зөвшөөрч байна.</p>
             </aside>
         </form>

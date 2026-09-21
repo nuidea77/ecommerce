@@ -161,7 +161,7 @@ class QPayService
         $order->update([
             'payment_status' => 'paid',
             'paid_at' => now(),
-            'status' => $order->status === 'pending' ? 'confirmed' : $order->status,
+            'status' => in_array($order->status, ['pending', 'awaiting_payment']) ? 'confirmed' : $order->status,
         ]);
         $order->addHistory('paid', 'QPay төлбөр амжилттай төлөгдлөө', 'payment', null);
         if ($order->wasChanged('status')) {
