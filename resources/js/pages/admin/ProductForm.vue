@@ -4,7 +4,9 @@ import { useRoute, useRouter } from 'vue-router';
 import api, { errorMessage } from '../../lib/api';
 import { useUiStore } from '../../stores/ui';
 import Spinner from '../../components/ui/Spinner.vue';
-import { PlusIcon, TrashIcon, PhotoIcon, XMarkIcon, DocumentDuplicateIcon } from '@heroicons/vue/24/outline';
+import ImageUploader from '../../components/admin/ImageUploader.vue';
+import Modal from '../../components/ui/Modal.vue';
+import { PlusIcon, TrashIcon, DocumentDuplicateIcon, PhotoIcon } from '@heroicons/vue/24/outline';
 
 const route = useRoute(); const router = useRouter(); const ui = useUiStore();
 const id = computed(() => route.params.id);
@@ -12,15 +14,13 @@ const categories = ref([]);
 const loading = ref(!!id.value);
 const saving = ref(false);
 const errors = ref({});
-const uploading = ref(false);
-const fileInput = ref(null);
 
 const form = reactive({
     category_id: '', name: '', short_description: '', description: '', base_price: 0, compare_price: null,
     images: [], specs: [], is_active: true, is_featured: false, allow_backorder: true, backorder_days: 14, variants: [],
 });
-const newImageUrl = ref('');
 
+const variantPicker = ref(null);
 const COLOR_PRESETS = { 'Хар': '#1c1917', 'Цагаан': '#f5f5f4', 'Ягаан': '#f472b6', 'Алтан': '#d4a017', 'Мөнгөлөг': '#c0c0c0', 'Улаан': '#dc2626', 'Хөх': '#2563eb', 'Ногоон': '#16a34a', 'Бор': '#78350f', 'Саарал': '#6b7280' };
 
 function blankVariant(from = null) {
@@ -29,14 +29,6 @@ function blankVariant(from = null) {
 function addVariant(from = null) { form.variants.push(blankVariant(from)); }
 function onColorInput(v) { if (COLOR_PRESETS[v.color]) v.color_hex = COLOR_PRESETS[v.color]; }
 
-async function upload(e) {
-    const file = e.target.files?.[0]; if (!file) return;
-    uploading.value = true;
-    try { const fd = new FormData(); fd.append('image', file); const { data } = await api.post('/admin/products/upload', fd, { headers: { 'Content-Type': 'multipart/form-data' } }); form.images.push(data.url); ui.toast('Зураг хуулагдлаа'); }
-    catch (err) { ui.toast(errorMessage(err), 'error'); }
-    finally { uploading.value = false; e.target.value = ''; }
-}
-function addImageUrl() { if (newImageUrl.value.trim()) { form.images.push(newImageUrl.value.trim()); newImageUrl.value = ''; } }
 
 async function save() {
     saving.value = true; errors.value = {};
@@ -98,7 +90,7 @@ onMounted(async () => {
                                 <div><label class="label text-xs">Үнэ (₮) *</label><input v-model.number="v.price" type="number" min="0" class="input py-2" required /></div>
                                 <div><label class="label text-xs">Үлдэгдэл *</label><input v-model.number="v.stock" type="number" class="input py-2" required /></div>
                                 <div><label class="label text-xs">SKU</label><input v-model="v.sku" class="input py-2" placeholder="Автомат" /></div>
-                                <div><label class="label text-xs">Зураг URL</label><input v-model="v.image" class="input py-2" placeholder="Сонголтын зураг" /></div>
+                                <div><label class="label text-xs">Сонголтын зураг</label><div class="flex items-center gap-2"><img v-if="v.image" :src="v.image" class="h-10 w-10 rounded-lg bg-white object-contain ring-1 ring-stone-200" alt="" /><button type="button" @click="variantPicker = i" class="btn-secondary btn-sm"><PhotoIcon class="h-4 w-4" /> {{ v.image ? 'Солих' : 'Зураг' }}</button><button v-if="v.image" type="button" @click="v.image = ''" class="btn-ghost btn-sm text-red-600">×</button></div></div>
                             </div>
                             <div class="mt-3 flex items-center justify-between">
                                 <label class="flex items-center gap-2 text-xs"><input type="checkbox" v-model="v.is_active" class="rounded border-stone-300 text-brand-600" /> Идэвхтэй</label>
@@ -120,12 +112,9 @@ onMounted(async () => {
             <div class="space-y-6">
                 <section class="card p-6">
                     <h2 class="font-semibold">Зураг</h2>
-                    <div class="mt-4 grid grid-cols-3 gap-2">
-                        <div v-for="(img, i) in form.images" :key="i" class="group relative aspect-square overflow-hidden rounded-lg bg-cream-200/60 ring-1 ring-stone-200"><img :src="img" class="h-full w-full object-cover" alt="" /><button type="button" @click="form.images.splice(i, 1)" class="absolute right-1 top-1 hidden rounded-full bg-white/90 p-0.5 text-red-600 group-hover:block"><XMarkIcon class="h-4 w-4" /></button><span v-if="i === 0" class="absolute bottom-1 left-1 rounded bg-stone-900/70 px-1 text-[10px] text-white">Үндсэн</span></div>
-                        <button type="button" @click="fileInput.click()" :disabled="uploading" class="flex aspect-square flex-col items-center justify-center rounded-lg border-2 border-dashed border-stone-300 text-stone-400 hover:border-brand-400 hover:text-brand-600"><PhotoIcon class="h-6 w-6" /><span class="text-[10px]">{{ uploading ? '...' : 'Хуулах' }}</span></button>
-                    </div>
-                    <input ref="fileInput" type="file" accept="image/*" class="hidden" @change="upload" />
-                    <div class="mt-3 flex gap-2"><input v-model="newImageUrl" class="input py-2 text-xs" placeholder="эсвэл зургийн URL" @keydown.enter.prevent="addImageUrl" /><button type="button" @click="addImageUrl" class="btn-secondary btn-sm">+</button></div>
+                    <p class="mt-1 text-xs text-stone-500">Цагаан дэвсгэртэй, дөрвөлжин зураг хамгийн сайн харагдана.</p>
+                    <div class="mt-4"><ImageUploader v-model="form.images" /></div>
+                    <p v-if="errors.images" class="mt-1 text-xs text-red-600">{{ errors.images[0] }}</p>
                 </section>
                 <section class="card space-y-3 p-6">
                     <h2 class="font-semibold">Тохиргоо</h2>
@@ -137,5 +126,10 @@ onMounted(async () => {
                 <button type="submit" :disabled="saving" class="btn-brand w-full py-3">{{ saving ? 'Хадгалж байна...' : 'Хадгалах' }}</button>
             </div>
         </form>
+        <Modal :open="variantPicker !== null" title="Сонголтын зураг" @close="variantPicker = null">
+            <ImageUploader v-if="variantPicker !== null" :model-value="form.variants[variantPicker].image ? [form.variants[variantPicker].image] : []" @update:model-value="(arr) => { form.variants[variantPicker].image = arr[0] || ''; if (arr[0]) variantPicker = null; }" :multiple="false" compact />
+            <p class="mt-3 text-xs text-stone-500">Эсвэл барааны зургуудаас сонгох:</p>
+            <div class="mt-2 flex flex-wrap gap-2"><button v-for="img in form.images" :key="img" type="button" @click="form.variants[variantPicker].image = img; variantPicker = null" class="h-14 w-14 overflow-hidden rounded-lg ring-1 ring-stone-200 hover:ring-brand-500"><img :src="img" class="h-full w-full object-contain" alt="" /></button></div>
+        </Modal>
     </div>
 </template>

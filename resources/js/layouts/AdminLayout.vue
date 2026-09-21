@@ -24,20 +24,20 @@ async function logout() {
 </script>
 
 <template>
-    <div class="flex min-h-full bg-white">
+    <div class="flex min-h-screen bg-white">
         <!-- Sidebar -->
-        <aside class="fixed inset-y-0 left-0 z-40 w-64 transform bg-brand-900 text-cream-200/80 transition-transform lg:static lg:translate-x-0" :class="open ? 'translate-x-0' : '-translate-x-full'">
-            <div class="flex h-16 items-center gap-2 px-5">
+        <aside class="fixed inset-y-0 left-0 z-40 flex h-screen w-64 shrink-0 transform flex-col bg-brand-900 text-cream-200/80 transition-transform lg:sticky lg:top-0 lg:translate-x-0" :class="open ? 'translate-x-0' : '-translate-x-full'">
+            <div class="flex h-16 shrink-0 items-center gap-2 px-5">
                 <img :src="'/images/logo-light.png'" alt="Чанар Есүй" class="h-8 w-auto" />
                 <span class="rounded-md bg-gold-500/20 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-gold-300">Админ</span>
                 <button class="ml-auto lg:hidden" @click="open = false"><XMarkIcon class="h-5 w-5" /></button>
             </div>
-            <nav class="mt-4 space-y-1 px-3">
+            <nav class="mt-2 flex-1 space-y-1 overflow-y-auto px-3 pb-4">
                 <router-link v-for="n in nav" :key="n.name" :to="{ name: n.name }" @click="open = false" class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium hover:bg-brand-800 hover:text-white" :exact-active-class="n.exact ? 'bg-brand-800 text-white' : ''" :active-class="n.exact ? '' : 'bg-brand-800 text-white'">
                     <component :is="n.icon" class="h-5 w-5" />{{ n.label }}
                 </router-link>
             </nav>
-            <div class="absolute bottom-0 w-full space-y-1 border-t border-white/10 p-3">
+            <div class="shrink-0 space-y-1 border-t border-white/10 p-3">
                 <router-link :to="{ name: 'home' }" class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm hover:bg-brand-800 hover:text-white"><BuildingStorefrontIcon class="h-5 w-5" />Дэлгүүр рүү</router-link>
                 <button @click="logout" class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm hover:bg-brand-800 hover:text-white"><ArrowLeftStartOnRectangleIcon class="h-5 w-5" />Гарах</button>
             </div>

@@ -80,12 +80,22 @@ class ProductController extends Controller
         return response()->json(['ok' => true]);
     }
 
+    /** Accepts a single `image` or several `images[]` (jpg/png/webp, 6 MB each). */
     public function uploadImage(Request $request): JsonResponse
     {
-        $request->validate(['image' => ['required', 'image', 'max:4096']]);
-        $path = $request->file('image')->store('products', 'public');
+        $request->validate([
+            'image' => ['required_without:images', 'image', 'mimes:jpg,jpeg,png,webp', 'max:6144'],
+            'images' => ['required_without:image', 'array', 'max:12'],
+            'images.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:6144'],
+        ]);
 
-        return response()->json(['url' => '/storage/'.$path]);
+        $files = $request->hasFile('images') ? $request->file('images') : [$request->file('image')];
+        $urls = [];
+        foreach ($files as $file) {
+            $urls[] = '/storage/'.$file->store('products', 'public');
+        }
+
+        return response()->json(['url' => $urls[0], 'urls' => $urls]);
     }
 
     protected function validated(Request $request, ?Product $product = null): array
