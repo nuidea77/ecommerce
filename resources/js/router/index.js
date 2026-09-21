@@ -34,6 +34,7 @@ const routes = [
             { path: 'categories', name: 'admin.categories', component: () => import('../pages/admin/Categories.vue') },
             { path: 'orders', name: 'admin.orders', component: () => import('../pages/admin/Orders.vue') },
             { path: 'orders/:id', name: 'admin.order', component: () => import('../pages/admin/OrderDetail.vue') },
+            { path: 'deliveries', name: 'admin.deliveries', component: () => import('../pages/admin/Deliveries.vue') },
             { path: 'users', name: 'admin.users', component: () => import('../pages/admin/Users.vue') },
         ],
     },

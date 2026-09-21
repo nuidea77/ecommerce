@@ -66,6 +66,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('categories', Admin\CategoryController::class)->except('show');
         Route::post('/products/upload', [Admin\ProductController::class, 'uploadImage']);
         Route::apiResource('products', Admin\ProductController::class);
+        Route::get('/deliveries', [Admin\DeliveryController::class, 'index']);
         Route::get('/orders', [Admin\OrderController::class, 'index']);
         Route::get('/orders/{order}', [Admin\OrderController::class, 'show']);
         Route::patch('/orders/{order}/status', [Admin\OrderController::class, 'updateStatus']);

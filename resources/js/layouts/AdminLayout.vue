@@ -12,9 +12,9 @@ const nav = [
     { name: 'admin.dashboard', label: 'Хянах самбар', icon: Squares2X2Icon, exact: true },
     { name: 'admin.orders', label: 'Захиалгууд', icon: ClipboardDocumentListIcon },
     { name: 'admin.products', label: 'Бүтээгдэхүүн', icon: CubeIcon },
+    { name: 'admin.deliveries', label: 'Хүргэлтүүд', icon: TruckIcon },
     { name: 'admin.categories', label: 'Ангилал', icon: TagIcon },
     { name: 'admin.users', label: 'Хэрэглэгчид', icon: UsersIcon },
-    { name: 'courier.deliveries', label: 'Хүргэлт (courier view)', icon: TruckIcon },
 ];
 
 async function logout() {
