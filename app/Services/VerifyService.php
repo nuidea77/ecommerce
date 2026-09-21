@@ -23,7 +23,7 @@ use RuntimeException;
  */
 class VerifyService
 {
-    public const PROVIDER = 'verify.mn';
+    public const PROVIDER = 'sms';
 
     public function isMock(): bool
     {

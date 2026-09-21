@@ -8,7 +8,7 @@ import { useUiStore } from '../../stores/ui';
 import AccountShell from '../../components/account/AccountShell.vue';
 import { ShieldCheckIcon, CheckBadgeIcon, DevicePhoneMobileIcon, ChatBubbleBottomCenterTextIcon, ClockIcon } from '@heroicons/vue/24/outline';
 
-const POLL_MS = 3000; // verify.mn: never poll faster than 3s
+const POLL_MS = 3000; // provider asks not to poll faster than 3s
 
 const route = useRoute(); const router = useRouter();
 const auth = useAuthStore(); const ui = useUiStore();
@@ -97,11 +97,11 @@ onUnmounted(() => { stopPolling(); clearInterval(clockTimer); });
             <div v-if="status.verified" class="card overflow-hidden">
                 <div class="flex flex-col items-start gap-5 bg-gradient-to-r from-emerald-600 to-teal-600 p-6 text-white sm:flex-row sm:items-center">
                     <span class="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white/20"><CheckBadgeIcon class="h-10 w-10" /></span>
-                    <div><p class="text-sm text-emerald-100">verify.mn · {{ dateTime(status.verified_at) }}</p><h2 class="text-2xl font-bold">Таны дугаар баталгаажсан</h2><p class="mt-1 text-emerald-50">Та бүх үйлчилгээг бүрэн ашиглах боломжтой.</p></div>
+                    <div><p class="text-sm text-emerald-100">Баталгаажсан · {{ dateTime(status.verified_at) }}</p><h2 class="text-2xl font-bold">Таны дугаар баталгаажсан</h2><p class="mt-1 text-emerald-50">Та бүх үйлчилгээг бүрэн ашиглах боломжтой.</p></div>
                 </div>
                 <dl class="grid gap-4 p-6 text-sm sm:grid-cols-2">
                     <div><dt class="text-stone-500">Баталгаажсан дугаар</dt><dd class="mt-0.5 font-mono text-lg font-semibold">{{ status.verified_phone }}</dd></div>
-                    <div><dt class="text-stone-500">Арга</dt><dd class="mt-0.5 font-semibold">SMS (144773) · verify.mn</dd></div>
+                    <div><dt class="text-stone-500">Арга</dt><dd class="mt-0.5 font-semibold">SMS (144773)</dd></div>
                 </dl>
                 <div class="border-t border-stone-100 px-6 py-4"><router-link :to="route.query.redirect || { name: 'account' }" class="btn-brand">Үргэлжлүүлэх</router-link></div>
             </div>
@@ -112,7 +112,7 @@ onUnmounted(() => { stopPolling(); clearInterval(clockTimer); });
                 <div class="card overflow-hidden">
                     <div class="flex flex-col items-start gap-5 bg-brand-900 p-6 text-cream-100 sm:flex-row sm:items-center">
                         <span class="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-brand-600"><ShieldCheckIcon class="h-10 w-10" /></span>
-                        <div><p class="text-sm text-cream-300/70">verify.mn · нэг удаагийн SMS</p><h2 class="text-2xl font-bold">Утасны дугаараа баталгаажуулна уу</h2><p class="mt-1 text-cream-200/80">Захиалга өгөхийн өмнө таны утаснаас <b>144773</b> дугаарт нэг удаагийн код илгээж дугаарыг тань баталгаажуулна.</p></div>
+                        <div><p class="text-sm text-cream-300/70">Нэг удаагийн SMS</p><h2 class="text-2xl font-bold">Утасны дугаараа баталгаажуулна уу</h2><p class="mt-1 text-cream-200/80">Захиалга өгөхийн өмнө таны утаснаас <b>144773</b> дугаарт нэг удаагийн код илгээж дугаарыг тань баталгаажуулна.</p></div>
                     </div>
 
                     <!-- Expired / no session: request a new code for the registered number -->
@@ -145,7 +145,7 @@ onUnmounted(() => { stopPolling(); clearInterval(clockTimer); });
 
                             <div v-if="status.mock" class="mt-5 rounded-xl border border-dashed border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
                                 <p class="font-semibold">🧪 Туршилтын горим (VERIFY_MOCK=true)</p>
-                                <p class="mt-1 text-xs">API түлхүүр тохируулаагүй тул verify.mn руу хүсэлт явахгүй. Утаснаас илгээсэн SMS-ийг доор симуляц хийнэ:</p>
+                                <p class="mt-1 text-xs">API түлхүүр тохируулаагүй тул SMS үйлчилгээ рүү хүсэлт явахгүй. Утаснаас илгээсэн SMS-ийг доор симуляц хийнэ:</p>
                                 <form @submit.prevent="mockConfirm" class="mt-2 flex gap-2"><input v-model="mock.text" class="input font-mono" placeholder="SMS текст (код)" required /><button :disabled="mock.busy" class="btn bg-amber-500 text-white hover:bg-amber-600">Илгээх</button></form>
                             </div>
                         </div>

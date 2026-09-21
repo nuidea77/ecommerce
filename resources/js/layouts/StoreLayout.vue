@@ -131,7 +131,7 @@ const shopName = computed(() => ui.config?.name || 'Чанар Есүй');
 
         <div v-if="auth.needsVerification && route.name !== 'verify'" class="border-b border-amber-200 bg-amber-50">
             <div class="container-x flex flex-wrap items-center justify-between gap-2 py-2 text-sm text-amber-900">
-                <span>📱 Захиалга өгөхийн тулд утасны дугаараа SMS-ээр (verify.mn) баталгаажуулна уу.</span>
+                <span>📱 Захиалга өгөхийн тулд утасны дугаараа SMS-ээр баталгаажуулна уу.</span>
                 <router-link :to="{ name: 'verify' }" class="btn-sm btn bg-amber-500 text-white hover:bg-amber-600">Баталгаажуулах</router-link>
             </div>
         </div>

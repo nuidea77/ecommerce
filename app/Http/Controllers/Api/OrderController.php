@@ -37,7 +37,7 @@ class OrderController extends Controller
     {
         if (config('verify.require_for_checkout') && $request->user()->needsVerification()) {
             return response()->json([
-                'message' => 'Захиалга өгөхийн тулд verify.mn-ээр бүртгэлээ баталгаажуулна уу.',
+                'message' => 'Захиалга өгөхийн тулд утасны дугаараа SMS-ээр баталгаажуулна уу.',
                 'verification_required' => true,
             ], 403);
         }

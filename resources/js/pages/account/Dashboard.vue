@@ -25,10 +25,10 @@ const stepIdx = (s) => ['unassigned', 'assigned', 'picked_up', 'in_transit', 'de
             <!-- Verification -->
             <div v-if="!auth.isVerified" class="flex flex-col items-start gap-4 rounded-2xl bg-gradient-to-r from-gold-500 to-gold-600 p-5 text-brand-900 sm:flex-row sm:items-center">
                 <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white/20"><ShieldCheckIcon class="h-7 w-7" /></span>
-                <div class="flex-1"><p class="font-bold">Бүртгэлээ баталгаажуулна уу</p><p class="text-sm text-brand-900/80">Захиалга өгөхийн өмнө утасны дугаараа SMS-ээр (verify.mn) нэг удаа баталгаажуулна.</p></div>
+                <div class="flex-1"><p class="font-bold">Бүртгэлээ баталгаажуулна уу</p><p class="text-sm text-brand-900/80">Захиалга өгөхийн өмнө утасны дугаараа SMS-ээр нэг удаа баталгаажуулна.</p></div>
                 <router-link :to="{ name: 'verify' }" class="btn-primary">Баталгаажуулах</router-link>
             </div>
-            <div v-else class="flex items-center gap-3 rounded-2xl bg-emerald-50 px-5 py-3 text-sm text-emerald-800 ring-1 ring-emerald-200"><ShieldCheckIcon class="h-5 w-5" /> Утасны дугаар verify.mn-ээр баталгаажсан · {{ auth.user.verified_phone }}</div>
+            <div v-else class="flex items-center gap-3 rounded-2xl bg-emerald-50 px-5 py-3 text-sm text-emerald-800 ring-1 ring-emerald-200"><ShieldCheckIcon class="h-5 w-5" /> Утасны дугаар SMS-ээр баталгаажсан · {{ auth.user.verified_phone }}</div>
 
             <!-- Stats -->
             <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
